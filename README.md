@@ -1,2 +1,40 @@
 # Gedi
-Use of Gaussian processes in the analysis of stellar noise to search for exoplanets
+
+Do or do not, there is no try in the use of Gaussian processes to model real data, test the limits of this approach, and find the best way to analyze radial velocities measurements of stars.
+
+
+                   ____                  
+                _.' :  `._               
+            .-.'`.  ;   .'`.-.           
+   __      / : ___\ ;  /___ ; \      __  
+ ,'_ ""--.:__;".-.";: :".-.":__;.--"" _`,
+ :' `.t""--.. '<@.`;_  ',@>` ..--""j.' `;
+      `:-.._J '-.-'L__ `-- ' L_..-;'     
+        "-.__ ;  .-"  "-.  : __.-"       
+            L ' /.------.\ ' J           
+             "-.   "--"   .-"            
+            __.l"-:_JL_;-";.__           
+         .-j/'.;  ;""""  / .'\"-.        
+       .' /:`. "-.:     .-" .';  `.      
+    .-"  / ;  "-. "-..-" .-"  :    "-.   
+ .+"-.  : :      "-.__.-"      ;-._   \  
+ ; \  `.; ;                    : : "+. ; 
+ :  ;   ; ;                    : ;  : \: 
+ ;  :   ; :                    ;:   ;  : 
+: \  ;  :  ;                  : ;  /  :: 
+;  ; :   ; :                  ;   :   ;: 
+:  :  ;  :  ;                : :  ;  : ; 
+;\    :   ; :                ; ;     ; ; 
+: `."-;   :  ;              :  ;    /  ; 
+ ;    -:   ; :              ;  : .-"   : 
+ :\     \  :  ;            : \.-"      : 
+  ;`.    \  ; :            ;.'_..--  / ; 
+  :  "-.  "-:  ;          :/."      .'  :
+   \         \ :          ;/  __        :
+    \       .-`.\        /t-""  ":-+.   :
+     `.  .-"    `l    __/ /`. :  ; ; \  ;
+       \   .-" .-"-.-"  .' .'j \  /   ;/ 
+        \ / .-"   /.     .'.' ;_:'    ;  
+         :-""-.`./-.'     /    `.___.'   
+               \ `t  ._  /  bug          
+                "-.t-._:' 
