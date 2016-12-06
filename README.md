@@ -2,5 +2,7 @@
 
 Do or do not, there is no try in the use of Gaussian processes to model real data, test the limits of this approach, and find the best way to analyze radial velocities measurements of stars.
  
+ Kernel.py -> script with all the kernels and its derivatives
+ Kernel_likelihood -> script where the  calculation of the log-likelihood and gradient of the kernels is made
 
 |▒▓▒▒◙▒▓▒▓▒▓||░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
