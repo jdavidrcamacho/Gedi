@@ -6,6 +6,6 @@ Do or do not, there is no try in the use of Gaussian processes to model real dat
  
  Kernel.py -> script with all the kernels and its derivatives
  
- Kernel_likelihood -> script where the  calculation of the log-likelihood and gradient of the kernels is made
+ Kernel_likelihood.py -> script where the  calculation of the log-likelihood and gradient of the kernels is made
 
 |▒▓▒▒◙▒▓▒▓▒▓||░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
