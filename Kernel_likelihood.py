@@ -11,16 +11,16 @@ import inspect
 from time import time   
 
 ##### INITIAL MATRIX ########################################################## 
-def build_matrix(kernel, x, xcalc, y, yerr): #covariance matrix calculations
-    r = x[:, None] - xcalc[None, :]
+def build_matrix(kernel, x, y, yerr): #covariance matrix calculations
+    r = x[:, None] - x[None, :]
     K = kernel(r)
     K = K + yerr**2*np.identity(len(x)) 
     return K
 
 
 ##### LIKELIHOOD ##############################################################
-def likelihood(kernel, x, xcalc, y, yerr): #covariance matrix calculations   
-    r = x[:, None] - xcalc[None, :]
+def likelihood(kernel, x, y, yerr): #covariance matrix calculations   
+    r = x[:, None] - x[None, :]
     K = kernel(r)
     K = K + yerr**2*np.identity(len(x))    
     log_p_correct = lnlike(K, y)
@@ -39,15 +39,15 @@ def lnlike(K, y): #log-likelihood calculations
 
 
 ##### LIKELIHOOD GRADIENT #####################################################
-def likelihood_aux(kernel, x, xcalc, y, yerr): #covariance matrix calculations   
-    r = x[:, None] - xcalc[None, :]
+def likelihood_aux(kernel, x, y, yerr): #covariance matrix calculations   
+    r = x[:, None] - x[None, :]
     K = kernel(r)
     K = K + yerr**2*np.identity(len(x))    
     log_p_correct = lnlike(K, y)   
     return K
 
-def grad_logp(kernel,x,xcalc,y,yerr,cov_matrix): #covariance matrix of derivatives
-    r = x[:, None] - xcalc[None, :]
+def grad_logp(kernel,x,y,yerr,cov_matrix): #covariance matrix of derivatives
+    r = x[:, None] - x[None, :]
     K_grad = kernel(r)
     K_inv = np.linalg.inv(cov_matrix)    
     alpha = np.dot(K_inv,y)
@@ -55,66 +55,66 @@ def grad_logp(kernel,x,xcalc,y,yerr,cov_matrix): #covariance matrix of derivativ
     grad = 0.5 * np.einsum('ij,ij', K_grad, A) #this comes from george
     return grad 
 
-def gradient_likelihood(kernel,x,xcalc,y,yerr):
+def gradient_likelihood(kernel,x,y,yerr):
     import inspect
-    cov_matrix=likelihood_aux(kernel,x,xcalc,y,yerr)
+    cov_matrix=likelihood_aux(kernel,x,y,yerr)
     if isinstance(kernel,kl.ExpSquared):
-        grad1=grad_logp(kernel.dES_dtheta, x, xcalc, y, yerr, cov_matrix)
-        grad2=grad_logp(kernel.dES_dl, x, xcalc, y, yerr, cov_matrix)
+        grad1=grad_logp(kernel.dES_dtheta, x, y, yerr, cov_matrix)
+        grad2=grad_logp(kernel.dES_dl, x, y, yerr, cov_matrix)
         #print 'gradient ->', grad1, grad2
         return grad1, grad2
     elif isinstance(kernel,kl.ExpSineSquared):
-        grad1=grad_logp(kernel.dESS_dtheta,x,xcalc,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dESS_dl,x,xcalc,y,yerr,cov_matrix)
-        grad3=grad_logp(kernel.dESS_dP,x,xcalc,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dESS_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dESS_dl,x,y,yerr,cov_matrix)
+        grad3=grad_logp(kernel.dESS_dP,x,y,yerr,cov_matrix)
         #print 'gradient ->', grad1, grad2, grad3
         return grad1, grad2, grad3 
     elif isinstance(kernel,kl.RatQuadratic):
-        grad1=grad_logp(kernel.dRQ_dtheta,x,xcalc,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dRQ_dalpha,x,xcalc,y,yerr,cov_matrix)
-        grad3=grad_logp(kernel.dRQ_dl,x,xcalc,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dRQ_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dRQ_dalpha,x,y,yerr,cov_matrix)
+        grad3=grad_logp(kernel.dRQ_dl,x,y,yerr,cov_matrix)
         #print 'gradient ->', grad1, grad2, grad3
         return grad1, grad2, grad3 
     elif isinstance(kernel,kl.Exponential):
-        grad1=grad_logp(kernel.dExp_dtheta,x,xcalc,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dExp_dl,x,xcalc,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dExp_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dExp_dl,x,y,yerr,cov_matrix)
         #print 'gradient ->', grad1, grad2
         return grad1, grad2, grad3 
     elif isinstance(kernel,kl.ExpSineGeorge):
-        grad1=grad_logp(kernel.dE_dGamma,x,xcalc,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dE_dP,x,xcalc,y,yerr,cov_matrix) 
+        grad1=grad_logp(kernel.dE_dGamma,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dE_dP,x,y,yerr,cov_matrix) 
         #print 'gradient ->', grad1, grad2
         return grad1, grad2
     elif isinstance(kernel,kl.Matern_32):
-        grad1=grad_logp(kernel.dM32_dtheta,x,xcalc,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dM32_dl,x,xcalc,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dM32_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dM32_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
     elif isinstance(kernel,kl.Matern_52):
-        grad1=grad_logp(kernel.dM52_dtheta,x,xcalc,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dM52_dl,x,xcalc,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dM52_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dM52_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
     elif isinstance(kernel,kl.ExpSineGeorge):
-        grad1=grad_logp(kernel.dE_dGamma,x,xcalc,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dE_dP,x,xcalc,y,yerr,cov_matrix) 
+        grad1=grad_logp(kernel.dE_dGamma,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dE_dP,x,y,yerr,cov_matrix) 
         a= [grad1, grad2];a=np.array(a)       
         return a
     elif isinstance(kernel,kl.Sum):
-        gradient_sum(kernel,x,xcalc,y,yerr)
+        gradient_sum(kernel,x,y,yerr)
     elif isinstance(kernel,kl.Product):
-        gradient_mul(kernel,x,xcalc,y,yerr)                
+        gradient_mul(kernel,x,y,yerr)                
     else:
         print 'gradient -> NOPE'    
 
 
 ##### LIKELIHOOD GRADIENT FOR SUMS - SEEMS TO WORK ############################    
-def gradient_sum(kernel,x,xcalc,y,yerr):
+def gradient_sum(kernel,x,y,yerr):
     kernelOriginal=kernel #para nao perder a original com os calculos todos
     a=kernel.__dict__
     grad_result=[]    
     for i in np.arange(1,len(kernel.__dict__)+1):
         var = "k%i" %i
         k_i = a[var]
-        calc = gradient_likelihood_sum(k_i,x,xcalc,y,yerr,kernelOriginal)
+        calc = gradient_likelihood_sum(k_i,x,y,yerr,kernelOriginal)
         grad_result.insert(1,calc)
         grad_final  =[]
         for j in range(len(grad_result)):         
@@ -123,46 +123,46 @@ def gradient_sum(kernel,x,xcalc,y,yerr):
     return grad_final
     #Devolve NoneType -> acontece se faltar return no gradient_likelihood
             
-def gradient_likelihood_sum(kernel,x,xcalc,y,yerr,kernelOriginal):
-    cov_matrix=likelihood_aux(kernelOriginal,x,xcalc,y,yerr)
+def gradient_likelihood_sum(kernel,x,y,yerr,kernelOriginal):
+    cov_matrix=likelihood_aux(kernelOriginal,x,y,yerr)
     if isinstance(kernel,kl.ExpSquared):
-        grad1=grad_logp(kernel.dES_dtheta, x, xcalc, y, yerr, cov_matrix)
-        grad2=grad_logp(kernel.dES_dl, x, xcalc, y, yerr, cov_matrix)
+        grad1=grad_logp(kernel.dES_dtheta, x, y, yerr, cov_matrix)
+        grad2=grad_logp(kernel.dES_dl, x, y, yerr, cov_matrix)
         return grad1, grad2
     elif isinstance(kernel,kl.ExpSineSquared):
-        grad1=grad_logp(kernel.dESS_dtheta,x,xcalc,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dESS_dl,x,xcalc,y,yerr,cov_matrix)
-        grad3=grad_logp(kernel.dESS_dP,x,xcalc,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dESS_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dESS_dl,x,y,yerr,cov_matrix)
+        grad3=grad_logp(kernel.dESS_dP,x,y,yerr,cov_matrix)
         return grad1, grad2, grad3 
     elif isinstance(kernel,kl.RatQuadratic):
-        grad1=grad_logp(kernel.dRQ_dtheta,x,xcalc,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dRQ_dalpha,x,xcalc,y,yerr,cov_matrix)
-        grad3=grad_logp(kernel.dRQ_dl,x,xcalc,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dRQ_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dRQ_dalpha,x,y,yerr,cov_matrix)
+        grad3=grad_logp(kernel.dRQ_dl,x,y,yerr,cov_matrix)
         return grad1, grad2, grad3 
     elif isinstance(kernel,kl.Exponential):
-        grad1=grad_logp(kernel.dExp_dtheta,x,xcalc,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dExp_dl,x,xcalc,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dExp_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dExp_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
     elif isinstance(kernel,kl.Matern_32):
-        grad1=grad_logp(kernel.dM32_dtheta,x,xcalc,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dM32_dl,x,xcalc,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dM32_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dM32_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
     elif isinstance(kernel,kl.Matern_52):
-        grad1=grad_logp(kernel.dM52_dtheta,x,xcalc,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dM52_dl,x,xcalc,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dM52_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dM52_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
     elif isinstance(kernel,kl.ExpSineGeorge):
-        grad1=grad_logp(kernel.dE_dGamma,x,xcalc,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dE_dP,x,xcalc,y,yerr,cov_matrix) 
+        grad1=grad_logp(kernel.dE_dGamma,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dE_dP,x,y,yerr,cov_matrix) 
         return grad1, grad2                
     else:
         print 'gradient -> NOPE'
 
 
 ##### LIKELIHOOD GRADIENT FOR PRODUCTS - SEEMS TO WORK ########################       
-def gradient_mul(kernel,x,xcalc,y,yerr):
+def gradient_mul(kernel,x,y,yerr):
     kernelOriginal=kernel #para nao perder a original com os calculos todos
-    cov_matrix=likelihood_aux(kernelOriginal,x,xcalc,y,yerr) #matrix cov original
+    cov_matrix=likelihood_aux(kernelOriginal,x,y,yerr) #matrix cov original
     a=kernel.__dict__
     len_dict=len(kernel.__dict__)
     grad_result=[] #para aqui irao os gradientes finais no fim
@@ -181,7 +181,7 @@ def gradient_mul(kernel,x,xcalc,y,yerr):
             else:
                  B2=len(kernelaux2[i2])
                  for j in range(B2):
-                     result=grad_logp(kernelaux1[i1]*kernelaux2[i2][j],x,xcalc,y,yerr,cov_matrix)
+                     result=grad_logp(kernelaux1[i1]*kernelaux2[i2][j],x,y,yerr,cov_matrix)
                      grad_result.insert(0,result)
     print 'gradient ->', grad_result    
     return grad_result   
@@ -208,12 +208,12 @@ def kernel_deriv(kernel):
 
 #####ORIGINAL LIKELIHOOD CALCULATIONS - Do not delete for now
 ###### LIKELIHOOD ##############################################################
-#def likelihood(kernel, x, xcalc, y, yerr): #covariance matrix calculations   
+#def likelihood(kernel, x, x, y, yerr): #covariance matrix calculations   
 #    K = np.zeros((len(x),len(x))) #covariance matrix K
 #    for i in range(len(x)):
 #        x1 = x[i]
-#        for j in range(len(xcalc)):                      
-#            x2 = xcalc[j]
+#        for j in range(len(x)):                      
+#            x2 = x[j]
 #            K[i,j] = kernel(x1, x2)
 #    K=K+yerr**2*np.identity(len(x))      
 #    log_p_correct = lnlike(K, y)
@@ -232,23 +232,23 @@ def kernel_deriv(kernel):
 #
 #
 ###### LIKELIHOOD GRADIENT #####################################################
-#def likelihood_aux(kernel, x, xcalc, y, yerr): #covariance matrix calculations   
+#def likelihood_aux(kernel, x, x, y, yerr): #covariance matrix calculations   
 #    K = np.zeros((len(x),len(x))) #covariance matrix K
 #    for i in range(len(x)):
 #        x1 = x[i]
-#        for j in range(len(xcalc)):                      
-#            x2 = xcalc[j]
+#        for j in range(len(x)):                      
+#            x2 = x[j]
 #            K[i,j] = kernel(x1, x2)
 #    K=K+yerr**2*np.identity(len(x))      
 #    log_p_correct = lnlike(K, y) 
 #    return K
 #
-#def grad_logp(kernel,x,xcalc,y,yerr,cov_matrix): #covariance matrix of derivatives
+#def grad_logp(kernel,x,x,y,yerr,cov_matrix): #covariance matrix of derivatives
 #    K_grad = np.zeros((len(x),len(x)))  #covariance matrix K_grad
 #    for i in range(len(x)):
 #        x1 = x[i]
-#        for j in range(len(xcalc)):                      
-#            x2 = xcalc[j]
+#        for j in range(len(x)):                      
+#            x2 = x[j]
 #            K_grad[i,j] = kernel(x1, x2)
 #    K_inv = np.linalg.inv(cov_matrix)    
 #    alpha = np.dot(K_inv,y)
@@ -256,66 +256,66 @@ def kernel_deriv(kernel):
 #    grad = 0.5 * np.einsum('ij,ij', K_grad, A) #this comes from george
 #    return grad 
 #
-#def gradient_likelihood(kernel,x,xcalc,y,yerr):
+#def gradient_likelihood(kernel,x,x,y,yerr):
 #    import inspect
-#    cov_matrix=likelihood_aux(kernel,x,xcalc,y,yerr)
+#    cov_matrix=likelihood_aux(kernel,x,x,y,yerr)
 #    if isinstance(kernel,kl.ExpSquared):
-#        grad1=grad_logp(kernel.dES_dtheta, x, xcalc, y, yerr, cov_matrix)
-#        grad2=grad_logp(kernel.dES_dl, x, xcalc, y, yerr, cov_matrix)
+#        grad1=grad_logp(kernel.dES_dtheta, x, x, y, yerr, cov_matrix)
+#        grad2=grad_logp(kernel.dES_dl, x, x, y, yerr, cov_matrix)
 #        #print 'gradient ->', grad1, grad2
 #        return grad1, grad2
 #    elif isinstance(kernel,kl.ExpSineSquared):
-#        grad1=grad_logp(kernel.dESS_dtheta,x,xcalc,y,yerr,cov_matrix)
-#        grad2=grad_logp(kernel.dESS_dl,x,xcalc,y,yerr,cov_matrix)
-#        grad3=grad_logp(kernel.dESS_dP,x,xcalc,y,yerr,cov_matrix)
+#        grad1=grad_logp(kernel.dESS_dtheta,x,x,y,yerr,cov_matrix)
+#        grad2=grad_logp(kernel.dESS_dl,x,x,y,yerr,cov_matrix)
+#        grad3=grad_logp(kernel.dESS_dP,x,x,y,yerr,cov_matrix)
 #        #print 'gradient ->', grad1, grad2, grad3
 #        return grad1, grad2, grad3 
 #    elif isinstance(kernel,kl.RatQuadratic):
-#        grad1=grad_logp(kernel.dRQ_dtheta,x,xcalc,y,yerr,cov_matrix)
-#        grad2=grad_logp(kernel.dRQ_dalpha,x,xcalc,y,yerr,cov_matrix)
-#        grad3=grad_logp(kernel.dRQ_dl,x,xcalc,y,yerr,cov_matrix)
+#        grad1=grad_logp(kernel.dRQ_dtheta,x,x,y,yerr,cov_matrix)
+#        grad2=grad_logp(kernel.dRQ_dalpha,x,x,y,yerr,cov_matrix)
+#        grad3=grad_logp(kernel.dRQ_dl,x,x,y,yerr,cov_matrix)
 #        #print 'gradient ->', grad1, grad2, grad3
 #        return grad1, grad2, grad3 
 #    elif isinstance(kernel,kl.Exponential):
-#        grad1=grad_logp(kernel.dExp_dtheta,x,xcalc,y,yerr,cov_matrix)
-#        grad2=grad_logp(kernel.dExp_dl,x,xcalc,y,yerr,cov_matrix)
+#        grad1=grad_logp(kernel.dExp_dtheta,x,x,y,yerr,cov_matrix)
+#        grad2=grad_logp(kernel.dExp_dl,x,x,y,yerr,cov_matrix)
 #        #print 'gradient ->', grad1, grad2
 #        return grad1, grad2, grad3 
 #    elif isinstance(kernel,kl.ExpSineGeorge):
-#        grad1=grad_logp(kernel.dE_dGamma,x,xcalc,y,yerr,cov_matrix)
-#        grad2=grad_logp(kernel.dE_dP,x,xcalc,y,yerr,cov_matrix) 
+#        grad1=grad_logp(kernel.dE_dGamma,x,x,y,yerr,cov_matrix)
+#        grad2=grad_logp(kernel.dE_dP,x,x,y,yerr,cov_matrix) 
 #        #print 'gradient ->', grad1, grad2
 #        return grad1, grad2
 #    elif isinstance(kernel,kl.Matern_32):
-#        grad1=grad_logp(kernel.dM32_dtheta,x,xcalc,y,yerr,cov_matrix)
-#        grad2=grad_logp(kernel.dM32_dl,x,xcalc,y,yerr,cov_matrix)
+#        grad1=grad_logp(kernel.dM32_dtheta,x,x,y,yerr,cov_matrix)
+#        grad2=grad_logp(kernel.dM32_dl,x,x,y,yerr,cov_matrix)
 #        return grad1, grad2
 #    elif isinstance(kernel,kl.Matern_52):
-#        grad1=grad_logp(kernel.dM52_dtheta,x,xcalc,y,yerr,cov_matrix)
-#        grad2=grad_logp(kernel.dM52_dl,x,xcalc,y,yerr,cov_matrix)
+#        grad1=grad_logp(kernel.dM52_dtheta,x,x,y,yerr,cov_matrix)
+#        grad2=grad_logp(kernel.dM52_dl,x,x,y,yerr,cov_matrix)
 #        return grad1, grad2
 #    elif isinstance(kernel,kl.ExpSineGeorge):
-#        grad1=grad_logp(kernel.dE_dGamma,x,xcalc,y,yerr,cov_matrix)
-#        grad2=grad_logp(kernel.dE_dP,x,xcalc,y,yerr,cov_matrix) 
+#        grad1=grad_logp(kernel.dE_dGamma,x,x,y,yerr,cov_matrix)
+#        grad2=grad_logp(kernel.dE_dP,x,x,y,yerr,cov_matrix) 
 #        a= [grad1, grad2];a=np.array(a)       
 #        return a
 #    elif isinstance(kernel,kl.Sum):
-#        gradient_sum(kernel,x,xcalc,y,yerr)
+#        gradient_sum(kernel,x,x,y,yerr)
 #    elif isinstance(kernel,kl.Product):
-#        gradient_mul(kernel,x,xcalc,y,yerr)                
+#        gradient_mul(kernel,x,x,y,yerr)                
 #    else:
 #        print 'gradient -> NOPE'    
 #
 #
 ###### LIKELIHOOD GRADIENT FOR SUMS - SEEMS TO WORK ############################    
-#def gradient_sum(kernel,x,xcalc,y,yerr):
+#def gradient_sum(kernel,x,x,y,yerr):
 #    kernelOriginal=kernel #para nao perder a original com os calculos todos
 #    a=kernel.__dict__
 #    grad_result=[]    
 #    for i in np.arange(1,len(kernel.__dict__)+1):
 #        var = "k%i" %i
 #        k_i = a[var]
-#        calc = gradient_likelihood_sum(k_i,x,xcalc,y,yerr,kernelOriginal)
+#        calc = gradient_likelihood_sum(k_i,x,x,y,yerr,kernelOriginal)
 #        grad_result.insert(1,calc)
 #        grad_final  =[]
 #        for j in range(len(grad_result)):         
@@ -324,46 +324,46 @@ def kernel_deriv(kernel):
 #    return grad_final
 #    #Devolve NoneType -> acontece se faltar return no gradient_likelihood
 #            
-#def gradient_likelihood_sum(kernel,x,xcalc,y,yerr,kernelOriginal):
-#    cov_matrix=likelihood_aux(kernelOriginal,x,xcalc,y,yerr)
+#def gradient_likelihood_sum(kernel,x,x,y,yerr,kernelOriginal):
+#    cov_matrix=likelihood_aux(kernelOriginal,x,x,y,yerr)
 #    if isinstance(kernel,kl.ExpSquared):
-#        grad1=grad_logp(kernel.dES_dtheta, x, xcalc, y, yerr, cov_matrix)
-#        grad2=grad_logp(kernel.dES_dl, x, xcalc, y, yerr, cov_matrix)
+#        grad1=grad_logp(kernel.dES_dtheta, x, x, y, yerr, cov_matrix)
+#        grad2=grad_logp(kernel.dES_dl, x, x, y, yerr, cov_matrix)
 #        return grad1, grad2
 #    elif isinstance(kernel,kl.ExpSineSquared):
-#        grad1=grad_logp(kernel.dESS_dtheta,x,xcalc,y,yerr,cov_matrix)
-#        grad2=grad_logp(kernel.dESS_dl,x,xcalc,y,yerr,cov_matrix)
-#        grad3=grad_logp(kernel.dESS_dP,x,xcalc,y,yerr,cov_matrix)
+#        grad1=grad_logp(kernel.dESS_dtheta,x,x,y,yerr,cov_matrix)
+#        grad2=grad_logp(kernel.dESS_dl,x,x,y,yerr,cov_matrix)
+#        grad3=grad_logp(kernel.dESS_dP,x,x,y,yerr,cov_matrix)
 #        return grad1, grad2, grad3 
 #    elif isinstance(kernel,kl.RatQuadratic):
-#        grad1=grad_logp(kernel.dRQ_dtheta,x,xcalc,y,yerr,cov_matrix)
-#        grad2=grad_logp(kernel.dRQ_dalpha,x,xcalc,y,yerr,cov_matrix)
-#        grad3=grad_logp(kernel.dRQ_dl,x,xcalc,y,yerr,cov_matrix)
+#        grad1=grad_logp(kernel.dRQ_dtheta,x,x,y,yerr,cov_matrix)
+#        grad2=grad_logp(kernel.dRQ_dalpha,x,x,y,yerr,cov_matrix)
+#        grad3=grad_logp(kernel.dRQ_dl,x,x,y,yerr,cov_matrix)
 #        return grad1, grad2, grad3 
 #    elif isinstance(kernel,kl.Exponential):
-#        grad1=grad_logp(kernel.dExp_dtheta,x,xcalc,y,yerr,cov_matrix)
-#        grad2=grad_logp(kernel.dExp_dl,x,xcalc,y,yerr,cov_matrix)
+#        grad1=grad_logp(kernel.dExp_dtheta,x,x,y,yerr,cov_matrix)
+#        grad2=grad_logp(kernel.dExp_dl,x,x,y,yerr,cov_matrix)
 #        return grad1, grad2
 #    elif isinstance(kernel,kl.Matern_32):
-#        grad1=grad_logp(kernel.dM32_dtheta,x,xcalc,y,yerr,cov_matrix)
-#        grad2=grad_logp(kernel.dM32_dl,x,xcalc,y,yerr,cov_matrix)
+#        grad1=grad_logp(kernel.dM32_dtheta,x,x,y,yerr,cov_matrix)
+#        grad2=grad_logp(kernel.dM32_dl,x,x,y,yerr,cov_matrix)
 #        return grad1, grad2
 #    elif isinstance(kernel,kl.Matern_52):
-#        grad1=grad_logp(kernel.dM52_dtheta,x,xcalc,y,yerr,cov_matrix)
-#        grad2=grad_logp(kernel.dM52_dl,x,xcalc,y,yerr,cov_matrix)
+#        grad1=grad_logp(kernel.dM52_dtheta,x,x,y,yerr,cov_matrix)
+#        grad2=grad_logp(kernel.dM52_dl,x,x,y,yerr,cov_matrix)
 #        return grad1, grad2
 #    elif isinstance(kernel,kl.ExpSineGeorge):
-#        grad1=grad_logp(kernel.dE_dGamma,x,xcalc,y,yerr,cov_matrix)
-#        grad2=grad_logp(kernel.dE_dP,x,xcalc,y,yerr,cov_matrix) 
+#        grad1=grad_logp(kernel.dE_dGamma,x,x,y,yerr,cov_matrix)
+#        grad2=grad_logp(kernel.dE_dP,x,x,y,yerr,cov_matrix) 
 #        return grad1, grad2                
 #    else:
 #        print 'gradient -> NOPE'
 #
 #
 ###### LIKELIHOOD GRADIENT FOR PRODUCTS - SEEMS TO WORK ########################       
-#def gradient_mul(kernel,x,xcalc,y,yerr):
+#def gradient_mul(kernel,x,x,y,yerr):
 #    kernelOriginal=kernel #para nao perder a original com os calculos todos
-#    cov_matrix=likelihood_aux(kernelOriginal,x,xcalc,y,yerr) #matrix cov original
+#    cov_matrix=likelihood_aux(kernelOriginal,x,x,y,yerr) #matrix cov original
 #    a=kernel.__dict__
 #    len_dict=len(kernel.__dict__)
 #    grad_result=[] #para aqui irao os gradientes finais no fim
@@ -382,7 +382,7 @@ def kernel_deriv(kernel):
 #            else:
 #                 B2=len(kernelaux2[i2])
 #                 for j in range(B2):
-#                     result=grad_logp(kernelaux1[i1]*kernelaux2[i2][j],x,xcalc,y,yerr,cov_matrix)
+#                     result=grad_logp(kernelaux1[i1]*kernelaux2[i2][j],x,x,y,yerr,cov_matrix)
 #                     grad_result.insert(0,result)
 #    print 'gradient ->', grad_result    
 #    return grad_result   
