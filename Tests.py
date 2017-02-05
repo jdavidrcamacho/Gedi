@@ -99,6 +99,11 @@ print(kernel1_resultb)
 print 'EXAMPLE 1c - RPROP'
 kernel1_resultc=opt.optimization(kernel1,x,y,yerr,method='RPROP')
 print(kernel1_resultc)
+
+#optimization
+print 'EXAMPLE 1d - altSDA'
+kernel1_resultc=opt.optimization(kernel1,x,y,yerr,method='altSDA')
+print(kernel1_resultc)
 print '#####################################'
 
 
@@ -121,6 +126,11 @@ print kernel2_resultb
 print 'EXAMPLE 2c - RPROP'
 kernel2_resultc=opt.optimization(kernel2,x,y,yerr,method='RPROP')
 print(kernel2_resultc)
+
+#optimization
+print 'EXAMPLE 2d - altSDA'
+kernel2_resultc=opt.optimization(kernel2,x,y,yerr,method='altSDA')
+print(kernel2_resultc)
 print '#####################################'
 
 
@@ -142,6 +152,11 @@ print kernel3_resultb
 #optimization
 print 'EXAMPLE 3c - RPROP'
 kernel3_resultc=opt.optimization(kernel3,x,y,yerr,method='RPROP')
+print(kernel3_resultc)
+
+#optimization
+print 'EXAMPLE 3c - altSDA'
+kernel3_resultc=opt.optimization(kernel3,x,y,yerr,method='altSDA')
 print(kernel3_resultc)
 print '#####################################'
 
