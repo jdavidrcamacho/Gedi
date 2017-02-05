@@ -20,8 +20,12 @@ def optimization(kernel,x,y,yerr,method='BFGS'):
     if method=='SDA' or method=='sda':
         SDA(kernel,x,y,yerr)
     if method=='RPROP' or method=='rprop':
-        RPROP(kernel,x,y,yerr) #this one is questionable
-
+        #this one is questionable
+        RPROP(kernel,x,y,yerr)
+    if method=='altSDA' or method=='altsda':
+        #I've "invented" this one, I do not guarantee it will work properly
+        altSDA(kernel,x,y,yerr) 
+        
     
 ##### algorithms
 scipystep=1.4901161193847656e-08 #taken from scipy.optimize
@@ -346,6 +350,72 @@ def RPROP(kernel,x,y,yerr):
     final_log= opt_likelihood(second_kernel,xFIRST,yFIRST,yerrFIRST)   
     print 'total iterations ->', it
     print 'final log likelihood ->',  final_log
+    print 'final kernel ->', second_kernel
+
+### altSDA - Alternative Steepest descent algorithm I made in my head
+def altSDA(kernel,x,y,yerr):
+    #to not loose que original kernel and data
+    kernelFIRST=kernel;xFIRST=x
+    yFIRST=y;yerrFIRST=yerr
+    
+    step=0.005 #initia search step
+    iterations=2000 #maximum number of iterations
+    minimum_grad=1 #gradient difference, 1 to not give error at start
+    
+    it=0
+    grad_condition=0.001
+
+    hyperparms=[] #initial values of the hyperparameters 
+    for k in range(len(kernel.__dict__['pars'])):
+        hyperparms.append(kernel.__dict__['pars'][k])  
+
+    #initial kernel, gradient, and steps
+    first_kernel=new_kernel(kernelFIRST,hyperparms)
+    first_calc=sign_gradlike(first_kernel, xFIRST,yFIRST,yerrFIRST)
+    #inital steps we will give for each hyperparameter    
+    step_update=list(np.zeros(len(first_calc)))
+    for i in range(len(first_calc)):
+        step_update[i]=step
+
+    while it<iterations and step>scipystep and minimum_grad>grad_condition:
+        #update of the hyperparameters
+        new_hyperparms = [x*y for x,y in zip(first_calc,step_update)]
+        new_hyperparms = [sum(x) for x in zip(hyperparms, new_hyperparms)]
+
+        #new kernel with hyperparams updated and gradient
+        second_kernel=new_kernel(kernelFIRST,new_hyperparms) 
+        second_calc=sign_gradlike(second_kernel, xFIRST,yFIRST,yerrFIRST)
+
+        #lets see if we are going the right direction
+        check_sign=[] #to check if we overshot the optimal value
+        final_hyperparameters=[]           
+        for i in range  (len(second_calc)):
+            check_sign.append(first_calc[i]*second_calc[i])
+            if check_sign[i]>0: #everything is ok and things can continue                    
+                step_update[i]=1.2*step_update[i] #new bigger step to speed up the convergence            
+                final_hyperparameters.append(new_hyperparms[i])                
+            else: #we passed the optimal value and need to go back
+                step_update[i]=0.5*step_update[i] #new smaller step to redo the calculations
+                final_hyperparameters.append(hyperparms[i])                       
+        
+        #to update the kernelfor the next iteration       
+        hyperparms=final_hyperparameters        
+        first_kernel=new_kernel(kernelFIRST,hyperparms)
+        first_calc=sign_gradlike(first_kernel, xFIRST,yFIRST,yerrFIRST)        
+        
+        it+=1 #should go back to the start and do the while
+            
+        #test of a stoping criteria
+        difference=[]
+        for i  in range(len(first_calc)):
+            difference.insert(0,abs(second_calc[i]))              
+            minimum_difference=np.min(difference)
+        minimum_grad=minimum_difference        
+                
+    #final likelihood and kernel
+    final_log= opt_likelihood(second_kernel,xFIRST,yFIRST,yerrFIRST)        
+    print 'total iterations ->', it
+    print 'final log likelihood ->', final_log
     print 'final kernel ->', second_kernel
 
     
