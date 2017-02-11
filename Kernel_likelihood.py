@@ -93,6 +93,9 @@ def gradient_likelihood(kernel,x,y,yerr):
         grad1=grad_logp(kernel.dM52_dtheta,x,y,yerr,cov_matrix)
         grad2=grad_logp(kernel.dM52_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
+    elif isinstance(kernel,kl.WhiteNoise):
+        grad1=grad_logp(kernel.dWN_dtheta,x,xcalc,y,yerr,cov_matrix)
+        return grad1
     elif isinstance(kernel,kl.ExpSineGeorge):
         grad1=grad_logp(kernel.dE_dGamma,x,y,yerr,cov_matrix)
         grad2=grad_logp(kernel.dE_dP,x,y,yerr,cov_matrix) 
