@@ -79,7 +79,7 @@ class ExpSquared(Kernel):
     def __call__(self, r):
         f1 = self.ES_theta**2   #theta**2
         f2 = self.ES_l**2       #l**2
-        f3 = (r)**2         #(x1-x2)**2
+        f3 = (r)**2             #(x1-x2)**2
         return f1 * np.exp(-0.5* f3/f2)
 
     def dES_dtheta(self, r):        
@@ -91,7 +91,7 @@ class ExpSquared(Kernel):
     def dES_dl(self, r):
         f1=self.ES_theta**2     #theta**2
         f2=self.ES_l            #l
-        f3=(r)**2           #(x1-x2)**2
+        f3=(r)**2               #(x1-x2)**2
         f4=self.ES_l**3         #l**3
         return f1*(f3/f4)*np.exp(-0.5*f3/f2**2) *f2#mult por l
    
@@ -133,7 +133,7 @@ class ExpSineSquared(Kernel):
         f2=self.ESS_l**2        #l**2
         f3=np.pi/self.ESS_P     #pi/P      
         f4=self.ESS_P           #P
-        f5=np.abs(r)        #x1-x2 ou x2-x1
+        f5=np.abs(r)            #x1-x2 ou x2-x1
         return f1*(4./f2)*f3*f5*np.cos(f3*f5)*np.sin(f3*f5) \
                 *np.exp((-2.0/f2)*np.sin(f3*f5)**2) 
 
@@ -162,15 +162,15 @@ class RatQuadratic(Kernel):
  
     def dRQ_dl(self,r):
         f1=self.RQ_theta**2     #theta**2
-        f2=(r)**2           #(x1-x2)**2     
+        f2=(r)**2               #(x1-x2)**2     
         f3=self.RQ_alpha        #alpha
         f4=self.RQ_l**2         #l**2
-        #f5=self.RQ_l**3         #l**3
+        #f5=self.RQ_l**3        #l**3
         return (f1*f2/f4)*(1.0 + f2/(2.0*f3*f4))**(-1.0-f3)
         
     def dRQ_dalpha(self,r):
         f1=self.RQ_theta**2     #theta**2
-        f2=(r)**2           #(x1-x2)**2
+        f2=(r)**2               #(x1-x2)**2
         f3=self.RQ_alpha        #alpha
         f4=self.RQ_l**2         #l**2
         func0=1.0 + f2/(2.0*f3*f4)
@@ -186,7 +186,7 @@ class WhiteNoise(Kernel):
     def __call__(self, r):
         f1=self.WN_theta**2
         f2=np.diag(np.ones_like(r))
-        return f1*f2 #Nao funciona, é preciso rever!
+        return f1*f2 
 
     def dWN_dtheta(self,r):
         f1=self.WN_theta**2  #theta
@@ -208,13 +208,13 @@ class Exponential(Kernel): #Matern 1/2 = Exponential
 
     def dExp_dtheta(self,r):
         f1=self.Exp_theta**2  #theta
-        f2=(r)            #(x1-x2)**2
+        f2=(r)                #(x1-x2)**2
         f3=self.Exp_l         #l
         return 2*f1*np.exp(-f2/f3)        
         
     def dExp_dl(self,r):
         f1=self.Exp_theta**2  #theta**2
-        f2=(r)            #(x1-x2)
+        f2=(r)                #(x1-x2)
         f3=self.Exp_l         #l
         f4=self.Exp_l**2      #l**2
         return (f1*f2/f3)*np.exp(-f2/f3)
@@ -234,13 +234,13 @@ class Matern_32(Kernel): #Matern 3/2
 
     def dM32_dtheta(self,r):
         f1=self.M32_theta**2  #theta
-        f2=r            #(x1-x2)**2
+        f2=r                  #(x1-x2)**2
         f3=self.M32_l         #l
         return 2*f1*(1+np.sqrt(3)/f3)*np.exp(-np.sqrt(3)*f2/f3)        
         
     def dM32_dl(self,r):
         f1=self.M32_theta**2    #theta**2
-        f2=r              #(x1-x2)
+        f2=r                    #(x1-x2)
         f3=self.M32_l           #l
         f4=self.M32_l**2        #l**2
         return f1*np.sqrt(3)*f2*(1+np.sqrt(3)/f3)*np.exp(-np.sqrt(3)*f2/f3)/f4 \
@@ -262,11 +262,11 @@ class Matern_52(Kernel): #Matern 5/2
         return f5*(1.0 + f1/f3 + (5.0*f4)/(3.0*f4))*np.exp(-f1/f3)
     
     def dM52_dtheta(self,r):
-        f1=self.M52_theta**2  #theta
-        f2=self.M52_l         #l
-        f3=self.M52_l**2      #l**2
-        f4=r            #(x1-x2)
-        f5=r**2         #(x1-x2)**2
+        f1=self.M52_theta**2      #theta
+        f2=self.M52_l             #l
+        f3=self.M52_l**2          #l**2
+        f4=r                      #(x1-x2)
+        f5=r**2                   #(x1-x2)**2
         return 2*f1*(1 + np.sqrt(5)*f4/f2 + (5.*f5)/(3*f3)) \
                 *np.exp(-np.sqrt(5)*f4/f2)
          
@@ -274,8 +274,8 @@ class Matern_52(Kernel): #Matern 5/2
         f1=self.M52_theta**2  #theta
         f2=self.M52_l         #l
         f3=self.M52_l**2      #l**2
-        f4=r            #(x1-x2)
-        f5=r**2         #(x1-x2)**2
+        f4=r                  #(x1-x2)
+        f5=r**2               #(x1-x2)**2
         return (f1/f3)*np.sqrt(5)*(1+np.sqrt(5)*f4/f2+(5.*f5)/(3*f3))*f4*np.exp(-np.sqrt(5)*f4/f2) \
                 + f1*(-np.sqrt(5)*f4/f3-(10.*f5)/(3*f2*f3))*np.exp(-np.sqrt(5)*f4/f2)
                 
