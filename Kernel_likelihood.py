@@ -117,11 +117,14 @@ def gradient_sum(kernel,x,y,yerr):
         var = "k%i" %i
         k_i = a[var]
         calc = gradient_likelihood_sum(k_i,x,y,yerr,kernelOriginal)
-        grad_result.insert(1,calc)
-        grad_final  =[]
+        if isinstance(calc, tuple): #to solve the whitenoise problem       
+            grad_result.insert(1,calc)
+        else:
+            calc=tuple([calc])
+            grad_result.insert(1,calc)
+        grad_final =[]
         for j in range(len(grad_result)):         
            grad_final = grad_final + list(grad_result[j])
-
     return grad_final
     #NoneType -> It might happen if there's no return in gradient_likelihood
             

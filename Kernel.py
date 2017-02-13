@@ -185,13 +185,16 @@ class WhiteNoise(Kernel):
                                                       
     def __call__(self, r):
         f1=self.WN_theta**2
-        f2=np.diag(np.ones_like(r))
+        #f2=np.diag(np.ones_like(r))
+        f2=np.diag(np.diag(np.ones_like(r)))
         return f1*f2 
 
     def dWN_dtheta(self,r):
         f1=self.WN_theta**2  #theta
-        f2=np.diag(np.ones_like(r))
+        #f2=np.diag(np.ones_like(r))
+        f2=np.diag(np.diag(np.ones_like(r)))
         return 2*f1*f2      
+                    
                 
 
 class Exponential(Kernel): #Matern 1/2 = Exponential
