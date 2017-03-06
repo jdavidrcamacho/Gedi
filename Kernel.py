@@ -155,7 +155,7 @@ class RatQuadratic(Kernel):
             
     def dRQ_dtheta(self,r):
         f1=self.RQ_theta**2     #theta**2
-        f2=(x1-x2)**2           #(x1-x2)**2
+        f2=(r)**2           #(x1-x2)**2
         f3=self.RQ_alpha        #alpha
         f4=self.RQ_l**2         #l**2
         return 2*f1*(1.0 + f2/(2.0*f3*f4))**(-f3)
