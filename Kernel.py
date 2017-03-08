@@ -195,8 +195,6 @@ class WhiteNoise(Kernel):
         f2=np.diag(np.diag(np.ones_like(r)))
         return 2*f1*f2      
                     
-                
-
 class Exponential(Kernel): #Matern 1/2 = Exponential
     def __init__(self,Exp_theta,Exp_l):
         super(Exponential,self).__init__(Exp_theta,Exp_l)
@@ -204,84 +202,79 @@ class Exponential(Kernel): #Matern 1/2 = Exponential
         self.Exp_l=Exp_l
 
     def __call__(self, r):
-        f1=r
+        f1=np.abs(r)
         f2=self.Exp_l
         f3=self.Exp_theta**2
         return f3*np.exp(-f1/f2)
 
     def dExp_dtheta(self,r):
-        f1=self.Exp_theta**2  #theta
-        f2=(r)                #(x1-x2)**2
-        f3=self.Exp_l         #l
-        return 2*f1*np.exp(-f2/f3)        
+        f1=np.abs(r)
+        f2=self.Exp_l
+        f3=self.Exp_theta**2
+        return 2*f3*np.exp(-f1/f2)      
         
     def dExp_dl(self,r):
-        f1=self.Exp_theta**2  #theta**2
-        f2=(r)                #(x1-x2)
-        f3=self.Exp_l         #l
-        f4=self.Exp_l**2      #l**2
+        f1=self.Exp_theta**2  
+        f2=np.abs(r)          
+        f3=self.Exp_l         
         return (f1*f2/f3)*np.exp(-f2/f3)
     
-
 class Matern_32(Kernel): #Matern 3/2
     def __init__(self,M32_theta,M32_l):
         super(Matern_32,self).__init__(M32_theta,M32_l)
         self.M32_theta=M32_theta   
         self.M32_l=M32_l  
         
-    def __call__(self, r):
-        f1=np.sqrt(3.0)*(r)
+    def __call__(self, r): 
+        f1=np.sqrt(3.0)*np.abs(r) 
         f2=self.M32_l
         f3=self.M32_theta**2
         return f3*(1.0 + f1/f2)*np.exp(-f1/f2)
 
     def dM32_dtheta(self,r):
-        f1=self.M32_theta**2  #theta
-        f2=r                  #(x1-x2)**2
-        f3=self.M32_l         #l
-        return 2*f1*(1+np.sqrt(3)/f3)*np.exp(-np.sqrt(3)*f2/f3)        
+        f1=np.sqrt(3.0)*np.abs(r) 
+        f2=self.M32_l
+        f3=self.M32_theta**2
+        return 2*f3*(1.0 + f1/f2)*np.exp(-f1/f2)   
         
     def dM32_dl(self,r):
-        f1=self.M32_theta**2    #theta**2
-        f2=r                    #(x1-x2)
-        f3=self.M32_l           #l
-        f4=self.M32_l**2        #l**2
-        return f1*np.sqrt(3)*f2*(1+np.sqrt(3)/f3)*np.exp(-np.sqrt(3)*f2/f3)/f4 \
-                - f1*np.sqrt(3)*np.exp(-np.sqrt(3)*f2/f3)/f4 
-
+        f1=self.M32_theta**2        
+        f2=np.sqrt(3.0)*np.abs(r)   
+        f3=self.M32_l               
+        f4=self.M32_l**2            
+        return f3*f1*(f2/f4)*(1+f2/f3)*np.exp(-f2/f3) \
+                - f3*f1*(f2/f4)*np.exp(-f2/f3)
         
 class Matern_52(Kernel): #Matern 5/2
-    def __init__(self,M52_l):
+    def __init__(self,M52_theta,M52_l):
         super(Matern_52,self).__init__(M52_theta,M52_l)
         self.M52_theta=M52_theta        
         self.M52_l=M52_l
 
     def __call__(self, r):
-        f1=np.sqrt(5.0)*r
-        f2=(r)**2        
+        f1=np.sqrt(5.0)*np.abs(r)
+        f2=(np.abs(r))**2        
         f3=self.M52_l
         f4=self.M52_l**2
         f5=self.M52_theta**2
-        return f5*(1.0 + f1/f3 + (5.0*f4)/(3.0*f4))*np.exp(-f1/f3)
+        return f5*(1.0 + f1/f3 + (5.0*f2)/(3.0*f4))*np.exp(-f1/f3)
     
     def dM52_dtheta(self,r):
-        f1=self.M52_theta**2      #theta
-        f2=self.M52_l             #l
-        f3=self.M52_l**2          #l**2
-        f4=r                      #(x1-x2)
-        f5=r**2                   #(x1-x2)**2
-        return 2*f1*(1 + np.sqrt(5)*f4/f2 + (5.*f5)/(3*f3)) \
-                *np.exp(-np.sqrt(5)*f4/f2)
+        f1=self.M52_theta**2
+        f2=self.M52_l
+        f3=3*(self.M52_l)**2
+        f4=np.sqrt(5)*np.abs(r)
+        f5=5*np.abs(r)**2
+        return 2*f1*(f5/f3 + f4/f2 +1)*np.exp(-f4/f2)
          
     def dM52_dl(self,r):
-        f1=self.M52_theta**2  #theta
-        f2=self.M52_l         #l
-        f3=self.M52_l**2      #l**2
-        f4=r                  #(x1-x2)
-        f5=r**2               #(x1-x2)**2
-        return (f1/f3)*np.sqrt(5)*(1+np.sqrt(5)*f4/f2+(5.*f5)/(3*f3))*f4*np.exp(-np.sqrt(5)*f4/f2) \
-                + f1*(-np.sqrt(5)*f4/f3-(10.*f5)/(3*f2*f3))*np.exp(-np.sqrt(5)*f4/f2)
-                
+        f1=self.M52_theta**2
+        f2=self.M52_l
+        f3=self.M52_l**2
+        f4=np.abs(r)
+        f5=np.abs(r)**2
+        return 2*f1*((5*f2*f5 + np.sqrt(5**3)*f5*f4)/(3*f3*f2) \
+                *np.exp(-np.sqrt(5)*f4/f2))                
                 
 ### This kernel is equal to george's ExpSine2Kernel
 class  ExpSineGeorge(Kernel):
