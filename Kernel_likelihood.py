@@ -43,41 +43,120 @@ def lnlike(K, y): #log-likelihood calculations
     return logLike
 
 
-##### MEAN AND VARIANCE #######################################################
+##### MEANS AND VARIANCES #####################################################
 def compute_kernel(kernel, x, xcalc, y, yerr):    
     from scipy.linalg import cho_factor, cho_solve    
     r = x[:, None] - x[None, :]
     K = kernel(r)
-    K = K + yerr**2*np.identity(len(x))             #covariance matrix
-    L1 = cho_factor(K) # tuple (L, lower)
-    sol = cho_solve(L1, y) # this is K^-1*(r)
+    K = K + yerr**2*np.identity(len(x)) #covariance matrix
+    L1 = cho_factor(K) #tuple (L, lower)
+    sol = cho_solve(L1, y) #this is K^-1*(r)
 
     K_final=K
     
-    new_r = xcalc[:, None] - x[None, :]    
-    new_lines = kernel(new_r)
-    K_final=np.vstack([K_final,new_lines])
-
-    new_r = xcalc[:,None] - xcalc[None,:]
-    new_columns = kernel(new_r)        
-    K_columns = np.vstack([new_lines.T,new_columns])
-    K_final=np.hstack([K_final,K_columns])
-
-    y_mean=[] #mean = K*.K-1.y  
-    for i in range(len(xcalc)):
-        y_mean.append(np.dot(new_lines[i,:], sol))  #mean
+    #Exceptions because of the White Noise diagonal problem
+    if isinstance(kernel,kl.Sum) or isinstance(kernel,kl.Product):
+        if  isinstance(kernel.k1,kl.WhiteNoise):
+            print kernel.k1
+            oldKernel=kernel
+            kernel=kernel.k2
+            new_r = xcalc[:, None] - x[None, :]   
+            new_lines = kernel(new_r)
+            K_final=np.vstack([K_final,new_lines])
+            
+            new_r = xcalc[:,None] - xcalc[None,:]
+            new_columns = oldKernel(new_r)        
+            K_columns = np.vstack([new_lines.T,new_columns])
+            K_final=np.hstack([K_final,K_columns])
+        
+            y_mean=[] #mean = K*.K-1.y  
+            for i in range(len(xcalc)):
+                y_mean.append(np.dot(new_lines[i,:], sol))  #mean
+            
+            y_var=[] #var=  K** - K*.K-1.K*.T
+            diag=np.diagonal(new_columns)
+            for i in range(len(xcalc)):
+                #k**=diag[i]; k*=new_lines[i]      
+                a=diag[i]
+                newsol = cho_solve(L1, new_lines[i]) #this is K-1.(K*)
+                d=np.dot(new_lines[i,:],newsol)
+                result=a-d      
+                y_var.append(result) #variance  
+        if isinstance(kernel.k2,kl.WhiteNoise):
+            oldKernel=kernel
+            kernel=kernel.k1
+            new_r = xcalc[:, None] - x[None, :]   
+            new_lines = kernel(new_r)
+            K_final=np.vstack([K_final,new_lines])
+            
+            new_r = xcalc[:,None] - xcalc[None,:]
+            new_columns = oldKernel(new_r)        
+            K_columns = np.vstack([new_lines.T,new_columns])
+            K_final=np.hstack([K_final,K_columns])
+        
+            y_mean=[] #mean = K*.K-1.y  
+            for i in range(len(xcalc)):
+                y_mean.append(np.dot(new_lines[i,:], sol)) #mean
+            
+            y_var=[] #var=  K** - K*.K-1.K*.T
+            diag=np.diagonal(new_columns)
+            for i in range(len(xcalc)):
+                #k**=diag[i]; k*=new_lines[i]      
+                a=diag[i]
+                newsol = cho_solve(L1, new_lines[i]) # this is K-1.(K*)
+                d=np.dot(new_lines[i,:],newsol)
+                result=a-d      
+                y_var.append(result) #variance
+        else:
+            new_r = xcalc[:, None] - x[None, :]   
+            new_lines = kernel(new_r)
+            K_final=np.vstack([K_final,new_lines])
+            
+            new_r = xcalc[:,None] - xcalc[None,:]
+            new_columns = kernel(new_r)        
+            K_columns = np.vstack([new_lines.T,new_columns])
+            K_final=np.hstack([K_final,K_columns])
+        
+            y_mean=[] #mean = K*.K-1.y  
+            for i in range(len(xcalc)):
+                y_mean.append(np.dot(new_lines[i,:], sol))  #mean
+            
+            y_var=[] #var=  K** - K*.K-1.K*.T
+            diag=np.diagonal(new_columns)
+            for i in range(len(xcalc)):
+                #k**=diag[i]; k*=new_lines[i]      
+                a=diag[i]
+                newsol = cho_solve(L1, new_lines[i]) #this is K-1.(K*)
+                d=np.dot(new_lines[i,:],newsol)
+                result=a-d      
+                y_var.append(result) #variance
     
-    y_var=[] #var=  K** - K*.K-1.K*.T
-    diag=np.diagonal(new_columns)
-    for i in range(len(xcalc)):
-        #k**=diag[i]; k*=new_lines[i]      
-        a=diag[i]
-        newsol = cho_solve(L1, new_lines[i]) # this is K-1.(K*)
-        d=np.dot(new_lines[i,:],newsol)
-        result=a-d      
-        y_var.append(result)                        #variance
+    #If there's no White Noise things are ok
+    else:    
+        new_r = xcalc[:, None] - x[None, :]   
+        new_lines = kernel(new_r)
+        K_final=np.vstack([K_final,new_lines])
+        
+        new_r = xcalc[:,None] - xcalc[None,:]
+        new_columns = kernel(new_r)        
+        K_columns = np.vstack([new_lines.T,new_columns])
+        K_final=np.hstack([K_final,K_columns])
+    
+        y_mean=[] #mean = K*.K-1.y  
+        for i in range(len(xcalc)):
+            y_mean.append(np.dot(new_lines[i,:], sol)) #mean
+        
+        y_var=[] #var=  K** - K*.K-1.K*.T
+        diag=np.diagonal(new_columns)
+        for i in range(len(xcalc)):
+            #k**=diag[i]; k*=new_lines[i]      
+            a=diag[i]
+            newsol = cho_solve(L1, new_lines[i]) #this is K-1.(K*)
+            d=np.dot(new_lines[i,:],newsol)
+            result=a-d      
+            y_var.append(result) #variance
 
-    y_std = np.sqrt(y_var)                          #standard deviation
+    y_std = np.sqrt(y_var) #standard deviation
     return [y_mean,y_std]
 
 
