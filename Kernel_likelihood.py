@@ -226,7 +226,7 @@ y = range of values of te dependent variable (the measurments)
 yerr = error in the measurments 
 cov_matrix = kernel covariance matrix    
 """ 
-def grad_logp(kernel,x,y,yerr,cov_matrix):s
+def grad_logp(kernel,x,y,yerr,cov_matrix):
     r = x[:, None] - x[None, :]
     K_grad = kernel(r)
     K_inv = np.linalg.inv(cov_matrix)    

@@ -328,7 +328,7 @@ def SDA(kernel,x,y,yerr):
         
         #to save the 'old' kernel and gradient
         first_kernel=new_kernel(kernelFIRST,hyperparms)
-        first_calc=sign_gradlike(first_kernel, xFIRST,xcalcFIRST,yFIRST,yerrFIRST)
+        first_calc=sign_gradlike(first_kernel, xFIRST,yFIRST,yerrFIRST)
 
         #update of the hyperparameters
         new_hyperparms = [step*n for n in first_calc]
