@@ -595,6 +595,7 @@ def sign_gradlike(kernel, x,y,yerr):
     grd= lk.gradient_likelihood(kernel, x,y,yerr) #gradient likelihood
     return grd   
 
+
 """
     new_kernel() updates the parameters of the kernels as the optimizations
 advances
