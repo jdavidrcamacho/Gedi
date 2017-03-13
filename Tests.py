@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib.pylab as pl
 
 #####  INITIAL DATA ###########################################################
-np.random.seed(12345)
+#np.random.seed(12345)
 x = 10 * np.sort(np.random.rand(101))
 yerr = 0.2 * np.ones_like(x)
 y = np.sin(x) + yerr * np.random.randn(len(x))
@@ -69,7 +69,6 @@ print '#####################################'
 
 ###############################################################################
 #TESTS FOR GRAPHICS
-
 print 'test 6 - everything combined'
 kernel2=kl.ExpSineSquared(10.0,1.0,10.0)+kl.Exponential(5.0,1.5)
 print 'kernel =',kernel2
