@@ -11,7 +11,7 @@ import Kernel_optimization;reload(Kernel_optimization);opt=Kernel_optimization
 import numpy as np
 import matplotlib.pylab as pl
 
-#####  DADOS INICIAS  #########################################################
+#####  INITIAL DATA ###########################################################
 np.random.seed(12345)
 x = 10 * np.sort(np.random.rand(101))
 yerr = 0.2 * np.ones_like(x)
@@ -65,10 +65,14 @@ optimization1=opt.committed_optimization(kernel1,x,y,yerr,max_opt=2)
 print 'kernel 1 final ->',optimization1[1]
 print 'likelihood 1 final ->', optimization1[0]
 
+print '#####################################'
+
 ###############################################################################
 #TESTS FOR GRAPHICS
 
+print 'test 6 - everything combined'
 kernel2=kl.ExpSineSquared(10.0,1.0,10.0)+kl.Exponential(5.0,1.5)
+print 'kernel =',kernel2
 xcalc=np.linspace(0,10,200)  
 
 [mu,std]=lk.compute_kernel(kernel1,x,xcalc,y,yerr)
@@ -83,8 +87,8 @@ pl.xlabel("$x$")
 pl.ylabel("$y$")
 
 optimization1=opt.committed_optimization(kernel2,x,y,yerr,max_opt=10)
-print 'final kernel ->',optimization1[1]
-print 'final likelihood ->', optimization1[0]
+print 'final kernel = ',optimization1[1]
+print 'final likelihood = ', optimization1[0]
 
 [mu,std]=lk.compute_kernel(optimization1[1],x,xcalc,y,yerr)
 pl.figure() 
@@ -96,3 +100,5 @@ pl.errorbar(x, y, yerr=yerr, fmt=".k", capsize=0)
 pl.title('Pos-optimization')
 pl.xlabel("$x$")
 pl.ylabel("$y$")
+
+print '#####################################'
