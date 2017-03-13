@@ -1,19 +1,23 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Jan 16 09:40:03 2017
-
-@author: camacho
-"""
-
 import Kernel;reload(Kernel);kl = Kernel
 import Kernel_likelihood;reload(Kernel_likelihood); lk= Kernel_likelihood
 
 import numpy as np
 import inspect
  
-##### OPTIMIZATION ############################################################
+##### Optimization of the kernels #####
+"""
+    single_optimization() allows you to choose what algorithm to use in the
+optimization of the kernels
 
-##### Start optimization
+    Parameters
+kernel = kernel in use
+x = range of values of the independent variable (usually time)
+y = range of values of te dependent variable (the measurments)
+yerr = error in the measurments  
+method = algorithm used in the optimization, by default uses BFGS algorithm,
+        available algorithms are BFGS, SDA, RPROP and altSDA
+""" 
 def single_optimization(kernel,x,y,yerr,method='BFGS'):
     if method=='BFGS' or method=='bfgs':
         return BFGS(kernel,x,y,yerr)    
@@ -26,6 +30,20 @@ def single_optimization(kernel,x,y,yerr,method='BFGS'):
         #I've "invented" this one, I do not guarantee it will work properly
         return altSDA(kernel,x,y,yerr) 
 
+
+"""
+    commited_optimization() performs the optimization using all algorithms and
+returns the one that gave better results in the end.
+    Its slower than the single_optimization() but gives better results. 
+
+    Parameters
+kernel = kernel in use
+x = range of values of the independent variable (usually time)
+y = range of values of te dependent variable (the measurments)
+yerr = error in the measurments  
+max_opt = optimization runs performed, by default uses 2, recommended upper
+        value of 10, more than that it will take a lot of time. 
+""" 
 def committed_optimization(kernel,x,y,yerr,max_opt=2):
     i=0
     while i<max_opt:
@@ -54,16 +72,22 @@ def committed_optimization(kernel,x,y,yerr,max_opt=2):
         return log_BFGS
 
         
-##### algorithms
-scipystep=1.4901161193847656e-08 #taken from scipy.optimize
-
-### BFGS - Broyden Fletcher Goldfarb Shanno Algorithm
+##### Algorithms #####
+"""
+    BFGS() is the Broyden Fletcher Goldfarb Shanno Algorithm
+    
+    Parameters
+kernel = kernel being optimized
+x = range of values of the independent variable (usually time)
+y = range of values of te dependent variable (the measurments)
+yerr = error in the measurments  
+"""
 def BFGS(kernel,x,y,yerr):
     #to not loose que original kernel and data
     kernelFIRST=kernel;xFIRST=x
     yFIRST=y;yerrFIRST=yerr
 
-    scipystep=1.4901161193847656e-8 #taken from scipy.optimize
+    scipystep=1.4901161193847656e-8
     step=1e-3 #initia search step
     iterations=1000 #maximum number of iterations
     minimum_grad=1 #gradient difference, 1 to not give error at start
@@ -85,9 +109,7 @@ def BFGS(kernel,x,y,yerr):
             
         #original kernel and gradient    
         first_kernel=new_kernel(kernelFIRST,hyperparms)
-        #print 'first kernel',first_kernel
-        first_calc= sign_gradlike(first_kernel, xFIRST,yFIRST,yerrFIRST)       
-        #print 'first calc',first_calc        
+        first_calc= sign_gradlike(first_kernel, xFIRST,yFIRST,yerrFIRST)            
         S1=np.dot(B,first_calc) 
     
         new_hyperparms = [step*n for n in S1] #gives step*S1
@@ -270,14 +292,22 @@ def BFGS(kernel,x,y,yerr):
     #final likelihood and kernel
     final_log= opt_likelihood(second_kernel,xFIRST,yFIRST,yerrFIRST)
     return [final_log,second_kernel]
+
+
+"""
+    SDA() is the Steepest descent Algorithm
     
-###  SDA - Steepest descent Algorithm
+    Parameters
+kernel = kernel being optimized
+x = range of values of the independent variable (usually time)
+y = range of values of te dependent variable (the measurments)
+yerr = error in the measurments  
+"""    
 def SDA(kernel,x,y,yerr):
-    #to not loose que original kernel and data
     kernelFIRST=kernel;xFIRST=x
     yFIRST=y;yerrFIRST=yerr
     
-    scipystep=1.4901161193847656e-8 #taken from scipy.optimize
+    scipystep=1.4901161193847656e-8
     step=1e-3 #initia search step
     iterations=1000 #maximum number of iterations
     minimum_grad=1 #gradient difference, 1 to not give error at start
@@ -338,12 +368,21 @@ def SDA(kernel,x,y,yerr):
     #final likelihood and kernel
     final_log= opt_likelihood(second_kernel,xFIRST,yFIRST,yerrFIRST)
     return [final_log,second_kernel] 
-                                
-### RPROP - Resilient Propagation Algorithm
-#I don't trust this algorithm but still keep it here
+
+
+"""
+    RPROP() is the Resilient Propagation Algorithm, I don't trust the results
+this algorithm gives but still keep it here in the hope of one day make it
+work
+    
+    Parameters
+kernel = kernel being optimized
+x = range of values of the independent variable (usually time)
+y = range of values of te dependent variable (the measurments)
+yerr = error in the measurments  
+"""                            
 def RPROP(kernel,x,y,yerr):
     try:
-        #to not loose que original kernel and data
         kernelFIRST=kernel;xFIRST=x
         yFIRST=y;yerrFIRST=yerr
         
@@ -362,7 +401,6 @@ def RPROP(kernel,x,y,yerr):
             step_update.append(step)
         
         while it<iterations and minimum_step>dmin and maximum_step<dmax:
-            #print 'steps',step_update
             hyperparms=[] #initial values of the hyperparameters 
             for k in range(len(first_kernel.__dict__['pars'])):
                 hyperparms.append(first_kernel.__dict__['pars'][k])
@@ -407,13 +445,23 @@ def RPROP(kernel,x,y,yerr):
     except:
         return [-1e10,-1e10]
 
-### altSDA - Alternative Steepest descent algorithm I made in my head
+
+"""
+    altSDA() is the Alternative Steepest descent algorithm I made in my head,
+combining the properties of the steepest descent algorithm with the rprop
+algorithm, it work a lot better than what I was expecting.
+    
+    Parameters
+kernel = kernel being optimized
+x = range of values of the independent variable (usually time)
+y = range of values of te dependent variable (the measurments)
+yerr = error in the measurments  
+"""  
 def altSDA(kernel,x,y,yerr):
-    #to not loose que original kernel and data
     kernelFIRST=kernel;xFIRST=x
     yFIRST=y;yerrFIRST=yerr
     
-    scipystep=1.4901161193847656e-8 #taken from scipy.optimize
+    scipystep=1.4901161193847656e-8
     step=1e-3 #initia search step
     iterations=1000 #maximum number of iterations
     minimum_grad=1 #gradient difference, 1 to not give error at start    
@@ -493,30 +541,68 @@ def altSDA(kernel,x,y,yerr):
     return [final_log,second_kernel]  
 
     
-##### Auxiliary calculations ##################################################       
-def opt_likelihood(kernel, x, y, yerr): #covariance matrix calculations   
+##### Auxiliary calculations #####
+from scipy.linalg import cho_factor, cho_solve
+"""
+    opt_likelihood() calculates the log likelihood necessary while the
+algorithms make their job
+    
+    Parameters
+kernel = kernel in use
+x = range of values of the independent variable (usually time)
+y = range of values of te dependent variable (the measurments)
+yerr = error in the measurments     
+"""      
+def opt_likelihood(kernel, x, y, yerr):   
     r = x[:, None] - x[None, :]
     K = kernel(r)
     K = K + yerr**2*np.identity(len(x))       
     log_p_correct = lk.lnlike(K, y)
-    from scipy.linalg import cho_factor, cho_solve
-    L1 = cho_factor(K) # tuple (L, lower)
-    sol = cho_solve(L1, y) # this is K^-1*(r)
+    L1 = cho_factor(K)
+    sol = cho_solve(L1, y)
     n = y.size
     logLike = -0.5*np.dot(y, sol) \
               - np.sum(np.log(np.diag(L1[0]))) \
               - n*0.5*np.log(2*np.pi)        
     return logLike
 
+
+"""
+    opt_gradlike() returns the -gradients of the parameters of a kernel
+    
+    Parameters
+kernel = kernel in use
+x = range of values of the independent variable (usually time)
+y = range of values of te dependent variable (the measurments)
+yerr = error in the measurments     
+""" 
 def opt_gradlike(kernel, x,y,yerr):
     grd= lk.gradient_likelihood(kernel, x,y,yerr) #gradient likelihood
     grd= [-grd for grd in grd] #inverts the sign of the gradient
     return grd    
 
+
+"""
+    sign_gradlike() returns the gradients of the parameters of a kernel
+    
+    Parameters
+kernel = kernel in use
+x = range of values of the independent variable (usually time)
+y = range of values of te dependent variable (the measurments)
+yerr = error in the measurments     
+"""
 def sign_gradlike(kernel, x,y,yerr):
     grd= lk.gradient_likelihood(kernel, x,y,yerr) #gradient likelihood
     return grd   
 
+"""
+    new_kernel() updates the parameters of the kernels as the optimizations
+advances
+    
+    Parameters
+kernelFIRST = original kernel in use
+b = new parameters or new hyperparameters if you prefer using that denomination
+"""
 def new_kernel(kernelFIRST,b): #to update the kernels
     if isinstance(kernelFIRST,kl.ExpSquared):
         return kl.ExpSquared(b[0],b[1])
@@ -541,7 +627,6 @@ def new_kernel(kernelFIRST,b): #to update the kernels
         k2_params=[]
         for j in range(len(kernelFIRST.k2.pars)):
             k2_params.append(b[len(kernelFIRST.k1.pars)+j])
-        #print 'ks params',k1_params,k2_params
         new_k1=new_kernel(kernelFIRST.k1,k1_params)
         new_k2=new_kernel(kernelFIRST.k2,k2_params)
         return new_k1+new_k2
@@ -552,11 +637,8 @@ def new_kernel(kernelFIRST,b): #to update the kernels
         k2_params=[]
         for j in range(len(kernelFIRST.k2.pars)):
             k2_params.append(b[len(kernelFIRST.k1.pars)+j])
-        #print 'ks params',k1_params,k2_params
         new_k1=new_kernel(kernelFIRST.k1,k1_params)
         new_k2=new_kernel(kernelFIRST.k2,k2_params)
         return new_k1*new_k2
     else:
-        print 'Falta algo'
-
-
+        print 'Something is missing'

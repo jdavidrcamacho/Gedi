@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Sep  7 10:42:48 2016
-
-@author: camacho
-"""
 import numpy as np
     
-##### KERNELS 
+##### Kernels initiation #####
+""" 
+    Script to define the kernels and its properties, 
+that includes sum and multiplication of kernels. 
+"""
 class Kernel(object):
     def __init__(self, *args):
         self.pars = np.array(args) # put all Kernel arguments in an array pars
@@ -42,8 +41,8 @@ class _operator(Kernel):
     def pars(self):
         return np.append(self.k1.pars, self.k2.pars)
 
-
-class Sum(_operator): #sum of kernels
+#Sum of kernels
+class Sum(_operator):
     def __repr__(self):
         return "{0} + {1}".format(self.k1, self.k2)
 
@@ -53,8 +52,8 @@ class Sum(_operator): #sum of kernels
     def parSize(self):
         return self.pars.size   
 
-
-class Product(_operator): #multiplication of kernels
+#Multplication of kernels
+class Product(_operator):
     def __repr__(self):
         return "{0} * {1}".format(self.k1, self.k2)
         
@@ -67,6 +66,19 @@ class Product(_operator): #multiplication of kernels
     def prod_kernel(self, r):
         return self.k1(r), self.k2(r)
 
+
+##### Exponetial squared kernel #####
+"""
+    Definition of the exponential squared kernel and its derivatives,
+it is also know as radial basis function (RBF kernel).
+
+    Important
+The derivative its in respect to log(parameter)
+
+    Parameters
+ES_theta = amplitude of the kernel
+ES_l = characteristic lenght scale  to define how smooth the kernel is   
+"""
 class ExpSquared(Kernel):
     def __init__(self, ES_theta, ES_l):
         super(ExpSquared, self).__init__(ES_theta, ES_l)
@@ -77,25 +89,40 @@ class ExpSquared(Kernel):
         self.ES_l = ES_l
         
     def __call__(self, r):
-        f1 = self.ES_theta**2   #theta**2
-        f2 = self.ES_l**2       #l**2
-        f3 = (r)**2             #(x1-x2)**2
+        f1 = self.ES_theta**2   
+        f2 = self.ES_l**2       
+        f3 = (r)**2             
         return f1 * np.exp(-0.5* f3/f2)
-
+    
+    #derivative in order to theta
     def dES_dtheta(self, r):        
-        f1=self.ES_theta**2    #theta        
-        f2=self.ES_l**2     #l**2
-        f3=(r)**2       #(x1-x2)**2
+        f1=self.ES_theta**2      
+        f2=self.ES_l**2
+        f3=(r)**2
         return  2*f1*np.exp(-0.5*f3/f2)
-
+    
+    #derivative in order to l
     def dES_dl(self, r):
-        f1=self.ES_theta**2     #theta**2
-        f2=self.ES_l            #l
-        f3=(r)**2               #(x1-x2)**2
-        f4=self.ES_l**3         #l**3
-        return f1*(f3/f4)*np.exp(-0.5*f3/f2**2) *f2#mult por l
+        f1=self.ES_theta**2
+        f2=self.ES_l
+        f3=(r)**2
+        f4=self.ES_l**3    
+        return f1*(f3/f4)*np.exp(-0.5*f3/f2**2) *f2
    
-     
+   
+##### Exponetial sine squared kernel #####
+"""
+    Definition of the exponential sine squared kernel and its derivatives,
+it is also know as periodic kernel.
+
+    Important
+The derivative its in respect to log(parameter)
+
+    Parameters
+ESS_theta = amplitude of the kernel
+ESS_l = characteristic lenght scale  to define how smooth the kernel is   
+ESS_P = periodic repetitions of the kernel
+"""
 class ExpSineSquared(Kernel):
     def __init__(self, ESS_theta, ESS_l, ESS_P):
         super(ExpSineSquared, self).__init__(ESS_theta, ESS_l, ESS_P)
@@ -109,15 +136,17 @@ class ExpSineSquared(Kernel):
         f2 = self.ESS_l**2
         f3 = np.abs(r)
         f4 = self.ESS_P
-        return f1*np.exp((-2/f2)*((np.sin(np.pi*f3/f4))**2))   
-      
+        return f1*np.exp((-2/f2)*((np.sin(np.pi*f3/f4))**2))
+        
+    #derivative in order to theta 
     def dESS_dtheta(self,r):
-        f1 = self.ESS_theta**2  #theta**2
-        f2 = self.ESS_l**2      #l**2 
-        f3 = np.pi/self.ESS_P   #pi/P
+        f1 = self.ESS_theta**2
+        f2 = self.ESS_l**2
+        f3 = np.pi/self.ESS_P
         f4 = np.abs(r)
         return 2*f1*np.exp(-(2.0/f2)*np.sin(f3*f4)**2)  
     
+    #derivative in order to l
     def dESS_dl(self,r):
         f1=self.ESS_theta**2
         f2=self.ESS_l**3
@@ -126,18 +155,31 @@ class ExpSineSquared(Kernel):
         f5=self.ESS_l**2
         f6=self.ESS_l
         return (4*f1/f2)*(np.sin(f3*f4)**2)*np.exp((-2./f5)*np.sin(f3*f4)**2) \
-                *f6#mult por l 
-        
+                *f6
+    
+    #derivative in order to P    
     def dESS_dP(self,r):
-        f1=self.ESS_theta**2    #theta**2
-        f2=self.ESS_l**2        #l**2
-        f3=np.pi/self.ESS_P     #pi/P      
-        f4=self.ESS_P           #P
-        f5=np.abs(r)            #x1-x2 ou x2-x1
+        f1=self.ESS_theta**2
+        f2=self.ESS_l**2
+        f3=np.pi/self.ESS_P    
+        f4=self.ESS_P
+        f5=np.abs(r)
         return f1*(4./f2)*f3*f5*np.cos(f3*f5)*np.sin(f3*f5) \
                 *np.exp((-2.0/f2)*np.sin(f3*f5)**2) 
 
-      
+ 
+##### Rational quadratic kernel #####
+"""
+    Definition of the rational quadratic kernel and its derivatives.
+
+    Important
+The derivative its in respect to log(parameter)
+
+    Parameters
+RQ_theta = amplitude of the kernel
+RQ_alpha = weight of large and small scale variations
+RQ_l = characteristic lenght scale to define how smooth the kernel is   
+"""
 class RatQuadratic(Kernel):
     def __init__(self, RQ_theta, RQ_alpha, RQ_l):
         super(RatQuadratic, self).__init__(RQ_theta, RQ_alpha, RQ_l)
@@ -152,32 +194,44 @@ class RatQuadratic(Kernel):
         f3 = (r)**2
         f4 = self.RQ_alpha
         return f1*(1+(0.5*f3/(f4*f2)))**(-f4)
-            
+    
+    #derivative in order to theta
     def dRQ_dtheta(self,r):
-        f1=self.RQ_theta**2     #theta**2
-        f2=(r)**2           #(x1-x2)**2
-        f3=self.RQ_alpha        #alpha
-        f4=self.RQ_l**2         #l**2
+        f1=self.RQ_theta**2
+        f2=(r)**2
+        f3=self.RQ_alpha
+        f4=self.RQ_l**2
         return 2*f1*(1.0 + f2/(2.0*f3*f4))**(-f3)
- 
+
+    #derivative in order to l
     def dRQ_dl(self,r):
-        f1=self.RQ_theta**2     #theta**2
-        f2=(r)**2               #(x1-x2)**2     
-        f3=self.RQ_alpha        #alpha
-        f4=self.RQ_l**2         #l**2
-        #f5=self.RQ_l**3        #l**3
+        f1=self.RQ_theta**2
+        f2=(r)**2    
+        f3=self.RQ_alpha
+        f4=self.RQ_l**2
         return (f1*f2/f4)*(1.0 + f2/(2.0*f3*f4))**(-1.0-f3)
         
+    #derivative in order to alpha 
     def dRQ_dalpha(self,r):
-        f1=self.RQ_theta**2     #theta**2
-        f2=(r)**2               #(x1-x2)**2
-        f3=self.RQ_alpha        #alpha
-        f4=self.RQ_l**2         #l**2
+        f1=self.RQ_theta**2
+        f2=(r)**2
+        f3=self.RQ_alpha
+        f4=self.RQ_l**2
         func0=1.0 + f2/(2.0*f3*f4)
         func1=f2/(2.0*f3*f4*func0)
         return f1*(func1-np.log(func0))*func0**(-f3) *f3       
     
-        
+ 
+##### White noise kernel #####
+"""
+    Definition of the white noise kernel and its derivatives.
+
+    Important
+The derivative its in respect to log(parameter)
+
+    Parameters
+WN_theta = amplitude of the kernel
+"""  
 class WhiteNoise(Kernel):                             
     def __init__(self,WN_theta):                     
         super(WhiteNoise,self).__init__(WN_theta)     
@@ -185,17 +239,28 @@ class WhiteNoise(Kernel):
                                                       
     def __call__(self, r):
         f1=self.WN_theta**2
-        #f2=np.diag(np.ones_like(r))
         f2=np.diag(np.diag(np.ones_like(r)))
         return f1*f2 
 
     def dWN_dtheta(self,r):
-        f1=self.WN_theta**2  #theta
-        #f2=np.diag(np.ones_like(r))
+        f1=self.WN_theta**2
         f2=np.diag(np.diag(np.ones_like(r)))
         return 2*f1*f2      
-                    
-class Exponential(Kernel): #Matern 1/2 = Exponential
+
+
+##### Exponential kernel #####
+"""
+    Definition of the exponential kernel and its derivatives, this kernel
+arise when setting v=1/2 in the matern family of kernels
+
+    Important
+The derivative its in respect to log(parameter)
+
+    Parameters
+EXP_theta = amplitude of the kernel
+EXP_l = characteristic lenght scale to define how smooth the kernel is  
+"""                
+class Exponential(Kernel):
     def __init__(self,Exp_theta,Exp_l):
         super(Exponential,self).__init__(Exp_theta,Exp_l)
         self.Exp_theta=Exp_theta        
@@ -207,19 +272,34 @@ class Exponential(Kernel): #Matern 1/2 = Exponential
         f3=self.Exp_theta**2
         return f3*np.exp(-f1/f2)
 
+    #derivative in order to theta
     def dExp_dtheta(self,r):
         f1=np.abs(r)
         f2=self.Exp_l
         f3=self.Exp_theta**2
         return 2*f3*np.exp(-f1/f2)      
-        
+    
+    #derivative in order to l
     def dExp_dl(self,r):
         f1=self.Exp_theta**2  
         f2=np.abs(r)          
         f3=self.Exp_l         
         return (f1*f2/f3)*np.exp(-f2/f3)
-    
-class Matern_32(Kernel): #Matern 3/2
+
+
+##### Matern 3/2 kernel #####
+"""
+    Definition of the Matern 3/2 kernel and its derivatives, this kernel
+arise when setting v=3/2 in the matern family of kernels
+
+    Important
+The derivative its in respect to log(parameter)
+
+    Parameters
+M32_theta = amplitude of the kernel
+M32_l = characteristic lenght scale to define how smooth the kernel is  
+""" 
+class Matern_32(Kernel):
     def __init__(self,M32_theta,M32_l):
         super(Matern_32,self).__init__(M32_theta,M32_l)
         self.M32_theta=M32_theta   
@@ -231,12 +311,14 @@ class Matern_32(Kernel): #Matern 3/2
         f3=self.M32_theta**2
         return f3*(1.0 + f1/f2)*np.exp(-f1/f2)
 
+    #derivative in order to theta
     def dM32_dtheta(self,r):
         f1=np.sqrt(3.0)*np.abs(r) 
         f2=self.M32_l
         f3=self.M32_theta**2
         return 2*f3*(1.0 + f1/f2)*np.exp(-f1/f2)   
-        
+    
+    #derivative in order to l
     def dM32_dl(self,r):
         f1=self.M32_theta**2        
         f2=np.sqrt(3.0)*np.abs(r)   
@@ -244,8 +326,21 @@ class Matern_32(Kernel): #Matern 3/2
         f4=self.M32_l**2            
         return f3*f1*(f2/f4)*(1+f2/f3)*np.exp(-f2/f3) \
                 - f3*f1*(f2/f4)*np.exp(-f2/f3)
-        
-class Matern_52(Kernel): #Matern 5/2
+
+
+##### Matern 5/2 kernel #####
+"""
+    Definition of the Matern 5/2 kernel and its derivatives, this kernel
+arise when setting v=5/2 in the matern family of kernels
+
+    Important
+The derivative its in respect to log(parameter)
+
+    Parameters
+M52_theta = amplitude of the kernel
+M52_l = characteristic lenght scale to define how smooth the kernel is  
+""" 
+class Matern_52(Kernel):
     def __init__(self,M52_theta,M52_l):
         super(Matern_52,self).__init__(M52_theta,M52_l)
         self.M52_theta=M52_theta        
@@ -276,7 +371,19 @@ class Matern_52(Kernel): #Matern 5/2
         return 2*f1*((5*f2*f5 + np.sqrt(5**3)*f5*f4)/(3*f3*f2) \
                 *np.exp(-np.sqrt(5)*f4/f2))                
                 
-### This kernel is equal to george's ExpSine2Kernel
+
+##### ExpSineGeorge kernel #####
+"""
+    Definition of a kernel equal to George's ExpSine2Kernel to test and 
+compare results
+
+    Important
+The derivative its in respect to log(parameter)
+
+    Parameters
+P = amplitude of the kernel
+gamma = 2/(l**2) 
+""" 
 class  ExpSineGeorge(Kernel):
     def __init__(self,gamma,P):
         super(ExpSineGeorge,self).__init__(gamma,P)
@@ -288,7 +395,8 @@ class  ExpSineGeorge(Kernel):
         f2=self.P
         f3=r
         return np.exp(-f1 *  np.sin(np.pi*f3/f2)**2)
-        
+
+    #derivative in order to gamma  
     def dE_dGamma(self,r):
         f1 = self.gamma
         f2 = self.P
@@ -296,7 +404,8 @@ class  ExpSineGeorge(Kernel):
         f4 = -np.sin(np.pi*f3/f2)**2
         f5 = np.exp(-f1*np.sin(np.pi*f3/f2)**2)  
         return f4*f5*f1
-        
+    
+    #derivative in  order to P
     def dE_dP(self,r):
         f1 = self.gamma
         f2 = self.P
