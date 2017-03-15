@@ -5,7 +5,7 @@ Do or do not, there is no try in the use of Gaussian processes to model real dat
 |▒▓▒▒◙▒▓▒▓▒▓||░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
  
  How to install?
- The easy way is using pip: $ pip install george
+ The easy way is using pip: $ pip install Gedi
 
  What other packages are needed to work?
  It's necessary to have numpy, scipy, matplotlib, inspect and time
