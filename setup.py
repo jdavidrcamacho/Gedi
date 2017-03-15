@@ -8,7 +8,7 @@ setup(
   author = 'Joao Camacho',
   author_email = 'joao.camacho@astro.up.pt',
   url = 'https://github.com/jdavidrcamacho/Gedi', # use the URL to the github repo
-  download_url = 'https://github.com/peterldowns/mypackage/archive/0.1.tar.gz', # I'll explain this in a second
+  download_url = 'https://github.com/jdavidrcamacho/Gedi/archive/0.1.tar.gz', 
   keywords = ['Gaussian', 'process','RV'], # arbitrary keywords
   classifiers = [],
 )
