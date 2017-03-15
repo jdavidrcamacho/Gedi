@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Dec  6 15:24:14 2016
-
-@author: camacho
-"""
 
 import Gedi as gedi
 
@@ -72,7 +67,7 @@ print 'test 6 - everything combined'
 kernel2=gedi.kernel.ExpSineSquared(10.0,1.0,10.0)+gedi.kernel.Exponential(5.0,1.5)
 print 'kernel =',kernel2
 
-xcalc=np.linspace(0,10,200)  
+xcalc=np.linspace(-1,11,300)  
 
 [mu,std]=gedi.likelihood.compute_kernel(kernel1,x,xcalc,y,yerr)
 pl.figure()
