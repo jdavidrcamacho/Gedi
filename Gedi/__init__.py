@@ -9,6 +9,7 @@ calculation and more
 
     Kernel_optimization: contains all the optimization algorithms implemented
 """
-import Kernel as kernel
-import Kernel_likelihood as likelihood 
-import Kernel_optimization as optimization
+import kernel
+import kernel_likelihood 
+import kernel_optimization
+import kernel_mcmc

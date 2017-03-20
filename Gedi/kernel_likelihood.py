@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-import Kernel;reload(Kernel);kl = Kernel
-
+import kernel as kl
 import numpy as np
-import inspect
-from time import time   
+import inspect 
 
 ##### Covariance matrix #####
 """

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-import Kernel;reload(Kernel);kl = Kernel
-import Kernel_likelihood;reload(Kernel_likelihood); lk= Kernel_likelihood
-
+import kernel as kl
+import kernel_likelihood as lk
 import numpy as np
 import inspect
  
@@ -96,7 +95,7 @@ def BFGS(kernel,x,y,yerr):
     check_it=False
     #we will only start the algorithm when we find the best step to give
     while check_it is False:
-        if isinstance(kernelFIRST,Kernel.Sum) or isinstance(kernelFIRST,Kernel.Product):
+        if isinstance(kernelFIRST,kl.Sum) or isinstance(kernelFIRST,kl.Product):
             hyperparms=[] #initial values of the hyperparam_eters 
             for k in range(len(kernelFIRST.pars)):
                 hyperparms.append(kernelFIRST.pars[k])
@@ -156,7 +155,7 @@ def BFGS(kernel,x,y,yerr):
         if (it+1)%3!=0:
             check_it=False
             while check_it is False:
-                if isinstance(kernelFIRST,Kernel.Sum) or isinstance(kernelFIRST,Kernel.Product):
+                if isinstance(kernelFIRST,kl.Sum) or isinstance(kernelFIRST,kl.Product):
                     hyperparms=[] #initial values of the hyperparam_eters 
                     for k in range(len(kernelFIRST.pars)):
                         hyperparms.append(kernelFIRST.pars[k])
@@ -223,7 +222,7 @@ def BFGS(kernel,x,y,yerr):
         else:
             check_it=False
             while check_it is False:
-                if isinstance(kernelFIRST,Kernel.Sum) or isinstance(kernelFIRST,Kernel.Product):
+                if isinstance(kernelFIRST,kl.Sum) or isinstance(kernelFIRST,kl.Product):
                     hyperparms=[] #initial values of the hyperparam_eters 
                     for k in range(len(kernelFIRST.pars)):
                         hyperparms.append(kernelFIRST.pars[k])
@@ -315,7 +314,7 @@ def SDA(kernel,x,y,yerr):
     it=0
     grad_condition=1e-3
     while it<iterations and step>scipystep and minimum_grad>grad_condition:
-        if isinstance(kernelFIRST,Kernel.Sum) or isinstance(kernelFIRST,Kernel.Product):
+        if isinstance(kernelFIRST,kl.Sum) or isinstance(kernelFIRST,kl.Product):
             hyperparms=[] #initial values of the hyperparam_eters 
             for k in range(len(kernelFIRST.pars)):
                 hyperparms.append(kernelFIRST.pars[k])
@@ -470,7 +469,7 @@ def altSDA(kernel,x,y,yerr):
     grad_condition=1e-3
 
     it=0
-    if isinstance(kernelFIRST,Kernel.Sum) or isinstance(kernelFIRST,Kernel.Product):
+    if isinstance(kernelFIRST,kl.Sum) or isinstance(kernelFIRST,kl.Product):
         hyperparms=[] #initial values of the hyperparam_eters 
         for k in range(len(kernelFIRST.pars)):
             hyperparms.append(kernelFIRST.pars[k])
