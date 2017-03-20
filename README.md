@@ -6,10 +6,11 @@ Do or do not, there is no try in the use of Gaussian processes to model real dat
  
  How to install?
  The easy way is using pip: $ pip install Gedi
+ 
+ Current version is Gedi 0.1.1
 
  What other packages are needed to work?
- It's necessary to have numpy, scipy, matplotlib, inspect and time.
- The last one is only needed because I forgot to delete "from time import time" from one of the scripts before releasing Gedi 0.1
+ It's necessary to have numpy, scipy, matplotlib, inspect.
  
 |▒▓▒▒◙▒▓▒▓▒▓||░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
