@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-import Kernel;reload(Kernel);kl = Kernel
+import Kernel;reload(Kernel);kl= Kernel
 import Kernel_likelihood;reload(Kernel_likelihood); lk= Kernel_likelihood
-
 import numpy as np
 import inspect
  
