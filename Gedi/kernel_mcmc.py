@@ -42,21 +42,35 @@ def MCMC(kernel,x,y,yerr,parameters,runs=50000):
     print first_kernel,first_likelihood        
     
     i=0
-    step=5e-3 #a better way to define the step is needed
-    running_logs=[]
-    params_number=len(parameters)
-    params_list = [[] for _ in range(params_number)]
+    #a better way to define the step is needed
+    step=5e-3 
+    #to save the evolution of the log likelihood
+    running_logs=[] 
+    #to save the evolution of the parameters
+    params_number=len(parameters) 
+    params_list = [[] for _ in range(params_number)] 
     
-    accepts=0;rejects=0
+    #lets run the mcmc
     while i<runs:
         u=np.random.uniform(0,1)
-        guess_params=[np.abs(n+(step)*np.random.randn()) for n in initial_params]    
+        
+        #lets make new parameters
+        guess_params=[np.abs(n+(step)*np.random.randn()) for n in initial_params]
+        
+        #limits of the variation of the parameters
+        for j in range(len(guess_params)):
+            if guess_params[j]<parameters[j][0]:
+                guess_params[j]=parameters[j][0]
+            if guess_params[j]>parameters[j][1]:
+                guess_params[j]=parameters[j][1]
+
+        #lets see if we keep the new parameters or not 
         second_kernel=new_kernel(kernelFIRST,guess_params)        
         second_likelihood=lk.likelihood(second_kernel,x,y,yerr)
             
         for j in range(len(guess_params)):
-            prior=np.exp(first_likelihood);
-            posterior=np.exp(second_likelihood)
+            prior=np.exp(first_likelihood))*initial_params[j]
+            posterior=np.exp(second_likelihood)*guess_params[j]
             if prior<1e-300:
                 ratio=1
                 initial_params[j]=guess_params[j]                
@@ -69,18 +83,30 @@ def MCMC(kernel,x,y,yerr,parameters,runs=50000):
 
             params_list[j].append(initial_params[j])
 
+        #lets see if we are going the right direction
+        check_sign=[]        
+        for ij in range  (len(second_calc)):
+            check_sign.append(first_calc[ij]*second_calc[ij])
+        check_it=all(check_sign>0 for check_sign in check_sign)
+        if check_it is True:                    
+            step=1.2*step #new bigger step to speed up the convergence            
+        else:
+            step=0.5*step #new smaller step to redo the calculations
+
+        #lets define the new kernel
         first_kernel=new_kernel(kernelFIRST,initial_params)
         first_likelihood=lk.likelihood(first_kernel,x,y,yerr)
         running_logs.append(first_likelihood)
         i+=1
     
+    #final kernel and log likelihood
     final_kernel=new_kernel(kernelFIRST,initial_params)
     final_likelihood=lk.likelihood(final_kernel,x,y,yerr)
     
-    #it returns the final kernel, final likelihood, the evolution of the log
-#likelihood and evolution of the parameters of the kernel
     return [final_kernel,final_likelihood,running_logs,params_list]
 
+
+##### auxiliary calculations #####
 """
     new_kernel() updates the parameters of the kernels as the mcmc advances
     
@@ -126,4 +152,4 @@ def new_kernel(kernelFIRST,b): #to update the kernels
         new_k2=new_kernel(kernelFIRST.k2,k2_params)
         return new_k1*new_k2
     else:
-        print 'Something is  missing'
+        print 'Something is missing'
