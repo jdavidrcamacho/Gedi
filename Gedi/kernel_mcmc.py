@@ -38,7 +38,8 @@ def MCMC(kernel,x,y,yerr,parameters,runs=50000):
     for i in range(len(parameters)):
         initial_params[i]=np.random.uniform(parameters[i][0],parameters[i][1])    
     first_kernel=new_kernel(kernelFIRST,initial_params)        
-    first_likelihood=lk.likelihood(first_kernel,x,y,yerr)  
+    first_likelihood=lk.likelihood(first_kernel,x,y,yerr)
+    first_calc=lk.gradient_likelihood(first_kernel,x,y,yerr)
     print first_kernel,first_likelihood        
     
     i=0
@@ -67,9 +68,10 @@ def MCMC(kernel,x,y,yerr,parameters,runs=50000):
         #lets see if we keep the new parameters or not 
         second_kernel=new_kernel(kernelFIRST,guess_params)        
         second_likelihood=lk.likelihood(second_kernel,x,y,yerr)
-            
+#        second_calc=lk.gradient_likelihood(second_kernel,x,y,yerr)        
+        
         for j in range(len(guess_params)):
-            prior=np.exp(first_likelihood))*initial_params[j]
+            prior=np.exp(first_likelihood)*initial_params[j]
             posterior=np.exp(second_likelihood)*guess_params[j]
             if prior<1e-300:
                 ratio=1
@@ -83,19 +85,21 @@ def MCMC(kernel,x,y,yerr,parameters,runs=50000):
 
             params_list[j].append(initial_params[j])
 
-        #lets see if we are going the right direction
-        check_sign=[]        
-        for ij in range  (len(second_calc)):
-            check_sign.append(first_calc[ij]*second_calc[ij])
-        check_it=all(check_sign>0 for check_sign in check_sign)
-        if check_it is True:                    
-            step=1.2*step #new bigger step to speed up the convergence            
-        else:
-            step=0.5*step #new smaller step to redo the calculations
+#A better implementation needs to be found for the commented steps
+#        #lets see if we are going the right direction
+#        check_sign=[]        
+#        for ij in range  (len(second_calc)):
+#            check_sign.append(first_calc[ij]*second_calc[ij])
+#        check_it=all(check_sign>0 for check_sign in check_sign)
+#        if check_it is True:                    
+#            step=1.2*step #new bigger step to speed up the convergence            
+#        else:
+#            step=0.5*step #new smaller step to redo the calculations
 
         #lets define the new kernel
         first_kernel=new_kernel(kernelFIRST,initial_params)
         first_likelihood=lk.likelihood(first_kernel,x,y,yerr)
+#        first_calc=lk.gradient_likelihood(first_kernel,x,y,yerr)
         running_logs.append(first_likelihood)
         i+=1
     
