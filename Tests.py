@@ -133,7 +133,7 @@ print 'initia likelihood =',kernel3_test1
 parameters=[[5.0,15.0],[1.0,4.0],[5.0,10.0],[0.1,1]]
 
 #we set the number of runs we want the algorithm to have
-runs=50000
+runs=10000
 
 #lets run our mcmc
 trial=gedi.kernel_mcmc.MCMC(kernel3,x,y,yerr,parameters,runs)
