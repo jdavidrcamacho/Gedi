@@ -281,12 +281,18 @@ def gradient_likelihood(kernel,x,y,yerr):
         grad1=grad_logp(kernel.dWN_dtheta,x,y,yerr,cov_matrix)
         return grad1
     elif isinstance(kernel,kl.ExpSineGeorge):
-        grad1=grad_logp(kernel.dE_dGamma,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dE_dP,x,y,yerr,cov_matrix) 
-        a= [grad1, grad2];a=np.array(a)       
-        return a
+        grad1=grad_logp(kernel.dE_dGamma,x,xcalc,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dE_dP,x,xcalc,y,yerr,cov_matrix) 
+        grad_list= [grad1, grad2];a=np.array(a)       
+        return grad_list
     elif isinstance(kernel,kl.Sum):
-        return gradient_sum(kernel,x,y,yerr)
+        grad_list=gradient_sum(kernel,x,y,yerr)
+        for i in range(len(grad_list)):
+            if isinstance(grad_list[i],float):
+                grad_list[i]=[grad_list[i]]
+        total=sum(grad_list, [])
+        return total        
+        #return gradient_sum(kernel,x,y,yerr)
     elif isinstance(kernel,kl.Product):
         return gradient_mul(kernel,x,y,yerr)                
     else:
@@ -308,8 +314,13 @@ def gradient_sum(kernel,x,y,yerr):
     grad_result=[]    
     for i in np.arange(1,len(kernel.__dict__)+1):
         var = "k%i" %i
-        k_i = a[var]
-        calc = gradient_likelihood_sum(k_i,x,y,yerr,kernelOriginal)
+        k_i = a[var] 
+        
+        if isinstance(k_i,kl.Sum): #to solve the three sums problem
+            calc=grad_sum_aux(k_i,x,y,yerr,kernelOriginal)
+        else:
+            calc=gradient_likelihood_sum(k_i,x,y,yerr,kernelOriginal)
+        
         if isinstance(calc, tuple): #to solve the whitenoise problem       
             grad_result.insert(1,calc)
         else:
@@ -372,6 +383,34 @@ def gradient_likelihood_sum(kernel,x,y,yerr,kernelOriginal):
         print 'gradient -> Something went wrong!'
 
 
+"""
+    grad_sum_aux() its necesary when we are dealing with multiple sums, i.e. 
+sum of three or more kernels
+
+    Parameters
+kernel = kernel in use
+x = range of values of the independent variable (usually time)
+y = range of values of te dependent variable (the measurments)
+yerr = error in the measurments
+kernelOriginal = original kernel (original sum) being used     
+"""  
+def grad_sum_aux(kernel,x,y,yerr,kernelOriginal):
+    kernelOriginal=kernelOriginal
+    a=kernel.__dict__
+    grad_result=[]    
+    for i in np.arange(1,len(kernel.__dict__)+1):
+        var = "k%i" %i
+        k_i = a[var]
+        calc=gradient_likelihood_sum(k_i,x,y,yerr,kernelOriginal)
+        if isinstance(calc, tuple):        
+            grad_result.insert(1,calc)
+        else:
+            calc=tuple([calc])
+            grad_result.insert(1,calc)
+        grad_final =[]
+        for j in range(len(grad_result)):         
+           grad_final = grad_final + list(grad_result[j])     
+    return grad_final
 ##### Gradient of the log likelihood of multiplications #####
 """
     gradient_mul() makes the gradient calculation of multiplications of kernels 
