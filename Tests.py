@@ -40,6 +40,15 @@ print 'kernel =',kernel3
 print 'likelihood =',kernel3_test1
 print 'gradients =',kernel3_test2
 
+print 'test 3.5'
+kernel3=gedi.kernel.ExpSquared(10.2,7.1)+gedi.kernel.ExpSineSquared(10.1,1.2,5.1) \
+        +gedi.kernel.WhiteNoise(1.0)
+kernel3_test1= gedi.kernel_likelihood.likelihood(kernel3,x,y,yerr)
+kernel3_test2= gedi.kernel_likelihood.gradient_likelihood(kernel3,x,y,yerr)
+print 'kernel =',kernel3
+print 'likelihood =',kernel3_test1
+print 'gradients =',kernel3_test2
+
 print 'test 4'
 kernel4=gedi.kernel.ExpSquared(10.2,7.1)*gedi.kernel.ExpSineSquared(10.1,1.2,5.1)
 kernel4_test1= gedi.kernel_likelihood.likelihood(kernel4,x,y,yerr)
