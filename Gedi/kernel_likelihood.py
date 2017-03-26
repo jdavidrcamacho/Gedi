@@ -281,12 +281,18 @@ def gradient_likelihood(kernel,x,y,yerr):
         grad1=grad_logp(kernel.dWN_dtheta,x,y,yerr,cov_matrix)
         return grad1
     elif isinstance(kernel,kl.ExpSineGeorge):
-        grad1=grad_logp(kernel.dE_dGamma,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dE_dP,x,y,yerr,cov_matrix) 
-        a= [grad1, grad2];a=np.array(a)       
-        return a
+        grad1=grad_logp(kernel.dE_dGamma,x,xcalc,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dE_dP,x,xcalc,y,yerr,cov_matrix) 
+        grad_list= [grad1, grad2];a=np.array(a)       
+        return grad_list
     elif isinstance(kernel,kl.Sum):
-        return gradient_sum(kernel,x,y,yerr)
+        grad_list=gradient_sum(kernel,x,xcalc,y,yerr)
+        for i in range(len(grad_list)):
+            if isinstance(grad_list[i],float):
+                grad_list[i]=[grad_list[i]]
+        total=sum(grad_list, [])
+        return total        
+        #return gradient_sum(kernel,x,y,yerr)
     elif isinstance(kernel,kl.Product):
         return gradient_mul(kernel,x,y,yerr)                
     else:
@@ -367,7 +373,9 @@ def gradient_likelihood_sum(kernel,x,y,yerr,kernelOriginal):
     elif isinstance(kernel,kl.ExpSineGeorge):
         grad1=grad_logp(kernel.dE_dGamma,x,y,yerr,cov_matrix)
         grad2=grad_logp(kernel.dE_dP,x,y,yerr,cov_matrix) 
-        return grad1, grad2                
+        return grad1, grad2
+    elif isinstance(kernel,kl.Sum):
+        return gradient_sum(kernel,x,xcalc,y,yerr)                
     else:
         print 'gradient -> Something went wrong!'
 
