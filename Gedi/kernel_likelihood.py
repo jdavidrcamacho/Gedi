@@ -281,8 +281,8 @@ def gradient_likelihood(kernel,x,y,yerr):
         grad1=grad_logp(kernel.dWN_dtheta,x,y,yerr,cov_matrix)
         return grad1
     elif isinstance(kernel,kl.ExpSineGeorge):
-        grad1=grad_logp(kernel.dE_dGamma,x,xcalc,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dE_dP,x,xcalc,y,yerr,cov_matrix) 
+        grad1=grad_logp(kernel.dE_dGamma,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dE_dP,x,y,yerr,cov_matrix) 
         grad_list= [grad1, grad2];a=np.array(a)       
         return grad_list
     elif isinstance(kernel,kl.Sum):
