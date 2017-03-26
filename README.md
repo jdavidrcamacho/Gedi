@@ -7,7 +7,7 @@ Do or do not, there is no try in the use of Gaussian processes to model real dat
  How to install?
  The easy way is using pip: $ pip install Gedi
  
- Current version is Gedi 0.1.1
+ Current version is Gedi 0.1.3, yes I've jumped 0.1.2 because I forgot to proper uploaded it to pypi
 
  What other packages are needed to work?
  It's necessary to have numpy, scipy, matplotlib, inspect.
