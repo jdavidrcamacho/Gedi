@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Mar  1 14:51:50 2017
-
-@author: camacho
-"""
-
 import kernel as kl
 import kernel_likelihood as lk
 
@@ -26,8 +20,7 @@ parameters = the interval of the kernel parameters (check the Tests.py
             understand it better)
 runs = the number of times the mcmc runs, 50000 by definition, its a lot but
     this version of the mcmc its still very inefficient, I hope to release a
-    better one in the future
-        
+    better one in the future    
 """ 
 def MCMC(kernel,x,y,yerr,parameters,runs=50000):
     #to not loose que original kernel and data
