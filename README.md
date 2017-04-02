@@ -20,7 +20,7 @@ Do or do not, there is no try in the use of Gaussian processes to model real dat
  
  kernel_likelihood.py -> script where the  calculation of the log-likelihood and gradient of the kernels is made
 
- kernel_optimization.py -> script where the kernel's optimizations is made, it's not in its final form (damn Android 18 is hidden somewhere) 
+ kernel_optimization.py -> script where the kernel's optimizations is made
 
  kernel_mcmc.py -> a very simple script of a mcmc to optimize the kernels, it's not very efficient but it's a first step to create a good one
 
