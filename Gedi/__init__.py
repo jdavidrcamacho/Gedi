@@ -2,6 +2,8 @@
 
 ##### Necessary scripts to everything work #####
 """
+    Package to analyze radial velocity measurments using Gaussian processes.
+
     Kernel: contains all the developed kernels
     
     Kernel_likelihood: contains all the programs for the log likelihood
