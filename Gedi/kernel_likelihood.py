@@ -281,8 +281,8 @@ def gradient_likelihood(kernel,x,y,yerr):
         grad1=grad_logp(kernel.dWN_dtheta,x,y,yerr,cov_matrix)
         return grad1
     elif isinstance(kernel,kl.ExpSineGeorge):
-        grad1=grad_logp(kernel.dE_dGamma,x,xcalc,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dE_dP,x,xcalc,y,yerr,cov_matrix) 
+        grad1=grad_logp(kernel.dE_dGamma,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dE_dP,x,y,yerr,cov_matrix) 
         grad_list= [grad1, grad2];a=np.array(a)       
         return grad_list
     elif isinstance(kernel,kl.Sum):
@@ -311,8 +311,9 @@ yerr = error in the measurments
 def gradient_sum(kernel,x,y,yerr):
     kernelOriginal=kernel 
     a=kernel.__dict__
+    len_dict=len(kernel.__dict__)
     grad_result=[]    
-    for i in np.arange(1,len(kernel.__dict__)+1):
+    for i in np.arange(1,len_dict+1):
         var = "k%i" %i
         k_i = a[var] 
         
@@ -378,9 +379,11 @@ def gradient_likelihood_sum(kernel,x,y,yerr,kernelOriginal):
     elif isinstance(kernel,kl.ExpSineGeorge):
         grad1=grad_logp(kernel.dE_dGamma,x,y,yerr,cov_matrix)
         grad2=grad_logp(kernel.dE_dP,x,y,yerr,cov_matrix) 
-        return grad1, grad2                
+        return grad1, grad2
+    elif isinstance(kernel,kl.Product):
+        return grad_mul_aux(kernel,x,y,yerr,kernelOriginal)                   
     else:
-        print 'gradient -> Something went wrong!'
+        print 'gradient -> Something went very wrong!'
 
 
 """
@@ -397,8 +400,9 @@ kernelOriginal = original kernel (original sum) being used
 def grad_sum_aux(kernel,x,y,yerr,kernelOriginal):
     kernelOriginal=kernelOriginal
     a=kernel.__dict__
+    len_dict=len(kernel.__dict__)
     grad_result=[]    
-    for i in np.arange(1,len(kernel.__dict__)+1):
+    for i in np.arange(1,len_dict+1):
         var = "k%i" %i
         k_i = a[var]
         calc=gradient_likelihood_sum(k_i,x,y,yerr,kernelOriginal)
@@ -411,6 +415,8 @@ def grad_sum_aux(kernel,x,y,yerr,kernelOriginal):
         for j in range(len(grad_result)):         
            grad_final = grad_final + list(grad_result[j])     
     return grad_final
+    
+    
 ##### Gradient of the log likelihood of multiplications #####
 """
     gradient_mul() makes the gradient calculation of multiplications of kernels 
@@ -424,39 +430,35 @@ yerr = error in the measurments
 def gradient_mul(kernel,x,y,yerr):
     kernelOriginal=kernel 
     cov_matrix=likelihood_aux(kernelOriginal,x,y,yerr)
-    a=kernel.__dict__
-    len_dict=len(kernel.__dict__)
-    grad_result=[]
-    kernelaux1=[]
-    kernelaux2=[]
-    for i in np.arange(1,len_dict+1):
-        var = "k%i"%i
-        kernelaux1.append(a[var])
-        kernelaux2.append(kernel_deriv(a[var]))
-    A1=len(kernelaux1)
-    B1=len(kernelaux2)
-    for i1 in range(A1):
-        for i2 in range(B1):
-            if i1==i2:
-                pass
-            else:
-                 B2=len(kernelaux2[i2])
-                 for j in range(B2):
-                     result=grad_logp(kernelaux1[i1]*kernelaux2[i2][j],x,y,yerr,cov_matrix)
-                     grad_result.insert(0,result)
 
-    #to deal with the "order problem"
-    final_grad_k1=[]
-    for i in range(len(kernel.k1.pars)):
-        final_grad_k1.append(grad_result[i])
-    final_grad_k2=[]
-    for j in range(len(kernel.k2.pars)):
-        final_grad_k2.append(grad_result[j+i+1])   
-    final_grad_k1=list(reversed(final_grad_k1))
-    final_grad_k2=list(reversed(final_grad_k2))
-    grad_result=final_grad_k1+final_grad_k2
-  
-    return grad_result   
+    listofKernels=[kernel.__dict__["k2"]] #to put each kernel separately
+    kernel_k1=kernel.__dict__["k1"]
+
+    while len(kernel_k1.__dict__)==2:
+        listofKernels.insert(0,kernel_k1.__dict__["k2"])
+        kernel_k1=kernel_k1.__dict__["k1"]
+
+    listofKernels.insert(0,kernel_k1) #each kernel is now separated
+    
+    kernelaux1=[];kernelaux2=[]
+    for i in range(len(listofKernels)):
+        kernelaux1.append(listofKernels[i])
+        kernelaux2.append(kernel_deriv(listofKernels[i]))
+    
+    grad_result=[]
+    kernelaux11=kernelaux1;kernelaux22=kernelaux2        
+    ii=0    
+    while ii<len(listofKernels):    
+        kernelaux11 = kernelaux1[:ii] + kernelaux1[ii+1 :]
+        kernels=np.prod(np.array(kernelaux11))
+        for ij in range(len(kernelaux22[ii])):
+            result=grad_logp(kernelaux2[ii][ij]*kernels,x,y,yerr,cov_matrix)
+            grad_result.insert(0,result)
+        kernelaux11=kernelaux1;kernelaux22=kernelaux2
+        ii=ii+1
+        
+    grad_result=grad_result[::-1]
+    return grad_result 
 
 """
     kernel_deriv() identifies the derivatives to use of a given kernel
@@ -485,3 +487,47 @@ def kernel_deriv(kernel):
         print 'Something went wrong!'
         
         
+"""
+    grad_mul_aux() its necesary when we are dealing with multiple terms of 
+sums and multiplications, example: ES*ESS + ES*ESS*WN + RQ*ES*WN.
+
+    Parameters
+kernel = kernel in use
+x = range of values of the independent variable (usually time)
+y = range of values of te dependent variable (the measurments)
+yerr = error in the measurments
+kernelOriginal = original kernel (original sum) being used     
+"""        
+def grad_mul_aux(kernel,x,y,yerr,kernelOriginal):
+    kernelOriginal=kernelOriginal 
+    cov_matrix=likelihood_aux(kernelOriginal,x,y,yerr)
+
+    listofKernels=[kernel.__dict__["k2"]] #to put each kernel separately
+    kernel_k1=kernel.__dict__["k1"]
+
+    while len(kernel_k1.__dict__)==2:
+        listofKernels.insert(0,kernel_k1.__dict__["k2"])
+        kernel_k1=kernel_k1.__dict__["k1"]
+
+    listofKernels.insert(0,kernel_k1) #each kernel is now separated
+    
+    kernelaux1=[];kernelaux2=[]
+    for i in range(len(listofKernels)):
+        kernelaux1.append(listofKernels[i])
+        kernelaux2.append(kernel_deriv(listofKernels[i]))
+    
+    grad_result=[]
+    kernelaux11=kernelaux1;kernelaux22=kernelaux2        
+    ii=0    
+    while ii<len(listofKernels):    
+        kernelaux11 = kernelaux1[:ii] + kernelaux1[ii+1 :]
+        kernels=np.prod(np.array(kernelaux11))
+        for ij in range(len(kernelaux22[ii])):
+            result=grad_logp(kernelaux2[ii][ij]*kernels,x,y,yerr,cov_matrix)
+            grad_result.insert(0,result)
+        kernelaux11=kernelaux1;kernelaux22=kernelaux2
+        ii=ii+1
+        
+    grad_result=grad_result[::-1]
+    return grad_result   
+    

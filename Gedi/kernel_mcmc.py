@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Mar  1 14:51:50 2017
-
-@author: camacho
-"""
-
 import kernel as kl
 import kernel_likelihood as lk
 
@@ -26,10 +20,9 @@ parameters = the interval of the kernel parameters (check the Tests.py
             understand it better)
 runs = the number of times the mcmc runs, 50000 by definition, its a lot but
     this version of the mcmc its still very inefficient, I hope to release a
-    better one in the future
-        
+    better one in the future    
 """ 
-def MCMC(kernel,x,y,yerr,parameters,runs=50000):
+def MCMC(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
     #to not loose que original kernel and data
     kernelFIRST=kernel;xFIRST=x
     yFIRST=y;yerrFIRST=yerr
@@ -67,8 +60,7 @@ def MCMC(kernel,x,y,yerr,parameters,runs=50000):
 
         #lets see if we keep the new parameters or not 
         second_kernel=new_kernel(kernelFIRST,guess_params)        
-        second_likelihood=lk.likelihood(second_kernel,x,y,yerr)
-#        second_calc=lk.gradient_likelihood(second_kernel,x,y,yerr)        
+        second_likelihood=lk.likelihood(second_kernel,x,y,yerr)   
         
         for j in range(len(guess_params)):
             prior=np.exp(first_likelihood)*initial_params[j]
@@ -82,25 +74,20 @@ def MCMC(kernel,x,y,yerr,parameters,runs=50000):
                     initial_params[j]=guess_params[j]
                 else:
                     initial_params[j]=initial_params[j]   
-
-            params_list[j].append(initial_params[j])
-
-#A better implementation needs to be found for the commented steps
-#        #lets see if we are going the right direction
-#        check_sign=[]        
-#        for ij in range  (len(second_calc)):
-#            check_sign.append(first_calc[ij]*second_calc[ij])
-#        check_it=all(check_sign>0 for check_sign in check_sign)
-#        if check_it is True:                    
-#            step=1.2*step #new bigger step to speed up the convergence            
-#        else:
-#            step=0.5*step #new smaller step to redo the calculations
+            
+            #separation of the burned data and the final data              
+            if i<burns:
+                pass
+            else:
+                params_list[j].append(initial_params[j])
 
         #lets define the new kernel
         first_kernel=new_kernel(kernelFIRST,initial_params)
         first_likelihood=lk.likelihood(first_kernel,x,y,yerr)
-#        first_calc=lk.gradient_likelihood(first_kernel,x,y,yerr)
-        running_logs.append(first_likelihood)
+        if i<burns:
+            pass
+        else:
+            running_logs.append(first_likelihood)
         i+=1
     
     #final kernel and log likelihood
