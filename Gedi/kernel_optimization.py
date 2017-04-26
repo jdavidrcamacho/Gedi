@@ -42,7 +42,8 @@ y = range of values of te dependent variable (the measurments)
 yerr = error in the measurments  
 max_opt = optimization runs performed, by default uses 2, recommended upper
         value of 10, more than that it will take a lot of time. 
-return_method = bool to return best optimization method. Default is false.""" 
+return_method = bool to return best optimization method. Default is false.
+""" 
 def committed_optimization(kernel,x,y,yerr,max_opt=2,return_method=False):
     i=0
     while i<max_opt:
