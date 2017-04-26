@@ -42,8 +42,9 @@ y = range of values of te dependent variable (the measurments)
 yerr = error in the measurments  
 max_opt = optimization runs performed, by default uses 2, recommended upper
         value of 10, more than that it will take a lot of time. 
+return_method = bool to return best optimization method. Default is false.
 """ 
-def committed_optimization(kernel,x,y,yerr,max_opt=2):
+def committed_optimization(kernel,x,y,yerr,max_opt=2,return_method=False):
     i=0
     while i<max_opt:
         log_SDA=SDA(kernel,x,y,yerr)
@@ -64,11 +65,20 @@ def committed_optimization(kernel,x,y,yerr,max_opt=2):
     maximum_likelihood=np.max(logs)
     
     if maximum_likelihood==log_SDA[0]:
-        return log_SDA        
+        if return_method:
+            return log_SDA, "SDA"
+        else:
+            return log_SDA
     if maximum_likelihood==log_altSDA[0]:
-        return log_altSDA
+        if return_method:
+            return log_altSDA, "altSDA"
+        else:
+            return log_altSDA
     if maximum_likelihood==log_BFGS[0]:
-        return log_BFGS
+        if return_method:
+            return log_BFGS, "BFGS"
+        else:    
+            return log_BFGS
 
         
 ##### Algorithms #####
