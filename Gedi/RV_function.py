@@ -2,48 +2,49 @@
 import  numpy as np
 
 ##### RV functions #####
-"""
-    RV_circular() simulates the radial velocity signal of a planet in a 
-circular orbit around a star.
-    The algorithm needs improvements as it is very inefficient.
-
-    Parameters
-P = period in days
-K =  semi-amplitude of the signal
-T = velocity at zero phase
-gamma = average velocity of the star
-time  = time of the simulation
-space = We want an observation every time/space days
-
-    Returns
-t = time
-RV = rv signal generated    
-""" 
 def RV_circular(P=365,K=0.1,T=0,gamma=0,time=100,space=20):
+    """
+        RV_circular() simulates the radial velocity signal of a planet in a 
+    circular orbit around a star.
+        The algorithm needs improvements as it is very inefficient.
+    
+        Parameters
+    P = period in days
+    K =  semi-amplitude of the signal
+    T = velocity at zero phase
+    gamma = average velocity of the star
+    time  = time of the simulation
+    space = We want an observation every time/space days
+    
+        Returns
+    t = time
+    RV = rv signal generated    
+    """ 
     t=np.linspace(0,time,space)
     RV=[K*np.sin(2*np.pi*x/P - T) + gamma for x in t]
     RV=[x for x in RV] #m/s 
     return [t,RV]
 
-"""
-    RV_kepler() simulates the radial velocity signal of a planet in a 
-keplerian orbit around a star.
 
-    Parameters
-P = period in days
-e = eccentricity
-K = RV amplitude
-gamma = constant system RV
-T = zero phase
-w = longitude of the periastron
-time = for how long we want the simulation
-space = We want an observation every time/space days
-
-    Returns
-t = time
-RV = rv
-"""
 def RV_kepler(P=365,e=0,K=0.1,T=0,gamma=0,w=np.pi,time=100,space=20):
+    """
+        RV_kepler() simulates the radial velocity signal of a planet in a 
+    keplerian orbit around a star.
+    
+        Parameters
+    P = period in days
+    e = eccentricity
+    K = RV amplitude
+    gamma = constant system RV
+    T = zero phase
+    w = longitude of the periastron
+    time = for how long we want the simulation
+    space = We want an observation every time/space days
+    
+        Returns
+    t = time
+    RV = rv
+    """
     t=np.linspace(0,time,space)
 
     #mean anomaly
