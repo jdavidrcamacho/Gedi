@@ -2,11 +2,11 @@
 import numpy as np
     
 ##### Kernels initiation #####
-""" 
-    Script to define the kernels and its properties, 
-that includes sum and multiplication of kernels. 
-"""
 class Kernel(object):
+    """ 
+        Definition the kernels and its properties, 
+    that includes sum and multiplication of kernels. 
+    """
     def __init__(self, *args):
         self.pars = np.array(args) # put all Kernel arguments in an array pars
 
@@ -43,6 +43,7 @@ class _operator(Kernel):
 
 #Sum of kernels
 class Sum(_operator):
+    """ To allow the sum of kernels """
     def __repr__(self):
         return "{0} + {1}".format(self.k1, self.k2)
 
@@ -54,6 +55,7 @@ class Sum(_operator):
 
 #Multplication of kernels
 class Product(_operator):
+    """ To allow the multiplycation of kernels """
     def __repr__(self):
         return "{0} * {1}".format(self.k1, self.k2)
         
@@ -68,18 +70,18 @@ class Product(_operator):
 
 
 ##### Exponetial squared kernel #####
-"""
-    Definition of the exponential squared kernel and its derivatives,
-it is also know as radial basis function (RBF kernel).
-
-    Important
-The derivative its in respect to log(parameter)
-
-    Parameters
-ES_theta = amplitude of the kernel
-ES_l = characteristic lenght scale  to define how smooth the kernel is   
-"""
 class ExpSquared(Kernel):
+    """
+        Definition of the exponential squared kernel and its derivatives,
+    it is also know as radial basis function (RBF kernel).
+    
+        Important
+    The derivative its in respect to log(parameter)
+    
+        Parameters
+    ES_theta = amplitude of the kernel
+    ES_l = characteristic lenght scale  to define how smooth the kernel is   
+    """
     def __init__(self, ES_theta, ES_l):
         super(ExpSquared, self).__init__(ES_theta, ES_l)
         # because we are "overwriting" the function __init__
@@ -111,19 +113,19 @@ class ExpSquared(Kernel):
    
    
 ##### Exponetial sine squared kernel #####
-"""
-    Definition of the exponential sine squared kernel and its derivatives,
-it is also know as periodic kernel.
-
-    Important
-The derivative its in respect to log(parameter)
-
-    Parameters
-ESS_theta = amplitude of the kernel
-ESS_l = characteristic lenght scale  to define how smooth the kernel is   
-ESS_P = periodic repetitions of the kernel
-"""
 class ExpSineSquared(Kernel):
+    """
+        Definition of the exponential sine squared kernel and its derivatives,
+    it is also know as periodic kernel.
+    
+        Important
+    The derivative its in respect to log(parameter)
+    
+        Parameters
+    ESS_theta = amplitude of the kernel
+    ESS_l = characteristic lenght scale  to define how smooth the kernel is   
+    ESS_P = periodic repetitions of the kernel
+    """
     def __init__(self, ESS_theta, ESS_l, ESS_P):
         super(ExpSineSquared, self).__init__(ESS_theta, ESS_l, ESS_P)
 
@@ -169,18 +171,18 @@ class ExpSineSquared(Kernel):
 
  
 ##### Rational quadratic kernel #####
-"""
-    Definition of the rational quadratic kernel and its derivatives.
-
-    Important
-The derivative its in respect to log(parameter)
-
-    Parameters
-RQ_theta = amplitude of the kernel
-RQ_alpha = weight of large and small scale variations
-RQ_l = characteristic lenght scale to define how smooth the kernel is   
-"""
 class RatQuadratic(Kernel):
+    """
+        Definition of the rational quadratic kernel and its derivatives.
+    
+        Important
+    The derivative its in respect to log(parameter)
+    
+        Parameters
+    RQ_theta = amplitude of the kernel
+    RQ_alpha = weight of large and small scale variations
+    RQ_l = characteristic lenght scale to define how smooth the kernel is   
+    """
     def __init__(self, RQ_theta, RQ_alpha, RQ_l):
         super(RatQuadratic, self).__init__(RQ_theta, RQ_alpha, RQ_l)
         self.RQ_theta = RQ_theta
@@ -222,17 +224,17 @@ class RatQuadratic(Kernel):
         return f1*(func1-np.log(func0))*func0**(-f3) *f3       
     
  
-##### White noise kernel #####
-"""
-    Definition of the white noise kernel and its derivatives.
-
-    Important
-The derivative its in respect to log(parameter)
-
-    Parameters
-WN_theta = amplitude of the kernel
-"""  
+##### White noise kernel ##### 
 class WhiteNoise(Kernel):                             
+    """
+        Definition of the white noise kernel and its derivatives.
+    
+        Important
+    The derivative its in respect to log(parameter)
+    
+        Parameters
+    WN_theta = amplitude of the kernel
+    """ 
     def __init__(self,WN_theta):                     
         super(WhiteNoise,self).__init__(WN_theta)     
         self.WN_theta=WN_theta                        
@@ -248,19 +250,19 @@ class WhiteNoise(Kernel):
         return 2*f1*f2      
 
 
-##### Exponential kernel #####
-"""
-    Definition of the exponential kernel and its derivatives, this kernel
-arise when setting v=1/2 in the matern family of kernels
-
-    Important
-The derivative its in respect to log(parameter)
-
-    Parameters
-EXP_theta = amplitude of the kernel
-EXP_l = characteristic lenght scale to define how smooth the kernel is  
-"""                
+##### Exponential kernel #####              
 class Exponential(Kernel):
+    """
+        Definition of the exponential kernel and its derivatives, this kernel
+    arise when setting v=1/2 in the matern family of kernels
+    
+        Important
+    The derivative its in respect to log(parameter)
+    
+        Parameters
+    EXP_theta = amplitude of the kernel
+    EXP_l = characteristic lenght scale to define how smooth the kernel is  
+    """  
     def __init__(self,Exp_theta,Exp_l):
         super(Exponential,self).__init__(Exp_theta,Exp_l)
         self.Exp_theta=Exp_theta        
@@ -288,18 +290,18 @@ class Exponential(Kernel):
 
 
 ##### Matern 3/2 kernel #####
-"""
-    Definition of the Matern 3/2 kernel and its derivatives, this kernel
-arise when setting v=3/2 in the matern family of kernels
-
-    Important
-The derivative its in respect to log(parameter)
-
-    Parameters
-M32_theta = amplitude of the kernel
-M32_l = characteristic lenght scale to define how smooth the kernel is  
-""" 
 class Matern_32(Kernel):
+    """
+        Definition of the Matern 3/2 kernel and its derivatives, this kernel
+    arise when setting v=3/2 in the matern family of kernels
+    
+        Important
+    The derivative its in respect to log(parameter)
+    
+        Parameters
+    M32_theta = amplitude of the kernel
+    M32_l = characteristic lenght scale to define how smooth the kernel is  
+    """ 
     def __init__(self,M32_theta,M32_l):
         super(Matern_32,self).__init__(M32_theta,M32_l)
         self.M32_theta=M32_theta   
@@ -329,18 +331,18 @@ class Matern_32(Kernel):
 
 
 ##### Matern 5/2 kernel #####
-"""
-    Definition of the Matern 5/2 kernel and its derivatives, this kernel
-arise when setting v=5/2 in the matern family of kernels
-
-    Important
-The derivative its in respect to log(parameter)
-
-    Parameters
-M52_theta = amplitude of the kernel
-M52_l = characteristic lenght scale to define how smooth the kernel is  
-""" 
 class Matern_52(Kernel):
+    """
+        Definition of the Matern 5/2 kernel and its derivatives, this kernel
+    arise when setting v=5/2 in the matern family of kernels
+    
+        Important
+    The derivative its in respect to log(parameter)
+    
+        Parameters
+    M52_theta = amplitude of the kernel
+    M52_l = characteristic lenght scale to define how smooth the kernel is  
+    """ 
     def __init__(self,M52_theta,M52_l):
         super(Matern_52,self).__init__(M52_theta,M52_l)
         self.M52_theta=M52_theta        
@@ -372,19 +374,19 @@ class Matern_52(Kernel):
                 *np.exp(-np.sqrt(5)*f4/f2))                
                 
 
-##### ExpSineGeorge kernel #####
-"""
-    Definition of a kernel equal to George's ExpSine2Kernel to test and 
-compare results
-
-    Important
-The derivative its in respect to log(parameter)
-
-    Parameters
-P = amplitude of the kernel
-gamma = 2/(l**2) 
-""" 
+##### ExpSineGeorge kernel ##### 
 class  ExpSineGeorge(Kernel):
+    """
+        Definition of a kernel equal to George's ExpSine2Kernel to test and 
+    compare results
+    
+        Important
+    The derivative its in respect to log(parameter)
+    
+        Parameters
+    P = amplitude of the kernel
+    gamma = 2/(l**2) 
+    """
     def __init__(self,gamma,P):
         super(ExpSineGeorge,self).__init__(gamma,P)
         self.gamma=gamma

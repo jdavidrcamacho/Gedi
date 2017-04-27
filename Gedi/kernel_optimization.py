@@ -5,19 +5,19 @@ import numpy as np
 import inspect
  
 ##### Optimization of the kernels #####
-"""
-    single_optimization() allows you to choose what algorithm to use in the
-optimization of the kernels
-
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments  
-method = algorithm used in the optimization, by default uses BFGS algorithm,
-        available algorithms are BFGS, SDA, RPROP and altSDA
-""" 
 def single_optimization(kernel,x,y,yerr,method='BFGS'):
+    """
+        single_optimization() allows you to choose what algorithm to use in the
+    optimization of the kernels
+    
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments  
+    method = algorithm used in the optimization, by default uses BFGS algorithm,
+            available algorithms are BFGS, SDA, RPROP and altSDA
+    """ 
     if method=='BFGS' or method=='bfgs':
         return BFGS(kernel,x,y,yerr)    
     if method=='SDA' or method=='sda':
@@ -30,21 +30,21 @@ def single_optimization(kernel,x,y,yerr,method='BFGS'):
         return altSDA(kernel,x,y,yerr) 
 
 
-"""
-    commited_optimization() performs the optimization using all algorithms and
-returns the one that gave better results in the end.
-    Its slower than the single_optimization() but gives better results. 
-
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments  
-max_opt = optimization runs performed, by default uses 2, recommended upper
-        value of 10, more than that it will take a lot of time. 
-return_method = bool to return best optimization method. Default is false.
-""" 
 def committed_optimization(kernel,x,y,yerr,max_opt=2,return_method=False):
+    """
+        commited_optimization() performs the optimization using all algorithms and
+    returns the one that gave better results in the end.
+        Its slower than the single_optimization() but gives better results. 
+    
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments  
+    max_opt = optimization runs performed, by default uses 2, recommended upper
+            value of 10, more than that it will take a lot of time. 
+    return_method = bool to return best optimization method. Default is false.
+    """ 
     i=0
     while i<max_opt:
         log_SDA=SDA(kernel,x,y,yerr)
@@ -82,16 +82,16 @@ def committed_optimization(kernel,x,y,yerr,max_opt=2,return_method=False):
 
         
 ##### Algorithms #####
-"""
-    BFGS() is the Broyden Fletcher Goldfarb Shanno Algorithm
-    
-    Parameters
-kernel = kernel being optimized
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments  
-"""
 def BFGS(kernel,x,y,yerr):
+    """
+        BFGS() is the Broyden Fletcher Goldfarb Shanno Algorithm
+        
+        Parameters
+    kernel = kernel being optimized
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments  
+    """
     #to not loose que original kernel and data
     kernelFIRST=kernel;xFIRST=x
     yFIRST=y;yerrFIRST=yerr
@@ -302,22 +302,22 @@ def BFGS(kernel,x,y,yerr):
     final_log= opt_likelihood(second_kernel,xFIRST,yFIRST,yerrFIRST)
     return [final_log,second_kernel]
 
-
-"""
-    SDA() is the Steepest descent Algorithm
-    
-    Parameters
-kernel = kernel being optimized
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments  
-"""    
+   
 def SDA(kernel,x,y,yerr):
+    """
+        SDA() is the Steepest descent Algorithm
+        
+        Parameters
+    kernel = kernel being optimized
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments  
+    """ 
     kernelFIRST=kernel;xFIRST=x
     yFIRST=y;yerrFIRST=yerr
     
     scipystep=1.4901161193847656e-8
-    step=1e-3 #initia search step
+    step=1e-3 #initial search step
     iterations=1000 #maximum number of iterations
     minimum_grad=1 #gradient difference, 1 to not give error at start
     
@@ -378,19 +378,19 @@ def SDA(kernel,x,y,yerr):
     final_log= opt_likelihood(second_kernel,xFIRST,yFIRST,yerrFIRST)
     return [final_log,second_kernel] 
 
-
-"""
-    RPROP() is the Resilient Propagation Algorithm, I don't trust the results
-this algorithm gives but still keep it here in the hope of one day make it
-work
-    
-    Parameters
-kernel = kernel being optimized
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments  
-"""                            
+                           
 def RPROP(kernel,x,y,yerr):
+    """
+        RPROP() is the Resilient Propagation Algorithm, I don't trust the results
+    this algorithm gives but still keep it here in the hope of one day make it
+    work
+        
+        Parameters
+    kernel = kernel being optimized
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments  
+    """ 
     try:
         kernelFIRST=kernel;xFIRST=x
         yFIRST=y;yerrFIRST=yerr
@@ -454,19 +454,19 @@ def RPROP(kernel,x,y,yerr):
     except:
         return [-1e10,-1e10]
 
-
-"""
-    altSDA() is the Alternative Steepest descent algorithm I made in my head,
-combining the properties of the steepest descent algorithm with the rprop
-algorithm, it work a lot better than what I was expecting.
-    
-    Parameters
-kernel = kernel being optimized
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments  
-"""  
+ 
 def altSDA(kernel,x,y,yerr):
+    """
+        altSDA() is the Alternative Steepest descent algorithm I made in my head,
+    combining the properties of the steepest descent algorithm with the rprop
+    algorithm, it work a lot better than what I was expecting.
+        
+        Parameters
+    kernel = kernel being optimized
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments  
+    """ 
     kernelFIRST=kernel;xFIRST=x
     yFIRST=y;yerrFIRST=yerr
     
@@ -552,17 +552,18 @@ def altSDA(kernel,x,y,yerr):
     
 ##### Auxiliary calculations #####
 from scipy.linalg import cho_factor, cho_solve
-"""
-    opt_likelihood() calculates the log likelihood necessary while the
-algorithms make their job
-    
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments     
-"""      
+     
 def opt_likelihood(kernel, x, y, yerr):   
+    """
+        opt_likelihood() calculates the log likelihood necessary while the
+    algorithms make their job
+        
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments     
+    """ 
     r = x[:, None] - x[None, :]
     K = kernel(r)
     K = K + yerr**2*np.identity(len(x))       
@@ -576,44 +577,44 @@ def opt_likelihood(kernel, x, y, yerr):
     return logLike
 
 
-"""
-    opt_gradlike() returns the -gradients of the parameters of a kernel
-    
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments     
-""" 
 def opt_gradlike(kernel, x,y,yerr):
+    """
+        opt_gradlike() returns the -gradients of the parameters of a kernel
+        
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments     
+    """ 
     grd= lk.gradient_likelihood(kernel, x,y,yerr) #gradient likelihood
     grd= [-grd for grd in grd] #inverts the sign of the gradient
     return grd    
 
 
-"""
-    sign_gradlike() returns the gradients of the parameters of a kernel
-    
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments     
-"""
 def sign_gradlike(kernel, x,y,yerr):
+    """
+        sign_gradlike() returns the gradients of the parameters of a kernel
+        
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments     
+    """
     grd= lk.gradient_likelihood(kernel, x,y,yerr) #gradient likelihood
     return grd   
 
 
-"""
-    new_kernel() updates the parameters of the kernels as the optimizations
-advances
-    
-    Parameters
-kernelFIRST = original kernel in use
-b = new parameters or new hyperparameters if you prefer using that denomination
-"""
 def new_kernel(kernelFIRST,b): #to update the kernels
+    """
+        new_kernel() updates the parameters of the kernels as the optimizations
+    advances
+        
+        Parameters
+    kernelFIRST = original kernel in use
+    b = new parameters or new hyperparameters if you prefer using that denomination
+    """
     if isinstance(kernelFIRST,kl.ExpSquared):
         return kl.ExpSquared(b[0],b[1])
     elif isinstance(kernelFIRST,kl.ExpSineSquared):

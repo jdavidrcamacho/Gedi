@@ -4,16 +4,16 @@ import numpy as np
 import inspect 
 
 ##### Covariance matrix #####
-"""
-    build_matrix() creates the covariance matrix
-    
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments     
-""" 
 def build_matrix(kernel, x, y, yerr):
+    """
+        build_matrix() creates the covariance matrix
+        
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments     
+    """ 
     r = x[:, None] - x[None, :]
     K = kernel(r)
     K = K + yerr**2*np.identity(len(x)) 
@@ -21,16 +21,16 @@ def build_matrix(kernel, x, y, yerr):
 
 
 ##### Marginal log likelihood #####
-"""
-    likelihood() calculates the marginal log likelihood.
-
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments     
-""" 
 def likelihood(kernel, x, y, yerr):    
+    """
+        likelihood() calculates the marginal log likelihood.
+    
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments     
+    """ 
     from scipy.linalg import cho_factor, cho_solve    
     r = x[:, None] - x[None, :]
     K = kernel(r)
@@ -44,16 +44,16 @@ def likelihood(kernel, x, y, yerr):
     return logLike    
 
 
-"""
-    lnlike() calculates the marginal log likelihood again?
-    Honestly I don't remember why I have it but I keep it here in case its used
-somewhere I'm not remembering. Might get deleted in the future.
-
-    Parameters
-K = kernel in use
-y = range of values of te dependent variable (the measurments)    
-""" 
 def lnlike(K, y): #log-likelihood calculations
+    """
+        lnlike() calculates the marginal log likelihood again?
+        Honestly I don't remember why I have it but I keep it here in case its used
+    somewhere I'm not remembering. Might get deleted in the future.
+    
+        Parameters
+    K = kernel in use
+    y = range of values of te dependent variable (the measurments)    
+    """ 
     from scipy.linalg import cho_factor, cho_solve
     L1 = cho_factor(K)
     sol = cho_solve(L1, y)
@@ -65,21 +65,21 @@ def lnlike(K, y): #log-likelihood calculations
 
 
 ##### Mean and  variance #####
-"""
-    compute_kenrel() makes the necessary calculations to allow the user to 
-create pretty graphics in the end, the ones that includes the mean and 
-standard deviation. 
-
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-xcalc = new range of values to calculate the means and standard deviation, in
-        other words, to predict value of the kernel between measurments, as
-        such we should have xcalc >> x
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments     
-""" 
 def compute_kernel(kernel, x, xcalc, y, yerr):    
+    """
+        compute_kenrel() makes the necessary calculations to allow the user to 
+    create pretty graphics in the end, the ones that includes the mean and 
+    standard deviation. 
+    
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    xcalc = new range of values to calculate the means and standard deviation, in
+            other words, to predict value of the kernel between measurments, as
+            such we should have xcalc >> x
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments     
+    """ 
     from scipy.linalg import cho_factor, cho_solve    
     r = x[:, None] - x[None, :]
     K = kernel(r)
@@ -195,17 +195,17 @@ def compute_kernel(kernel, x, xcalc, y, yerr):
     return [y_mean,y_std]
 
 
-##### Gradient of the log likelihood #####
-"""
-    likelihood_aux() makes the covariance matrix calculations  
-
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments     
-""" 
+##### Gradient of the log likelihood ##### 
 def likelihood_aux(kernel, x, y, yerr):
+    """
+        likelihood_aux() makes the covariance matrix calculations  
+    
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments     
+    """
     r = x[:, None] - x[None, :]
     K = kernel(r)
     K = K + yerr**2*np.identity(len(x))    
@@ -213,18 +213,18 @@ def likelihood_aux(kernel, x, y, yerr):
     return K
 
 
-"""
-    grad_logp() makes the covariance matrix calculations of the kernel
-derivatives and calculates the gradient
-
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments 
-cov_matrix = kernel covariance matrix    
-""" 
 def grad_logp(kernel,x,y,yerr,cov_matrix):
+    """
+        grad_logp() makes the covariance matrix calculations of the kernel
+    derivatives and calculates the gradient
+    
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments 
+    cov_matrix = kernel covariance matrix    
+    """ 
     r = x[:, None] - x[None, :]
     K_grad = kernel(r)
     K_inv = np.linalg.inv(cov_matrix)    
@@ -234,17 +234,17 @@ def grad_logp(kernel,x,y,yerr,cov_matrix):
     return grad 
 
 
-"""
-    gradient_likelihood() identifies the derivatives to use of a given kernel
-to calculate the gradient
-
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments    
-"""
 def gradient_likelihood(kernel,x,y,yerr):
+    """
+        gradient_likelihood() identifies the derivatives to use of a given kernel
+    to calculate the gradient
+    
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments    
+    """
     import inspect
     cov_matrix=likelihood_aux(kernel,x,y,yerr)
     if isinstance(kernel,kl.ExpSquared):
@@ -298,17 +298,17 @@ def gradient_likelihood(kernel,x,y,yerr):
     else:
         print 'gradient -> Something went wrong!'
 
-##### Gradient of the log likelihood of sums #####
-"""
-    gradient_sum() makes the gradient calculation of sums of kernels
-
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments     
-"""    
+##### Gradient of the log likelihood of sums #####    
 def gradient_sum(kernel,x,y,yerr):
+    """
+        gradient_sum() makes the gradient calculation of sums of kernels
+    
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments     
+    """
     kernelOriginal=kernel 
     a=kernel.__dict__
     len_dict=len(kernel.__dict__)
@@ -333,19 +333,19 @@ def gradient_sum(kernel,x,y,yerr):
     return grad_final
     #NoneType -> It might happen if there's no return in gradient_likelihood
 
-
-"""
-    gradient_likelihood_sum() identifies the derivatives to use of a given 
-kernel to calculate the gradient
-
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments  
-kernelOriginal = original kernel (original sum) being used  
-"""            
+           
 def gradient_likelihood_sum(kernel,x,y,yerr,kernelOriginal):
+    """
+        gradient_likelihood_sum() identifies the derivatives to use of a given 
+    kernel to calculate the gradient
+    
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments  
+    kernelOriginal = original kernel (original sum) being used  
+    """ 
     cov_matrix=likelihood_aux(kernelOriginal,x,y,yerr)
     if isinstance(kernel,kl.ExpSquared):
         grad1=grad_logp(kernel.dES_dtheta, x, y, yerr, cov_matrix)
@@ -385,19 +385,19 @@ def gradient_likelihood_sum(kernel,x,y,yerr,kernelOriginal):
     else:
         print 'gradient -> Something went very wrong!'
 
-
-"""
-    grad_sum_aux() its necesary when we are dealing with multiple sums, i.e. 
-sum of three or more kernels
-
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments
-kernelOriginal = original kernel (original sum) being used     
-"""  
+ 
 def grad_sum_aux(kernel,x,y,yerr,kernelOriginal):
+    """
+        grad_sum_aux() its necesary when we are dealing with multiple sums, i.e. 
+    sum of three or more kernels
+    
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments
+    kernelOriginal = original kernel (original sum) being used     
+    """ 
     kernelOriginal=kernelOriginal
     a=kernel.__dict__
     len_dict=len(kernel.__dict__)
@@ -417,17 +417,17 @@ def grad_sum_aux(kernel,x,y,yerr,kernelOriginal):
     return grad_final
     
     
-##### Gradient of the log likelihood of multiplications #####
-"""
-    gradient_mul() makes the gradient calculation of multiplications of kernels 
-
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments     
-"""        
+##### Gradient of the log likelihood of multiplications #####       
 def gradient_mul(kernel,x,y,yerr):
+    """
+        gradient_mul() makes the gradient calculation of multiplications of kernels 
+    
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments     
+    """ 
     kernelOriginal=kernel 
     cov_matrix=likelihood_aux(kernelOriginal,x,y,yerr)
 
@@ -460,13 +460,14 @@ def gradient_mul(kernel,x,y,yerr):
     grad_result=grad_result[::-1]
     return grad_result 
 
-"""
-    kernel_deriv() identifies the derivatives to use of a given kernel
-
-    Parameters
-kernel = kernel being use
-"""            
+           
 def kernel_deriv(kernel):
+    """
+        kernel_deriv() identifies the derivatives to use of a given kernel
+    
+        Parameters
+    kernel = kernel being use
+    """ 
     if isinstance(kernel,kl.ExpSquared):
         return kernel.dES_dtheta, kernel.dES_dl
     elif isinstance(kernel,kl.ExpSineSquared):
@@ -486,19 +487,19 @@ def kernel_deriv(kernel):
     else:
         print 'Something went wrong!'
         
-        
-"""
-    grad_mul_aux() its necesary when we are dealing with multiple terms of 
-sums and multiplications, example: ES*ESS + ES*ESS*WN + RQ*ES*WN.
-
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments
-kernelOriginal = original kernel (original sum) being used     
-"""        
+              
 def grad_mul_aux(kernel,x,y,yerr,kernelOriginal):
+    """
+        grad_mul_aux() its necesary when we are dealing with multiple terms of 
+    sums and multiplications, example: ES*ESS + ES*ESS*WN + RQ*ES*WN.
+    
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments
+    kernelOriginal = original kernel (original sum) being used     
+    """  
     kernelOriginal=kernelOriginal 
     cov_matrix=likelihood_aux(kernelOriginal,x,y,yerr)
 

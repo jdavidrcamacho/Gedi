@@ -6,23 +6,23 @@ import numpy as np
 import inspect
 
 ##### markov chain monte carlo #####
-"""
-    MCMC() perform the markov chain monte carlo to find the optimal parameters
-of a given kernel.
-    The algorithm needs improvements as it is very inefficient.
-
-    Parameters
-kernel = kernel in use
-x = range of values of the independent variable (usually time)
-y = range of values of te dependent variable (the measurments)
-yerr = error in the measurments
-parameters = the interval of the kernel parameters (check the Tests.py
-            understand it better)
-runs = the number of times the mcmc runs, 50000 by definition, its a lot but
-    this version of the mcmc its still very inefficient, I hope to release a
-    better one in the future    
-""" 
 def MCMC(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
+    """
+        MCMC() perform the markov chain monte carlo to find the optimal parameters
+    of a given kernel.
+        The algorithm needs improvements as it is very inefficient.
+    
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments
+    parameters = the interval of the kernel parameters (check the Tests.py
+                understand it better)
+    runs = the number of times the mcmc runs, 50000 by definition, its a lot but
+        this version of the mcmc its still very inefficient, I hope to release a
+        better one in the future    
+    """ 
     #to not loose que original kernel and data
     kernelFIRST=kernel;xFIRST=x
     yFIRST=y;yerrFIRST=yerr
@@ -98,14 +98,14 @@ def MCMC(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
 
 
 ##### auxiliary calculations #####
-"""
-    new_kernel() updates the parameters of the kernels as the mcmc advances
-    
-    Parameters
-kernelFIRST = original kernel in use
-b = new parameters or new hyperparameters if you prefer using that denomination
-"""
 def new_kernel(kernelFIRST,b): #to update the kernels
+    """
+        new_kernel() updates the parameters of the kernels as the mcmc advances
+        
+        Parameters
+    kernelFIRST = original kernel in use
+    b = new parameters or new hyperparameters if you prefer using that denomination
+    """
     if isinstance(kernelFIRST,kl.ExpSquared):
         return kl.ExpSquared(b[0],b[1])
     elif isinstance(kernelFIRST,kl.ExpSineSquared):
