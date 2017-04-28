@@ -17,16 +17,17 @@ def single_optimization(kernel,x,y,yerr,method='BFGS'):
     method = algorithm used in the optimization, by default uses BFGS algorithm,
             available algorithms are BFGS, SDA, RPROP and altSDA
     """ 
-    if method=='BFGS' or method=='bfgs':
+    if method in ["BFGS", "bfgs"]:
         return BFGS(kernel,x,y,yerr)    
-    if method=='SDA' or method=='sda':
+    if method in ["SDA", "sda"]:
         return SDA(kernel,x,y,yerr)
-    if method=='RPROP' or method=='rprop':
+    if method in ["RPROP", "rprop"]:
         #this one is questionable
         return RPROP(kernel,x,y,yerr)
-    if method=='altSDA' or method=='altsda':
+    if method in ["altSDA", "altsda"]:
         #I've "invented" this one, I do not guarantee it will work properly
         return altSDA(kernel,x,y,yerr) 
+
 
 
 def committed_optimization(kernel,x,y,yerr,max_opt=2,return_method=False):
