@@ -30,3 +30,5 @@ Do or do not, there is no try in the use of Gaussian processes to model real dat
  Tests.py -> simples tests to see how things work.
 
 |▒▓▒▒◙▒▓▒▓▒▓||░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+<A href="https://www.quantifiedcode.com/app/project/6540466252654140acb80a5cdc12b8b0"><img src="https://www.quantifiedcode.com/api/v1/project/6540466252654140acb80a5cdc12b8b0/badge.svg" alt="Code issues"/></A>
