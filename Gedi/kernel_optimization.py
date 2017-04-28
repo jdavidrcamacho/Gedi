@@ -37,8 +37,8 @@ def single_optimization(kernel,x,y,yerr,method='BFGS'):
 
 def committed_optimization(kernel,x,y,yerr,max_opt=2,return_method=False):
     """
-        commited_optimization() performs the optimization using all algorithms and
-    returns the one that gave better results in the end.
+        commited_optimization() performs the optimization using all algorithms
+    and returns the one that gave better results in the end.
         Its slower than the single_optimization() but gives better results. 
     
         Parameters
