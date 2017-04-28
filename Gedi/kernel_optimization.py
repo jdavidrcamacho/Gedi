@@ -2,7 +2,6 @@
 import kernel as kl
 import kernel_likelihood as lk
 import numpy as np
-import inspect
  
 ##### Optimization of the kernels #####
 def single_optimization(kernel,x,y,yerr,method='BFGS'):
@@ -105,7 +104,7 @@ def BFGS(kernel,x,y,yerr):
     check_it=False
     #we will only start the algorithm when we find the best step to give
     while check_it is False:
-        if isinstance(kernelFIRST,kl.Sum) or isinstance(kernelFIRST,kl.Product):
+        if isinstance(kernelFIRST,(kl.Sum,kl.Product)):
             hyperparms=[] #initial values of the hyperparam_eters 
             for k in range(len(kernelFIRST.pars)):
                 hyperparms.append(kernelFIRST.pars[k])
@@ -165,7 +164,7 @@ def BFGS(kernel,x,y,yerr):
         if (it+1)%3!=0:
             check_it=False
             while check_it is False:
-                if isinstance(kernelFIRST,kl.Sum) or isinstance(kernelFIRST,kl.Product):
+                if isinstance(kernelFIRST,(kl.Sum,kl.Product)):
                     hyperparms=[] #initial values of the hyperparam_eters 
                     for k in range(len(kernelFIRST.pars)):
                         hyperparms.append(kernelFIRST.pars[k])
@@ -232,7 +231,7 @@ def BFGS(kernel,x,y,yerr):
         else:
             check_it=False
             while check_it is False:
-                if isinstance(kernelFIRST,kl.Sum) or isinstance(kernelFIRST,kl.Product):
+                if isinstance(kernelFIRST,(kl.Sum,kl.Product)):
                     hyperparms=[] #initial values of the hyperparam_eters 
                     for k in range(len(kernelFIRST.pars)):
                         hyperparms.append(kernelFIRST.pars[k])
@@ -324,16 +323,14 @@ def SDA(kernel,x,y,yerr):
     it=0
     grad_condition=1e-3
     while it<iterations and step>scipystep and minimum_grad>grad_condition:
-        if isinstance(kernelFIRST,kl.Sum) or isinstance(kernelFIRST,kl.Product):
+        if isinstance(kernelFIRST,(kl.Sum,kl.Product)):
             hyperparms=[] #initial values of the hyperparam_eters 
             for k in range(len(kernelFIRST.pars)):
                 hyperparms.append(kernelFIRST.pars[k])
-            B=np.identity(len(hyperparms)) #Initial matrix   
         else:
             hyperparms=[] #initial values of the hyperparameters 
             for k in range(len(kernelFIRST.__dict__['pars'])):
-                hyperparms.append(kernelFIRST.__dict__['pars'][k])
-            B=np.identity(len(hyperparms)) #Initial matrix         
+                hyperparms.append(kernelFIRST.__dict__['pars'][k])        
         
         #to save the 'old' kernel and gradient
         first_kernel=new_kernel(kernelFIRST,hyperparms)
@@ -479,16 +476,14 @@ def altSDA(kernel,x,y,yerr):
     grad_condition=1e-3
 
     it=0
-    if isinstance(kernelFIRST,kl.Sum) or isinstance(kernelFIRST,kl.Product):
+    if isinstance(kernelFIRST,(kl.Sum,kl.Product)):
         hyperparms=[] #initial values of the hyperparam_eters 
         for k in range(len(kernelFIRST.pars)):
-            hyperparms.append(kernelFIRST.pars[k])
-        B=np.identity(len(hyperparms)) #Initial matrix   
+            hyperparms.append(kernelFIRST.pars[k]) 
     else:
         hyperparms=[] #initial values of the hyperparameters 
         for k in range(len(kernelFIRST.__dict__['pars'])):
             hyperparms.append(kernelFIRST.__dict__['pars'][k])
-        B=np.identity(len(hyperparms)) #Initial matrix
 
     #initial kernel, gradient, and steps
     first_kernel=new_kernel(kernelFIRST,hyperparms)
@@ -566,8 +561,7 @@ def opt_likelihood(kernel, x, y, yerr):
     """ 
     r = x[:, None] - x[None, :]
     K = kernel(r)
-    K = K + yerr**2*np.identity(len(x))       
-    log_p_correct = lk.lnlike(K, y)
+    K = K + yerr**2*np.identity(len(x))
     L1 = cho_factor(K)
     sol = cho_solve(L1, y)
     n = y.size
@@ -588,7 +582,7 @@ def opt_gradlike(kernel, x,y,yerr):
     yerr = error in the measurments     
     """ 
     grd= lk.gradient_likelihood(kernel, x,y,yerr) #gradient likelihood
-    grd= [-grd for grd in grd] #inverts the sign of the gradient
+    grd= [-n for n in grd] #inverts the sign of the gradient
     return grd    
 
 
@@ -623,9 +617,9 @@ def new_kernel(kernelFIRST,b): #to update the kernels
         return kl.RatQuadratic(b[0],b[1],b[2])
     elif isinstance(kernelFIRST,kl.Exponential):
         return kl.Exponential(b[0],b[1])
-    elif isinstance(kernelFIRST,kl.Matern_32):
+    elif isinstance(kernelFIRST,kl.Matern32):
         return kl.Matern_32(b[0],b[1])
-    elif isinstance(kernelFIRST,kl.Matern_52):
+    elif isinstance(kernelFIRST,kl.Matern52):
         return kl.Matern_52(b[0],b[1])
     elif isinstance(kernelFIRST,kl.ExpSineGeorge):
         return kl.ExpSineGeorge(b[0],b[1])

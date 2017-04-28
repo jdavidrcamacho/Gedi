@@ -114,9 +114,9 @@ def new_kernel(kernelFIRST,b): #to update the kernels
         return kl.RatQuadratic(b[0],b[1],b[2])
     elif isinstance(kernelFIRST,kl.Exponential):
         return kl.Exponential(b[0],b[1])
-    elif isinstance(kernelFIRST,kl.Matern_32):
+    elif isinstance(kernelFIRST,kl.Matern32):
         return kl.Matern_32(b[0],b[1])
-    elif isinstance(kernelFIRST,kl.Matern_52):
+    elif isinstance(kernelFIRST,kl.Matern52):
         return kl.Matern_52(b[0],b[1])
     elif isinstance(kernelFIRST,kl.ExpSineGeorge):
         return kl.ExpSineGeorge(b[0],b[1])

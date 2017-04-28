@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 import kernel as kl
 import numpy as np
-import inspect 
 
-##### Covariance matrix #####
 def build_matrix(kernel, x, y, yerr):
     """
         build_matrix() creates the covariance matrix
@@ -20,7 +18,6 @@ def build_matrix(kernel, x, y, yerr):
     return K
 
 
-##### Marginal log likelihood #####
 def likelihood(kernel, x, y, yerr):    
     """
         likelihood() calculates the marginal log likelihood.
@@ -44,7 +41,7 @@ def likelihood(kernel, x, y, yerr):
     return logLike    
 
 
-def lnlike(K, y): #log-likelihood calculations
+def lnlike(K, y):
     """
         lnlike() calculates the marginal log likelihood again?
         Honestly I don't remember why I have it but I keep it here in case its used
@@ -64,7 +61,6 @@ def lnlike(K, y): #log-likelihood calculations
     return logLike
 
 
-##### Mean and  variance #####
 def compute_kernel(kernel, x, xcalc, y, yerr):    
     """
         compute_kenrel() makes the necessary calculations to allow the user to 
@@ -90,9 +86,8 @@ def compute_kernel(kernel, x, xcalc, y, yerr):
     K_final=K
     
     #Exceptions because of the "white noise diagonal problem"
-    if isinstance(kernel,kl.Sum) or isinstance(kernel,kl.Product):
+    if isinstance(kernel, (kl.Sum, kl.Product)):
         if  isinstance(kernel.k1,kl.WhiteNoise):
-            print kernel.k1
             oldKernel=kernel
             kernel=kernel.k2
             new_r = xcalc[:, None] - x[None, :]   
@@ -195,10 +190,10 @@ def compute_kernel(kernel, x, xcalc, y, yerr):
     return [y_mean,y_std]
 
 
-##### Gradient of the log likelihood ##### 
 def likelihood_aux(kernel, x, y, yerr):
     """
-        likelihood_aux() makes the covariance matrix calculations  
+        likelihood_aux() makes the covariance matrix calculations necessary
+    in the gradient of the log likelihood
     
         Parameters
     kernel = kernel in use
@@ -208,8 +203,7 @@ def likelihood_aux(kernel, x, y, yerr):
     """
     r = x[:, None] - x[None, :]
     K = kernel(r)
-    K = K + yerr**2*np.identity(len(x))    
-    log_p_correct = lnlike(K, y)   
+    K = K + yerr**2*np.identity(len(x))
     return K
 
 
@@ -236,8 +230,8 @@ def grad_logp(kernel,x,y,yerr,cov_matrix):
 
 def gradient_likelihood(kernel,x,y,yerr):
     """
-        gradient_likelihood() identifies the derivatives to use of a given kernel
-    to calculate the gradient
+        gradient_likelihood() identifies the derivatives to use of a given 
+    kernel to calculate the gradient
     
         Parameters
     kernel = kernel in use
@@ -245,7 +239,6 @@ def gradient_likelihood(kernel,x,y,yerr):
     y = range of values of te dependent variable (the measurments)
     yerr = error in the measurments    
     """
-    import inspect
     cov_matrix=likelihood_aux(kernel,x,y,yerr)
     if isinstance(kernel,kl.ExpSquared):
         grad1=grad_logp(kernel.dES_dtheta, x, y, yerr, cov_matrix)
@@ -269,11 +262,11 @@ def gradient_likelihood(kernel,x,y,yerr):
         grad1=grad_logp(kernel.dE_dGamma,x,y,yerr,cov_matrix)
         grad2=grad_logp(kernel.dE_dP,x,y,yerr,cov_matrix) 
         return grad1, grad2
-    elif isinstance(kernel,kl.Matern_32):
+    elif isinstance(kernel,kl.Matern32):
         grad1=grad_logp(kernel.dM32_dtheta,x,y,yerr,cov_matrix)
         grad2=grad_logp(kernel.dM32_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
-    elif isinstance(kernel,kl.Matern_52):
+    elif isinstance(kernel,kl.Matern52):
         grad1=grad_logp(kernel.dM52_dtheta,x,y,yerr,cov_matrix)
         grad2=grad_logp(kernel.dM52_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
@@ -283,7 +276,7 @@ def gradient_likelihood(kernel,x,y,yerr):
     elif isinstance(kernel,kl.ExpSineGeorge):
         grad1=grad_logp(kernel.dE_dGamma,x,y,yerr,cov_matrix)
         grad2=grad_logp(kernel.dE_dP,x,y,yerr,cov_matrix) 
-        grad_list= [grad1, grad2];a=np.array(a)       
+        grad_list= [grad1, grad2];      
         return grad_list
     elif isinstance(kernel,kl.Sum):
         grad_list=gradient_sum(kernel,x,y,yerr)
@@ -292,16 +285,15 @@ def gradient_likelihood(kernel,x,y,yerr):
                 grad_list[i]=[grad_list[i]]
         total=sum(grad_list, [])
         return total        
-        #return gradient_sum(kernel,x,y,yerr)
     elif isinstance(kernel,kl.Product):
         return gradient_mul(kernel,x,y,yerr)                
     else:
         print 'gradient -> Something went wrong!'
 
-##### Gradient of the log likelihood of sums #####    
+    
 def gradient_sum(kernel,x,y,yerr):
     """
-        gradient_sum() makes the gradient calculation of sums of kernels
+        gradient_sum() makes the gradient calculation for the sums of kernels
     
         Parameters
     kernel = kernel in use
@@ -314,7 +306,7 @@ def gradient_sum(kernel,x,y,yerr):
     len_dict=len(kernel.__dict__)
     grad_result=[]    
     for i in np.arange(1,len_dict+1):
-        var = "k%i" %i
+        var = "k{0:d}".format(i)
         k_i = a[var] 
         
         if isinstance(k_i,kl.Sum): #to solve the three sums problem
@@ -365,11 +357,11 @@ def gradient_likelihood_sum(kernel,x,y,yerr,kernelOriginal):
         grad1=grad_logp(kernel.dExp_dtheta,x,y,yerr,cov_matrix)
         grad2=grad_logp(kernel.dExp_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
-    elif isinstance(kernel,kl.Matern_32):
+    elif isinstance(kernel,kl.Matern32):
         grad1=grad_logp(kernel.dM32_dtheta,x,y,yerr,cov_matrix)
         grad2=grad_logp(kernel.dM32_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
-    elif isinstance(kernel,kl.Matern_52):
+    elif isinstance(kernel,kl.Matern52):
         grad1=grad_logp(kernel.dM52_dtheta,x,y,yerr,cov_matrix)
         grad2=grad_logp(kernel.dM52_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
@@ -403,7 +395,7 @@ def grad_sum_aux(kernel,x,y,yerr,kernelOriginal):
     len_dict=len(kernel.__dict__)
     grad_result=[]    
     for i in np.arange(1,len_dict+1):
-        var = "k%i" %i
+        var = "k{0:d}".format(i)
         k_i = a[var]
         calc=gradient_likelihood_sum(k_i,x,y,yerr,kernelOriginal)
         if isinstance(calc, tuple):        
@@ -416,11 +408,11 @@ def grad_sum_aux(kernel,x,y,yerr,kernelOriginal):
            grad_final = grad_final + list(grad_result[j])     
     return grad_final
     
-    
-##### Gradient of the log likelihood of multiplications #####       
+         
 def gradient_mul(kernel,x,y,yerr):
     """
-        gradient_mul() makes the gradient calculation of multiplications of kernels 
+        gradient_mul() makes the gradient calculation of multiplications of 
+    kernels 
     
         Parameters
     kernel = kernel in use
@@ -463,7 +455,7 @@ def gradient_mul(kernel,x,y,yerr):
            
 def kernel_deriv(kernel):
     """
-        kernel_deriv() identifies the derivatives to use of a given kernel
+        kernel_deriv() identifies the derivatives to use in a given kernel
     
         Parameters
     kernel = kernel being use
@@ -476,9 +468,9 @@ def kernel_deriv(kernel):
         return kernel.dRQ_dtheta, kernel.dRQ_dl, kernel.dRQ_dalpha
     elif isinstance(kernel,kl.Exponential):
         return kernel.dExp_dtheta, kernel.dExp_dl
-    elif isinstance(kernel,kl.Matern_32):
+    elif isinstance(kernel,kl.Matern32):
         return kernel.dM32_dtheta, kernel.dM32_dl
-    elif isinstance(kernel,kl.Matern_52):
+    elif isinstance(kernel,kl.Matern52):
         return kernel.dM52_dtheta, kernel.dM52_dl
     elif isinstance(kernel,kl.ExpSineGeorge):
         return kernel.dE_dGamma, kernel.dE_dP
@@ -491,7 +483,8 @@ def kernel_deriv(kernel):
 def grad_mul_aux(kernel,x,y,yerr,kernelOriginal):
     """
         grad_mul_aux() its necesary when we are dealing with multiple terms of 
-    sums and multiplications, example: ES*ESS + ES*ESS*WN + RQ*ES*WN.
+    sums and multiplications, example: ES*ESS + ES*ESS*WN + RQ*ES*WN and not
+    having everything breaking apart
     
         Parameters
     kernel = kernel in use
