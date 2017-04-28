@@ -16,7 +16,12 @@ def single_optimization(kernel,x,y,yerr,method='BFGS'):
     yerr = error in the measurments  
     method = algorithm used in the optimization, by default uses BFGS algorithm,
             available algorithms are BFGS, SDA, RPROP and altSDA
-    """ 
+    
+        Returns
+    List with two elements
+    List[0] = final log likelihood
+    List[1] = final kernel     
+    """
     if method in ["BFGS", "bfgs"]:
         return BFGS(kernel,x,y,yerr)    
     if method in ["SDA", "sda"]:
@@ -44,7 +49,12 @@ def committed_optimization(kernel,x,y,yerr,max_opt=2,return_method=False):
     max_opt = optimization runs performed, by default uses 2, recommended upper
             value of 10, more than that it will take a lot of time. 
     return_method = bool to return best optimization method. Default is false.
-    """ 
+    
+        Returns
+    List with two elements
+    List[0] = final log likelihood
+    List[1] = final kernel     
+    """
     i=0
     while i<max_opt:
         log_SDA=SDA(kernel,x,y,yerr)
@@ -91,6 +101,11 @@ def BFGS(kernel,x,y,yerr):
     x = range of values of the independent variable (usually time)
     y = range of values of te dependent variable (the measurments)
     yerr = error in the measurments  
+    
+        Returns
+    List with two elements
+    List[0] = final log likelihood
+    List[1] = final kernel     
     """
     #to not loose que original kernel and data
     kernelFIRST=kernel;xFIRST=x
@@ -312,7 +327,12 @@ def SDA(kernel,x,y,yerr):
     x = range of values of the independent variable (usually time)
     y = range of values of te dependent variable (the measurments)
     yerr = error in the measurments  
-    """ 
+    
+        Returns
+    List with two elements
+    List[0] = final log likelihood
+    List[1] = final kernel     
+    """
     kernelFIRST=kernel;xFIRST=x
     yFIRST=y;yerrFIRST=yerr
     
@@ -379,15 +399,20 @@ def SDA(kernel,x,y,yerr):
                            
 def RPROP(kernel,x,y,yerr):
     """
-        RPROP() is the Resilient Propagation Algorithm, I don't trust the results
-    this algorithm gives but still keep it here in the hope of one day make it
-    work
+        RPROP() is the Resilient Propagation Algorithm, 
+    I don't trust the results this algorithm gives but still keep it here in 
+    the hope of one day make it work
         
         Parameters
     kernel = kernel being optimized
     x = range of values of the independent variable (usually time)
     y = range of values of te dependent variable (the measurments)
     yerr = error in the measurments  
+    
+        Returns
+    List with two elements
+    List[0] = final log likelihood
+    List[1] = final kernel     
     """ 
     try:
         kernelFIRST=kernel;xFIRST=x
@@ -455,16 +480,21 @@ def RPROP(kernel,x,y,yerr):
  
 def altSDA(kernel,x,y,yerr):
     """
-        altSDA() is the Alternative Steepest descent algorithm I made in my head,
-    combining the properties of the steepest descent algorithm with the rprop
-    algorithm, it work a lot better than what I was expecting.
+        altSDA() is the Alternative Steepest descent algorithm I made in my 
+    head, combining the properties of the steepest descent algorithm with the 
+    rprop algorithm, it work a lot better than what I was expecting.
         
         Parameters
     kernel = kernel being optimized
     x = range of values of the independent variable (usually time)
     y = range of values of te dependent variable (the measurments)
     yerr = error in the measurments  
-    """ 
+    
+        Returns
+    List with two elements
+    List[0] = final log likelihood
+    List[1] = final kernel     
+    """
     kernelFIRST=kernel;xFIRST=x
     yFIRST=y;yerrFIRST=yerr
     
