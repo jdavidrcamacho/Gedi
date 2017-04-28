@@ -314,7 +314,7 @@ def gradient_sum(kernel,x,y,yerr):
     len_dict=len(kernel.__dict__)
     grad_result=[]    
     for i in np.arange(1,len_dict+1):
-        var = "k%i" %i
+        var = "k{0:d}".format(i)
         k_i = a[var] 
         
         if isinstance(k_i,kl.Sum): #to solve the three sums problem
@@ -403,7 +403,7 @@ def grad_sum_aux(kernel,x,y,yerr,kernelOriginal):
     len_dict=len(kernel.__dict__)
     grad_result=[]    
     for i in np.arange(1,len_dict+1):
-        var = "k%i" %i
+        var = "k{0:d}".format(i)
         k_i = a[var]
         calc=gradient_likelihood_sum(k_i,x,y,yerr,kernelOriginal)
         if isinstance(calc, tuple):        
