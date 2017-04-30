@@ -32,6 +32,7 @@ class Kernel(object):
 
                             
 class _operator(Kernel):
+    """ To allow operations between two kernels """
     def __init__(self, k1, k2):
         self.k1 = k1
         self.k2 = k2
