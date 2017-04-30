@@ -2,7 +2,7 @@
 
 ##### Necessary scripts to everything work #####
 """
-    Package to analyze radial velocity measurments using Gaussian processes.
+    Package to analyze radial velocity measurements using Gaussian processes.
 
     Kernel: contains all the developed kernels
     
