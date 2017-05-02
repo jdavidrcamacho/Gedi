@@ -295,37 +295,37 @@ def gradient_likelihood_sum(kernel,x,y,yerr,kernelOriginal):
 #    cov_matrix=build_matrix(kernelOriginal,x,y,yerr)
     cov_matrix=build_matrix(kernel,x,y,yerr)
     if isinstance(kernel,kl.ExpSquared):
-        grad1=grad_logp(kernel.dES_dtheta, x, y, yerr, cov_matrix)
-        grad2=grad_logp(kernel.dES_dl, x, y, yerr, cov_matrix)
+        grad1=grad_logp(kernel.des_dtheta, x, y, yerr, cov_matrix)
+        grad2=grad_logp(kernel.des_dl, x, y, yerr, cov_matrix)
         return grad1, grad2
     elif isinstance(kernel,kl.ExpSineSquared):
-        grad1=grad_logp(kernel.dESS_dtheta,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dESS_dl,x,y,yerr,cov_matrix)
-        grad3=grad_logp(kernel.dESS_dP,x,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dess_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dess_dl,x,y,yerr,cov_matrix)
+        grad3=grad_logp(kernel.dess_dp,x,y,yerr,cov_matrix)
         return grad1, grad2, grad3 
     elif isinstance(kernel,kl.RatQuadratic):
-        grad1=grad_logp(kernel.dRQ_dtheta,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dRQ_dalpha,x,y,yerr,cov_matrix)
-        grad3=grad_logp(kernel.dRQ_dl,x,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.drq_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.drq_dalpha,x,y,yerr,cov_matrix)
+        grad3=grad_logp(kernel.drq_dl,x,y,yerr,cov_matrix)
         return grad1, grad2, grad3 
     elif isinstance(kernel,kl.Exponential):
-        grad1=grad_logp(kernel.dExp_dtheta,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dExp_dl,x,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dexp_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dexp_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
     elif isinstance(kernel,kl.Matern32):
-        grad1=grad_logp(kernel.dM32_dtheta,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dM32_dl,x,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dm32_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dm32_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
     elif isinstance(kernel,kl.Matern52):
-        grad1=grad_logp(kernel.dM52_dtheta,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dM52_dl,x,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dm52_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dm52_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
     elif isinstance(kernel,kl.WhiteNoise):
-        grad1=grad_logp(kernel.dWN_dtheta,x,y,yerr,cov_matrix)       
+        grad1=grad_logp(kernel.dwn_dtheta,x,y,yerr,cov_matrix)       
         return grad1
     elif isinstance(kernel,kl.ExpSineGeorge):
-        grad1=grad_logp(kernel.dE_dGamma,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dE_dP,x,y,yerr,cov_matrix) 
+        grad1=grad_logp(kernel.de_dgamma,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.de_dp,x,y,yerr,cov_matrix) 
         return grad1, grad2
     elif isinstance(kernel,kl.Product):
         return grad_mul_aux(kernel,x,y,yerr,kernelOriginal)                   
@@ -415,21 +415,21 @@ def kernel_deriv(kernel):
     kernel = kernel being use
     """ 
     if isinstance(kernel,kl.ExpSquared):
-        return kernel.dES_dtheta, kernel.dES_dl
+        return kernel.des_dtheta, kernel.des_dl
     elif isinstance(kernel,kl.ExpSineSquared):
-        return kernel.dESS_dtheta, kernel.dESS_dl, kernel.dESS_dP
+        return kernel.dess_dtheta, kernel.dess_dl, kernel.dess_dp
     elif  isinstance(kernel,kl.RatQuadratic):
-        return kernel.dRQ_dtheta, kernel.dRQ_dl, kernel.dRQ_dalpha
+        return kernel.drq_dtheta, kernel.drq_dl, kernel.drq_dalpha
     elif isinstance(kernel,kl.Exponential):
-        return kernel.dExp_dtheta, kernel.dExp_dl
+        return kernel.dexp_dtheta, kernel.dexp_dl
     elif isinstance(kernel,kl.Matern32):
-        return kernel.dM32_dtheta, kernel.dM32_dl
+        return kernel.dm32_dtheta, kernel.dm32_dl
     elif isinstance(kernel,kl.Matern52):
-        return kernel.dM52_dtheta, kernel.dM52_dl
+        return kernel.dm52_dtheta, kernel.dm52_dl
     elif isinstance(kernel,kl.ExpSineGeorge):
-        return kernel.dE_dGamma, kernel.dE_dP
+        return kernel.de_dgamma, kernel.de_dp
     elif isinstance(kernel,kl.WhiteNoise):
-        return kernel.dWN_dtheta
+        return kernel.dwn_dtheta
     else:
         print 'Something went wrong!'
         
