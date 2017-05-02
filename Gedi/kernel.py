@@ -87,14 +87,14 @@ class ExpSquared(Kernel):
         f3 = (r)**2             
         return f1 * np.exp(-0.5* f3/f2)
     
-    def dES_dtheta(self, r):
+    def des_dtheta(self, r):
         """ Log-derivative in order to theta """        
         f1=self.ES_theta**2      
         f2=self.ES_l**2
         f3=(r)**2
         return  2*f1*np.exp(-0.5*f3/f2)
     
-    def dES_dl(self, r):
+    def des_dl(self, r):
         """ Log-derivative in order to l """
         f1=self.ES_theta**2
         f2=self.ES_l
@@ -133,7 +133,7 @@ class ExpSineSquared(Kernel):
         f4 = self.ESS_P
         return f1*np.exp((-2/f2)*((np.sin(np.pi*f3/f4))**2))
         
-    def dESS_dtheta(self,r):
+    def dess_dtheta(self,r):
         """ Log-derivative in order to theta """
         f1 = self.ESS_theta**2
         f2 = self.ESS_l**2
@@ -141,7 +141,7 @@ class ExpSineSquared(Kernel):
         f4 = np.abs(r)
         return 2*f1*np.exp(-(2.0/f2)*np.sin(f3*f4)**2)  
     
-    def dESS_dl(self,r):
+    def dess_dl(self,r):
         """ Log-derivative in order to l """
         f1=self.ESS_theta**2
         f2=self.ESS_l**3
@@ -153,7 +153,7 @@ class ExpSineSquared(Kernel):
                 *f6
     
  
-    def dESS_dP(self,r):
+    def dess_dp(self,r):
         """ Log-derivative in order to P """
         f1=self.ESS_theta**2
         f2=self.ESS_l**2
@@ -192,7 +192,7 @@ class RatQuadratic(Kernel):
         f4 = self.RQ_alpha
         return f1*(1+(0.5*f3/(f4*f2)))**(-f4)
     
-    def dRQ_dtheta(self,r):
+    def drq_dtheta(self,r):
         """ Log-derivative in order to theta """
         f1=self.RQ_theta**2
         f2=(r)**2
@@ -200,7 +200,7 @@ class RatQuadratic(Kernel):
         f4=self.RQ_l**2
         return 2*f1*(1.0 + f2/(2.0*f3*f4))**(-f3)
 
-    def dRQ_dl(self,r):
+    def drq_dl(self,r):
         """ Log-derivatives in order to l """
         f1=self.RQ_theta**2
         f2=(r)**2    
@@ -208,7 +208,7 @@ class RatQuadratic(Kernel):
         f4=self.RQ_l**2
         return (f1*f2/f4)*(1.0 + f2/(2.0*f3*f4))**(-1.0-f3)
         
-    def dRQ_dalpha(self,r):
+    def drq_dalpha(self,r):
         """ Log-derivative in order to alpha """
         f1=self.RQ_theta**2
         f2=(r)**2
@@ -242,7 +242,7 @@ class WhiteNoise(Kernel):
         f2=np.diag(np.diag(np.ones_like(r)))
         return f1*f2 
 
-    def dWN_dtheta(self,r):
+    def dwn_dtheta(self,r):
         """ Log-derivative in order to theta """
         f1=self.WN_theta**2
         f2=np.diag(np.diag(np.ones_like(r)))
@@ -276,14 +276,14 @@ class Exponential(Kernel):
         f3=self.Exp_theta**2
         return f3*np.exp(-f1/f2)
 
-    def dExp_dtheta(self,r):
+    def dexp_dtheta(self,r):
         """ Log-derivative in order to theta """
         f1=np.abs(r)
         f2=self.Exp_l
         f3=self.Exp_theta**2
         return 2*f3*np.exp(-f1/f2)      
     
-    def dExp_dl(self,r):
+    def dexp_dl(self,r):
         """ Log-derivative in order to l """
         f1=self.Exp_theta**2  
         f2=np.abs(r)          
@@ -318,14 +318,14 @@ class Matern32(Kernel):
         f3=self.M32_theta**2
         return f3*(1.0 + f1/f2)*np.exp(-f1/f2)
 
-    def dM32_dtheta(self,r):
+    def dm32_dtheta(self,r):
         """ Log-derivative in order to theta """
         f1=np.sqrt(3.0)*np.abs(r) 
         f2=self.M32_l
         f3=self.M32_theta**2
         return 2*f3*(1.0 + f1/f2)*np.exp(-f1/f2)   
     
-    def dM32_dl(self,r):
+    def dm32_dl(self,r):
         """ Log-derivative in order to l """
         f1=self.M32_theta**2        
         f2=np.sqrt(3.0)*np.abs(r)   
@@ -364,7 +364,7 @@ class Matern52(Kernel):
         f5=self.M52_theta**2
         return f5*(1.0 + f1/f3 + (5.0*f2)/(3.0*f4))*np.exp(-f1/f3)
     
-    def dM52_dtheta(self,r):
+    def dm52_dtheta(self,r):
         """ Log-derivative in order to theta """
         f1=self.M52_theta**2
         f2=self.M52_l
@@ -373,7 +373,7 @@ class Matern52(Kernel):
         f5=5*np.abs(r)**2
         return 2*f1*(f5/f3 + f4/f2 +1)*np.exp(-f4/f2)
          
-    def dM52_dl(self,r):
+    def dm52_dl(self,r):
         """ Log-derivative in order to l """
         f1=self.M52_theta**2
         f2=self.M52_l
@@ -411,7 +411,7 @@ class  ExpSineGeorge(Kernel):
         f3=r
         return np.exp(-f1 *  np.sin(np.pi*f3/f2)**2)
  
-    def dE_dGamma(self,r):
+    def de_dgamma(self,r):
         """ Log-derivative in order to gamma """
         f1 = self.gamma
         f2 = self.P
@@ -420,7 +420,7 @@ class  ExpSineGeorge(Kernel):
         f5 = np.exp(-f1*np.sin(np.pi*f3/f2)**2)  
         return f4*f5*f1
 
-    def dE_dP(self,r):
+    def de_dp(self,r):
         """ Log-derivative in order to P """
         f1 = self.gamma
         f2 = self.P
