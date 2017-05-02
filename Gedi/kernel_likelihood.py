@@ -199,43 +199,38 @@ def gradient_likelihood(kernel,x,y,yerr):
     """
     cov_matrix=build_matrix(kernel,x,y,yerr)
     if isinstance(kernel,kl.ExpSquared):
-        grad1=grad_logp(kernel.dES_dtheta, x, y, yerr, cov_matrix)
-        grad2=grad_logp(kernel.dES_dl, x, y, yerr, cov_matrix)
+        grad1=grad_logp(kernel.des_dtheta, x, y, yerr, cov_matrix)
+        grad2=grad_logp(kernel.des_dl, x, y, yerr, cov_matrix)
         return grad1, grad2
     elif isinstance(kernel,kl.ExpSineSquared):
-        grad1=grad_logp(kernel.dESS_dtheta,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dESS_dl,x,y,yerr,cov_matrix)
-        grad3=grad_logp(kernel.dESS_dP,x,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dess_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dess_dl,x,y,yerr,cov_matrix)
+        grad3=grad_logp(kernel.dess_dp,x,y,yerr,cov_matrix)
         return grad1, grad2, grad3 
     elif isinstance(kernel,kl.RatQuadratic):
-        grad1=grad_logp(kernel.dRQ_dtheta,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dRQ_dalpha,x,y,yerr,cov_matrix)
-        grad3=grad_logp(kernel.dRQ_dl,x,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.drq_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.drq_dalpha,x,y,yerr,cov_matrix)
+        grad3=grad_logp(kernel.drq_dl,x,y,yerr,cov_matrix)
         return grad1, grad2, grad3 
     elif isinstance(kernel,kl.Exponential):
-        grad1=grad_logp(kernel.dExp_dtheta,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dExp_dl,x,y,yerr,cov_matrix)
-        return grad1, grad2
-    elif isinstance(kernel,kl.ExpSineGeorge):
-        grad1=grad_logp(kernel.dE_dGamma,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dE_dP,x,y,yerr,cov_matrix) 
+        grad1=grad_logp(kernel.dexp_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dexp_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
     elif isinstance(kernel,kl.Matern32):
-        grad1=grad_logp(kernel.dM32_dtheta,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dM32_dl,x,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dm32_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dm32_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
     elif isinstance(kernel,kl.Matern52):
-        grad1=grad_logp(kernel.dM52_dtheta,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dM52_dl,x,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dm52_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dm52_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
     elif isinstance(kernel,kl.WhiteNoise):
-        grad1=grad_logp(kernel.dWN_dtheta,x,y,yerr,cov_matrix)
+        grad1=grad_logp(kernel.dwn_dtheta,x,y,yerr,cov_matrix)
         return grad1
     elif isinstance(kernel,kl.ExpSineGeorge):
-        grad1=grad_logp(kernel.dE_dGamma,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.dE_dP,x,y,yerr,cov_matrix) 
-        grad_list= [grad1, grad2];      
-        return grad_list
+        grad1=grad_logp(kernel.de_dgamma,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.de_dp,x,y,yerr,cov_matrix) 
+        return grad1, grad2
     elif isinstance(kernel,kl.Sum):
         grad_list=gradient_sum(kernel,x,y,yerr)                
         for i, e in enumerate(grad_list):
