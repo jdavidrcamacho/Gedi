@@ -3,7 +3,6 @@ import kernel as kl
 import kernel_likelihood as lk
 
 import numpy as np
-import inspect
 
 ##### markov chain monte carlo #####
 def MCMC(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
@@ -23,16 +22,15 @@ def MCMC(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
         this version of the mcmc its still very inefficient, I hope to release a
         better one in the future    
     """ 
-    #to not loose que original kernel and data
-    kernelFIRST=kernel;xFIRST=x
-    yFIRST=y;yerrFIRST=yerr
+    #to not loose que original kernel
+    kernelFIRST=kernel
 
     initial_params= [0]*len(parameters)
-    for i in range(len(parameters)):
+
+    for i, e in enumerate(parameters): 
         initial_params[i]=np.random.uniform(parameters[i][0],parameters[i][1])    
     first_kernel=new_kernel(kernelFIRST,initial_params)        
     first_likelihood=lk.likelihood(first_kernel,x,y,yerr)
-    first_calc=lk.gradient_likelihood(first_kernel,x,y,yerr)
     print first_kernel,first_likelihood        
     
     i=0
@@ -52,7 +50,7 @@ def MCMC(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
         guess_params=[np.abs(n+(step)*np.random.randn()) for n in initial_params]
         
         #limits of the variation of the parameters
-        for j in range(len(guess_params)):
+        for j, e in enumerate(guess_params):
             if guess_params[j]<parameters[j][0]:
                 guess_params[j]=parameters[j][0]
             if guess_params[j]>parameters[j][1]:
@@ -61,8 +59,8 @@ def MCMC(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
         #lets see if we keep the new parameters or not 
         second_kernel=new_kernel(kernelFIRST,guess_params)        
         second_likelihood=lk.likelihood(second_kernel,x,y,yerr)   
-        
-        for j in range(len(guess_params)):
+
+        for j, e in enumerate(guess_params):
             prior=np.exp(first_likelihood)*initial_params[j]
             posterior=np.exp(second_likelihood)*guess_params[j]
             if prior<1e-300:
@@ -124,20 +122,20 @@ def new_kernel(kernelFIRST,b): #to update the kernels
         return kl.WhiteNoise(b[0])
     elif isinstance(kernelFIRST,kl.Sum):
         k1_params=[]
-        for i in range(len(kernelFIRST.k1.pars)):
+        for i, e in enumerate(kernelFIRST.k1.pars):
             k1_params.append(b[i])    
         k2_params=[]
-        for j in range(len(kernelFIRST.k2.pars)):
+        for j, e in enumerate(kernelFIRST.k2.pars):    
             k2_params.append(b[len(kernelFIRST.k1.pars)+j])
         new_k1=new_kernel(kernelFIRST.k1,k1_params)
         new_k2=new_kernel(kernelFIRST.k2,k2_params)
         return new_k1+new_k2
     elif isinstance(kernelFIRST,kl.Product):
         k1_params=[]
-        for i in range(len(kernelFIRST.k1.pars)):
+        for i, e in enumerate(kernelFIRST.k1.pars):
             k1_params.append(b[i])    
         k2_params=[]
-        for j in range(len(kernelFIRST.k2.pars)):
+        for j, e in enumerate(kernelFIRST.k2.pars):
             k2_params.append(b[len(kernelFIRST.k1.pars)+j])
         new_k1=new_kernel(kernelFIRST.k1,k1_params)
         new_k2=new_kernel(kernelFIRST.k2,k2_params)
