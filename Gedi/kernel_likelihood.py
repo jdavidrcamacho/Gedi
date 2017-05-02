@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import kernel as kl
 import numpy as np
+from scipy.linalg import cho_factor, cho_solve 
 
 def build_matrix(kernel, x, y, yerr):
     """
@@ -27,11 +28,8 @@ def likelihood(kernel, x, y, yerr):
     x = range of values of the independent variable (usually time)
     y = range of values of te dependent variable (the measurments)
     yerr = error in the measurments     
-    """ 
-    from scipy.linalg import cho_factor, cho_solve    
-    r = x[:, None] - x[None, :]
-    K = kernel(r)
-    K = K + yerr**2*np.identity(len(x))    
+    """
+    K=build_matrix(kernel, x, y, yerr)    
     L1 = cho_factor(K)
     sol = cho_solve(L1, y)
     n = y.size
@@ -39,26 +37,6 @@ def likelihood(kernel, x, y, yerr):
               - np.sum(np.log(np.diag(L1[0]))) \
               - n*0.5*np.log(2*np.pi)        
     return logLike    
-
-
-def lnlike(K, y):
-    """
-        lnlike() calculates the marginal log likelihood again?
-        Honestly I don't remember why I have it but I keep it here in case its used
-    somewhere I'm not remembering. Might get deleted in the future.
-    
-        Parameters
-    K = kernel in use
-    y = range of values of te dependent variable (the measurments)    
-    """ 
-    from scipy.linalg import cho_factor, cho_solve
-    L1 = cho_factor(K)
-    sol = cho_solve(L1, y)
-    n = y.size
-    logLike = -0.5*np.dot(y, sol) \
-              - np.sum(np.log(np.diag(L1[0]))) \
-              - n*0.5*np.log(2*np.pi)        
-    return logLike
 
 
 def compute_kernel(kernel, x, xcalc, y, yerr):    
@@ -75,16 +53,13 @@ def compute_kernel(kernel, x, xcalc, y, yerr):
             such we should have xcalc >> x
     y = range of values of te dependent variable (the measurments)
     yerr = error in the measurments     
-    """ 
-    from scipy.linalg import cho_factor, cho_solve    
-    r = x[:, None] - x[None, :]
-    K = kernel(r)
-    K = K + yerr**2*np.identity(len(x))
+    """
+    K=build_matrix(kernel, x, y, yerr)    
     L1 = cho_factor(K)
     sol = cho_solve(L1, y)
 
     K_final=K
-    
+
     #Exceptions because of the "white noise diagonal problem"
     if isinstance(kernel, (kl.Sum, kl.Product)):
         if  isinstance(kernel.k1,kl.WhiteNoise):
@@ -99,13 +74,13 @@ def compute_kernel(kernel, x, xcalc, y, yerr):
             K_columns = np.vstack([new_lines.T,new_columns])
             K_final=np.hstack([K_final,K_columns])
         
-            y_mean=[] #mean = K*.K-1.y  
-            for i in range(len(xcalc)):
+            y_mean=[] #mean = K*.K-1.y  :
+            for i, e in enumerate(xcalc):
                 y_mean.append(np.dot(new_lines[i,:], sol))
             
             y_var=[] #var=  K** - K*.K-1.K*.T
             diag=np.diagonal(new_columns)
-            for i in range(len(xcalc)):
+            for i, e in enumerate(xcalc):
                 #K**=diag[i]; K*=new_lines[i]  
                 a=diag[i]
                 newsol = cho_solve(L1, new_lines[i])
@@ -125,12 +100,12 @@ def compute_kernel(kernel, x, xcalc, y, yerr):
             K_final=np.hstack([K_final,K_columns])
         
             y_mean=[] #mean = K*.K-1.y  
-            for i in range(len(xcalc)):
+            for i, e in enumerate(xcalc):
                 y_mean.append(np.dot(new_lines[i,:], sol))
             
             y_var=[] #var=  K** - K*.K-1.K*.T
             diag=np.diagonal(new_columns)
-            for i in range(len(xcalc)):
+            for i, e in enumerate(xcalc):
                 #K**=diag[i]; K*=new_lines[i]      
                 a=diag[i]
                 newsol = cho_solve(L1, new_lines[i])
@@ -148,12 +123,12 @@ def compute_kernel(kernel, x, xcalc, y, yerr):
             K_final=np.hstack([K_final,K_columns])
         
             y_mean=[] #mean = K*.K-1.y  
-            for i in range(len(xcalc)):
+            for i, e in enumerate(xcalc):
                 y_mean.append(np.dot(new_lines[i,:], sol))
             
             y_var=[] #var=  K** - K*.K-1.K*.T
             diag=np.diagonal(new_columns)
-            for i in range(len(xcalc)):
+            for i, e in enumerate(xcalc):
                 #K**=diag[i]; K*=new_lines[i]      
                 a=diag[i]
                 newsol = cho_solve(L1, new_lines[i])
@@ -173,12 +148,12 @@ def compute_kernel(kernel, x, xcalc, y, yerr):
         K_final=np.hstack([K_final,K_columns])
     
         y_mean=[] #mean = K*.K-1.y  
-        for i in range(len(xcalc)):
+        for i, e in enumerate(xcalc):
             y_mean.append(np.dot(new_lines[i,:], sol))
         
         y_var=[] #var=  K** - K*.K-1.K*.T
         diag=np.diagonal(new_columns)
-        for i in range(len(xcalc)):
+        for i, e in enumerate(xcalc):
             #K**=diag[i]; K*=new_lines[i]      
             a=diag[i]
             newsol = cho_solve(L1, new_lines[i])
@@ -188,23 +163,6 @@ def compute_kernel(kernel, x, xcalc, y, yerr):
 
     y_std = np.sqrt(y_var) #standard deviation
     return [y_mean,y_std]
-
-
-def likelihood_aux(kernel, x, y, yerr):
-    """
-        likelihood_aux() makes the covariance matrix calculations necessary
-    in the gradient of the log likelihood
-    
-        Parameters
-    kernel = kernel in use
-    x = range of values of the independent variable (usually time)
-    y = range of values of te dependent variable (the measurments)
-    yerr = error in the measurments     
-    """
-    r = x[:, None] - x[None, :]
-    K = kernel(r)
-    K = K + yerr**2*np.identity(len(x))
-    return K
 
 
 def grad_logp(kernel,x,y,yerr,cov_matrix):
@@ -239,7 +197,7 @@ def gradient_likelihood(kernel,x,y,yerr):
     y = range of values of te dependent variable (the measurments)
     yerr = error in the measurments    
     """
-    cov_matrix=likelihood_aux(kernel,x,y,yerr)
+    cov_matrix=build_matrix(kernel,x,y,yerr)
     if isinstance(kernel,kl.ExpSquared):
         grad1=grad_logp(kernel.dES_dtheta, x, y, yerr, cov_matrix)
         grad2=grad_logp(kernel.dES_dl, x, y, yerr, cov_matrix)
@@ -279,9 +237,9 @@ def gradient_likelihood(kernel,x,y,yerr):
         grad_list= [grad1, grad2];      
         return grad_list
     elif isinstance(kernel,kl.Sum):
-        grad_list=gradient_sum(kernel,x,y,yerr)
-        for i in range(len(grad_list)):
-            if isinstance(grad_list[i],float):
+        grad_list=gradient_sum(kernel,x,y,yerr)                
+        for i, e in enumerate(grad_list):
+            if isinstance(e,float):
                 grad_list[i]=[grad_list[i]]
         total=sum(grad_list, [])
         return total        
@@ -320,7 +278,8 @@ def gradient_sum(kernel,x,y,yerr):
             calc=tuple([calc])
             grad_result.insert(1,calc)
         grad_final =[]
-        for j in range(len(grad_result)):         
+        for j, e in enumerate(grad_result):            
+            
            grad_final = grad_final + list(grad_result[j])
     return grad_final
     #NoneType -> It might happen if there's no return in gradient_likelihood
@@ -338,7 +297,8 @@ def gradient_likelihood_sum(kernel,x,y,yerr,kernelOriginal):
     yerr = error in the measurments  
     kernelOriginal = original kernel (original sum) being used  
     """ 
-    cov_matrix=likelihood_aux(kernelOriginal,x,y,yerr)
+#    cov_matrix=build_matrix(kernelOriginal,x,y,yerr)
+    cov_matrix=build_matrix(kernel,x,y,yerr)
     if isinstance(kernel,kl.ExpSquared):
         grad1=grad_logp(kernel.dES_dtheta, x, y, yerr, cov_matrix)
         grad2=grad_logp(kernel.dES_dl, x, y, yerr, cov_matrix)
@@ -404,7 +364,7 @@ def grad_sum_aux(kernel,x,y,yerr,kernelOriginal):
             calc=tuple([calc])
             grad_result.insert(1,calc)
         grad_final =[]
-        for j in range(len(grad_result)):         
+        for j, e in enumerate(grad_result):
            grad_final = grad_final + list(grad_result[j])     
     return grad_final
     
@@ -421,8 +381,7 @@ def gradient_mul(kernel,x,y,yerr):
     yerr = error in the measurments     
     """ 
     kernelOriginal=kernel 
-    cov_matrix=likelihood_aux(kernelOriginal,x,y,yerr)
-
+    cov_matrix=build_matrix(kernelOriginal,x,y,yerr)
     listofKernels=[kernel.__dict__["k2"]] #to put each kernel separately
     kernel_k1=kernel.__dict__["k1"]
 
@@ -433,7 +392,7 @@ def gradient_mul(kernel,x,y,yerr):
     listofKernels.insert(0,kernel_k1) #each kernel is now separated
     
     kernelaux1=[];kernelaux2=[]
-    for i in range(len(listofKernels)):
+    for i, e in enumerate(listofKernels):
         kernelaux1.append(listofKernels[i])
         kernelaux2.append(kernel_deriv(listofKernels[i]))
     
@@ -443,7 +402,7 @@ def gradient_mul(kernel,x,y,yerr):
     while ii<len(listofKernels):    
         kernelaux11 = kernelaux1[:ii] + kernelaux1[ii+1 :]
         kernels=np.prod(np.array(kernelaux11))
-        for ij in range(len(kernelaux22[ii])):
+        for ij, e in enumerate(kernelaux22[ii]):
             result=grad_logp(kernelaux2[ii][ij]*kernels,x,y,yerr,cov_matrix)
             grad_result.insert(0,result)
         kernelaux11=kernelaux1;kernelaux22=kernelaux2
@@ -494,8 +453,7 @@ def grad_mul_aux(kernel,x,y,yerr,kernelOriginal):
     kernelOriginal = original kernel (original sum) being used     
     """  
     kernelOriginal=kernelOriginal 
-    cov_matrix=likelihood_aux(kernelOriginal,x,y,yerr)
-
+    cov_matrix= build_matrix(kernelOriginal,x,y,yerr)
     listofKernels=[kernel.__dict__["k2"]] #to put each kernel separately
     kernel_k1=kernel.__dict__["k1"]
 
@@ -506,7 +464,7 @@ def grad_mul_aux(kernel,x,y,yerr,kernelOriginal):
     listofKernels.insert(0,kernel_k1) #each kernel is now separated
     
     kernelaux1=[];kernelaux2=[]
-    for i in range(len(listofKernels)):
+    for i, e in enumerate(listofKernels):       
         kernelaux1.append(listofKernels[i])
         kernelaux2.append(kernel_deriv(listofKernels[i]))
     
@@ -516,7 +474,7 @@ def grad_mul_aux(kernel,x,y,yerr,kernelOriginal):
     while ii<len(listofKernels):    
         kernelaux11 = kernelaux1[:ii] + kernelaux1[ii+1 :]
         kernels=np.prod(np.array(kernelaux11))
-        for ij in range(len(kernelaux22[ii])):
+        for ij, e in enumerate(kernelaux22[ii]):
             result=grad_logp(kernelaux2[ii][ij]*kernels,x,y,yerr,cov_matrix)
             grad_result.insert(0,result)
         kernelaux11=kernelaux1;kernelaux22=kernelaux2
@@ -524,4 +482,6 @@ def grad_mul_aux(kernel,x,y,yerr,kernelOriginal):
         
     grad_result=grad_result[::-1]
     return grad_result   
+    
+    
     
