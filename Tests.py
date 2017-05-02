@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pylab as pl
 
 #####  INITIAL DATA ###########################################################
-#np.random.seed(12345)
+np.random.seed(12345)
 x = 10 * np.sort(np.random.rand(101))
 yerr = 0.2 * np.ones_like(x)
 y = np.sin(x) + yerr * np.random.randn(len(x))
@@ -63,60 +63,61 @@ print '#####################################'
 #TESTS FOR THE OPTIMIZATION
 print 'test 5 - optimization'
 #this sets the initial kernel
-kernel1=gedi.kernel.Exponential(10.0,1.0)+gedi.kernel.WhiteNoise(1.0)
-print 'kernel 1 ->', kernel1
+kernel5=gedi.kernel.Exponential(10.0,1.0)+gedi.kernel.WhiteNoise(1.0)
+print 'kernel 5 ->', kernel5
 #this calculates the initial log likelihood
-likelihood1=gedi.kernel_likelihood.likelihood(kernel1,x,y,yerr)
-print 'likelihood 1 ->', likelihood1
+likelihood5=gedi.kernel_likelihood.likelihood(kernel5,x,y,yerr)
+print 'likelihood 5 ->', likelihood5
 
 #this performs the optimization
-optimization1=gedi.kernel_optimization.committed_optimization(kernel1, \
-                x,y,yerr,max_opt=2,return_method=True)
+optimization5=gedi.kernel_optimization.committed_optimization(kernel5,x,y,yerr)
+#optimization5=gedi.kernel_optimization.single_optimization(kernel5,x,y,yerr,method="altsda")
 #it returns optimization[0]=final log likelihood optimization[1]=final kernel
-print 'kernel 1 final ->',optimization1[1]
-print 'likelihood 1 final ->', optimization1[0]
+print 'kernel 1 final ->',optimization5[1]
+print 'likelihood 1 final ->', optimization5[0]
 
 print '#####################################'
 
-################################################################################
-##TESTS FOR GRAPHICS
-#print 'test 6 - everything combined'
-#kernel2=gedi.kernel.ExpSineSquared(10.0,1.0,10.0)+gedi.kernel.Exponential(5.0,1.5)
-#print 'kernel =',kernel2
-#
-#xcalc=np.linspace(-1,11,300)  
-#
-##computation of the initial mean and standard deviation
-#[mu,std]=gedi.kernel_likelihood.compute_kernel(kernel1,x,xcalc,y,yerr)
-#pl.figure()
-#pl.fill_between(xcalc, mu+std, mu-std, color="k", alpha=0.1)
-#pl.plot(xcalc, mu+std, color="k", alpha=1, lw=0.25)
-#pl.plot(xcalc, mu-std, color="k", alpha=1, lw=0.25)
-#pl.plot(xcalc, mu, color="k", alpha=1, lw=0.5)
-#pl.errorbar(x, y, yerr=yerr, fmt=".k", capsize=0)
-#pl.title("Pre-optimization")
-#pl.xlabel("$x$")
-#pl.ylabel("$y$")
-#
-##run of the optimization algorithms
-#optimization1=gedi.kernel_optimization.committed_optimization(kernel2,x,y,yerr,max_opt=10)
-#print 'final kernel = ',optimization1[1]
-#print 'final likelihood = ', optimization1[0]
-#
-##computation of the final mean and standard deviation
-#[mu,std]=gedi.kernel_likelihood.compute_kernel(optimization1[1],x,xcalc,y,yerr)
-#pl.figure() 
-#pl.fill_between(xcalc, mu+std, mu-std, color="k", alpha=0.1)
-#pl.plot(xcalc, mu+std, color="k", alpha=1, lw=0.25)
-#pl.plot(xcalc, mu-std, color="k", alpha=1, lw=0.25)
-#pl.plot(xcalc, mu, color="k", alpha=1, lw=0.5)
-#pl.errorbar(x, y, yerr=yerr, fmt=".k", capsize=0)
-#pl.title('Pos-optimization')
-#pl.xlabel("$x$")
-#pl.ylabel("$y$")
-#
-#print '#####################################'
-#
+###############################################################################
+#TESTS FOR GRAPHICS
+print 'test 6 - everything combined'
+kernel6=gedi.kernel.ExpSineSquared(10.0,1.0,10.0)+gedi.kernel.Exponential(5.0,1.5)
+print 'kernel =',kernel6
+
+xcalc=np.linspace(-1,11,300)  
+
+#computation of the initial mean and standard deviation
+[mu,std]=gedi.kernel_likelihood.compute_kernel(kernel6,x,xcalc,y,yerr)
+pl.figure()
+pl.fill_between(xcalc, mu+std, mu-std, color="k", alpha=0.1)
+pl.plot(xcalc, mu+std, color="k", alpha=1, lw=0.25)
+pl.plot(xcalc, mu-std, color="k", alpha=1, lw=0.25)
+pl.plot(xcalc, mu, color="k", alpha=1, lw=0.5)
+pl.errorbar(x, y, yerr=yerr, fmt=".k", capsize=0)
+pl.title("Pre-optimization")
+pl.xlabel("$x$")
+pl.ylabel("$y$")
+
+#run of the optimization algorithms
+optimization6=gedi.kernel_optimization.committed_optimization(kernel6,x,y,yerr,max_opt=10)
+#optimization6=gedi.kernel_optimization.single_optimization(kernel6,x,y,yerr,method="altsda")
+print 'final kernel = ',optimization6[1]
+print 'final likelihood = ', optimization6[0]
+
+#computation of the final mean and standard deviation
+[mu,std]=gedi.kernel_likelihood.compute_kernel(optimization6[1],x,xcalc,y,yerr)
+pl.figure() 
+pl.fill_between(xcalc, mu+std, mu-std, color="k", alpha=0.1)
+pl.plot(xcalc, mu+std, color="k", alpha=1, lw=0.25)
+pl.plot(xcalc, mu-std, color="k", alpha=1, lw=0.25)
+pl.plot(xcalc, mu, color="k", alpha=1, lw=0.5)
+pl.errorbar(x, y, yerr=yerr, fmt=".k", capsize=0)
+pl.title('Pos-optimization')
+pl.xlabel("$x$")
+pl.ylabel("$y$")
+
+print '#####################################'
+
 ################################################################################
 ##TESTS FOR MCMC
 #print 'test 7 - mcmc'
