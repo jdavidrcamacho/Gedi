@@ -122,12 +122,12 @@ def BFGS(kernel,x,y,yerr):
     while check_it is False:
         if isinstance(kernelFIRST,(kl.Sum,kl.Product)):
             hyperparms=[] #initial values of the hyperparam_eters 
-            for k in range(len(kernelFIRST.pars)):
+            for k, e in enumerate(kernelFIRST.pars):
                 hyperparms.append(kernelFIRST.pars[k])
             B=np.identity(len(hyperparms)) #Initial matrix   
         else:
             hyperparms=[] #initial values of the hyperparameters 
-            for k in range(len(kernelFIRST.__dict__['pars'])):
+            for k, e in enumerate(kernelFIRST.__dict__['pars']):
                 hyperparms.append(kernelFIRST.__dict__['pars'][k])
             B=np.identity(len(hyperparms)) #Initial matrix
             
@@ -145,7 +145,7 @@ def BFGS(kernel,x,y,yerr):
     
         #lets see if we are going the right direction
         check_sign=[] #to check if we overshot the optimal value           
-        for i in range  (len(second_calc)):
+        for i , e in enumerate(second_calc):
             check_sign.append(first_calc[i]*second_calc[i])
         check_it=all(check_sign>0 for check_sign in check_sign)
         if check_it is True: #we are ok to move forward
@@ -181,13 +181,13 @@ def BFGS(kernel,x,y,yerr):
             check_it=False
             while check_it is False:
                 if isinstance(kernelFIRST,(kl.Sum,kl.Product)):
-                    hyperparms=[] #initial values of the hyperparam_eters 
-                    for k in range(len(kernelFIRST.pars)):
+                    hyperparms=[] #initial values of the hyperparam_eters :
+                    for k, e in enumerate(kernelFIRST.pars):
                         hyperparms.append(kernelFIRST.pars[k])
                     B=np.identity(len(hyperparms)) #Initial matrix   
                 else:
                     hyperparms=[] #initial values of the hyperparameters 
-                    for k in range(len(kernelFIRST.__dict__['pars'])):
+                    for k in enumerate(kernelFIRST.__dict__['pars']):
                         hyperparms.append(kernelFIRST.__dict__['pars'][k])
                     B=np.identity(len(hyperparms)) #Initial matrix    
                 
@@ -203,7 +203,7 @@ def BFGS(kernel,x,y,yerr):
         
                 #lets see if we are going the right direction
                 check_sign=[] #to check if we overshot the optimal value           
-                for i in range  (len(second_calc)):
+                for i, e in enumerate(second_calc):
                     check_sign.append(first_calc[i]*second_calc[i])
                 check_it=all(check_sign>0 for check_sign in check_sign)
                 if check_it is True: #we are ok to move forward
@@ -221,7 +221,7 @@ def BFGS(kernel,x,y,yerr):
 
             #test of a stoping criteria
             difference=[]
-            for i  in range(len(first_calc)):
+            for i, e in enumerate(first_calc):
                 difference.insert(0,abs(second_calc[i]))              
                 minimum_difference=np.min(difference)
             minimum_grad=minimum_difference
@@ -249,12 +249,12 @@ def BFGS(kernel,x,y,yerr):
             while check_it is False:
                 if isinstance(kernelFIRST,(kl.Sum,kl.Product)):
                     hyperparms=[] #initial values of the hyperparam_eters 
-                    for k in range(len(kernelFIRST.pars)):
+                    for k, e in enumerate(kernelFIRST.pars):
                         hyperparms.append(kernelFIRST.pars[k])
                     B=np.identity(len(hyperparms)) #Initial matrix   
                 else:
                     hyperparms=[] #initial values of the hyperparameters 
-                    for k in range(len(kernelFIRST.__dict__['pars'])):
+                    for k in enumerate(kernelFIRST.__dict__['pars']):
                         hyperparms.append(kernelFIRST.__dict__['pars'][k])
                     B=np.identity(len(hyperparms)) #Initial matrix
                        
@@ -270,7 +270,7 @@ def BFGS(kernel,x,y,yerr):
         
                 #lets see if we are going the right direction
                 check_sign=[] #to check if we overshot the optimal value           
-                for i in range  (len(second_calc)):
+                for i, e in enumerate(second_calc):
                     check_sign.append(first_calc[i]*second_calc[i])
                 check_it=all(check_sign>0 for check_sign in check_sign)
                 if check_it is True: #we are ok to move forward
@@ -288,7 +288,7 @@ def BFGS(kernel,x,y,yerr):
 
             #test of a stoping criteria
             difference=[]
-            for i  in range(len(first_calc)):
+            for i, e in enumerate(first_calc):
                 difference.insert(0,abs(second_calc[i]))              
                 minimum_difference=np.min(difference)
             minimum_grad=minimum_difference
@@ -346,11 +346,11 @@ def SDA(kernel,x,y,yerr):
     while it<iterations and step>scipystep and minimum_grad>grad_condition:
         if isinstance(kernelFIRST,(kl.Sum,kl.Product)):
             hyperparms=[] #initial values of the hyperparam_eters 
-            for k in range(len(kernelFIRST.pars)):
+            for k, e in enumerate(kernelFIRST.pars):
                 hyperparms.append(kernelFIRST.pars[k])
         else:
             hyperparms=[] #initial values of the hyperparameters 
-            for k in range(len(kernelFIRST.__dict__['pars'])):
+            for k, e in enumerate(kernelFIRST.__dict__['pars']):
                 hyperparms.append(kernelFIRST.__dict__['pars'][k])        
         
         #to save the 'old' kernel and gradient
@@ -372,10 +372,10 @@ def SDA(kernel,x,y,yerr):
     
         #lets see if we are going the right direction
         check_sign=[] #to check if we overshot the optimal value           
-        for i in range  (len(second_calc)):
+        for i ,e in enumerate(second_calc):
             check_sign.append(first_calc[i]*second_calc[i])
         check_it=all(check_sign>0 for check_sign in check_sign)
-        #print check_it
+
         if check_it is True: #everything is ok and things can continue                    
             step=1.2*step #new bigger step to speed up the convergence            
             kernel=new_kernel(kernelFIRST,new_hyperparms) 
@@ -385,7 +385,7 @@ def SDA(kernel,x,y,yerr):
 
         #test of a stoping criteria
         difference=[]
-        for i  in range(len(first_calc)):
+        for i ,e in enumerate(first_calc):
             difference.insert(0,abs(second_calc[i]))              
             minimum_difference=np.min(difference)
         minimum_grad=minimum_difference        
@@ -429,12 +429,12 @@ def RPROP(kernel,x,y,yerr):
         first_kernel=kernel    
         first_calc=sign_gradlike(kernel, xFIRST,yFIRST,yerrFIRST)
         step_update=[] #steps we will give
-        for i in range(len(first_calc)):
+        for i ,e in enumerate(first_calc):
             step_update.append(step)
         
         while it<iterations and minimum_step>dmin and maximum_step<dmax:
-            hyperparms=[] #initial values of the hyperparameters 
-            for k in range(len(first_kernel.__dict__['pars'])):
+            hyperparms=[] #initial values of the hyperparameters
+            for k, e in enumerate(kernelFIRST.__dict__['pars']):
                 hyperparms.append(first_kernel.__dict__['pars'][k])
                 
             new_hyperparms = [sum(n) for n in zip(hyperparms, step_update)]
@@ -442,7 +442,7 @@ def RPROP(kernel,x,y,yerr):
             #new kernel with hyperparams updated
             second_kernel=new_kernel(kernelFIRST,new_hyperparms)
             second_calc=sign_gradlike(second_kernel, xFIRST,yFIRST,yerrFIRST)
-            for j in range(len(first_calc)):
+            for j ,e in enumerate(first_calc):
                 if first_calc[j]*second_calc[j]>0:
                     step_update[j]=-np.sign(second_calc[i])*step_update[j]*nplus
                     first_kernel=second_kernel        
@@ -452,10 +452,9 @@ def RPROP(kernel,x,y,yerr):
                     step_update[j]=step_update[j]*nminus
                     first_kernel=second_kernel
                     first_calc=()                
-                    for i in range(len(second_calc)):
+                    for i ,e in enumerate(second_calc):
                         first_calc=first_calc+(0,)
-                    it=it+1
-                    
+                    it=it+1                   
                 else:
                     step_update[j]=-np.sign(second_calc[i])*step_update[j]
                     first_kernel=second_kernel        
@@ -464,7 +463,7 @@ def RPROP(kernel,x,y,yerr):
     
             #test of a stoping criteria
             difference=[]
-            for i  in range(len(step_update)):
+            for i ,e in enumerate(step_update):
                 difference.insert(0,abs(step_update[i]))              
                 minimum_difference=np.min(difference)
                 maximum_difference=np.max(difference)
@@ -508,12 +507,12 @@ def altSDA(kernel,x,y,yerr):
 
     it=0
     if isinstance(kernelFIRST,(kl.Sum,kl.Product)):
-        hyperparms=[] #initial values of the hyperparam_eters 
-        for k in range(len(kernelFIRST.pars)):
+        hyperparms=[] #initial values of the hyperparameters 
+        for k, e in enumerate(kernelFIRST.pars):
             hyperparms.append(kernelFIRST.pars[k]) 
     else:
         hyperparms=[] #initial values of the hyperparameters 
-        for k in range(len(kernelFIRST.__dict__['pars'])):
+        for k, e in enumerate(kernelFIRST.__dict__['pars']):
             hyperparms.append(kernelFIRST.__dict__['pars'][k])
 
     #initial kernel, gradient, and steps
@@ -521,7 +520,7 @@ def altSDA(kernel,x,y,yerr):
     first_calc=sign_gradlike(first_kernel, xFIRST,yFIRST,yerrFIRST)
     #inital steps we will give for each hyperparameter    
     step_update=list(np.zeros(len(first_calc)))
-    for i in range(len(first_calc)):
+    for i, e in enumerate(first_calc):
         step_update[i]=step
 
     while it<iterations and minimum_step>scipystep and minimum_grad>grad_condition:
@@ -536,7 +535,7 @@ def altSDA(kernel,x,y,yerr):
         #lets see if we are going the right direction
         check_sign=[] #to check if we overshot the optimal value
         final_hyperparameters=[]           
-        for i in range  (len(second_calc)):
+        for i, e in enumerate(second_calc):
             check_sign.append(first_calc[i]*second_calc[i])
             if check_sign[i]>0: #everything is ok and things can continue                    
                 step_update[i]=1.2*step_update[i] #new bigger step to speed up the convergence            
@@ -557,14 +556,14 @@ def altSDA(kernel,x,y,yerr):
             
         #test of a stoping criteria (gradient)
         difference=[]
-        for i  in range(len(first_calc)):
+        for i, e in enumerate(first_calc):
             difference.insert(0,abs(second_calc[i]))              
             minimum_difference=np.min(difference)
         minimum_grad=minimum_difference
 
         #test of a stoping criteria (step)
         difference=[]
-        for i  in range(len(step_update)):
+        for i, e in enumerate(step_update):
             difference.insert(0,abs(step_update[i]))              
             minimum_difference=np.min(difference)
         minimum_step=minimum_difference          
@@ -658,20 +657,20 @@ def new_kernel(kernelFIRST,b): #to update the kernels
         return kl.WhiteNoise(b[0])
     elif isinstance(kernelFIRST,kl.Sum):
         k1_params=[]
-        for i in range(len(kernelFIRST.k1.pars)):
+        for i, e in enumerate(kernelFIRST.k1.pars):
             k1_params.append(b[i])    
         k2_params=[]
-        for j in range(len(kernelFIRST.k2.pars)):
+        for j, e in enumerate(kernelFIRST.k2.pars):
             k2_params.append(b[len(kernelFIRST.k1.pars)+j])
         new_k1=new_kernel(kernelFIRST.k1,k1_params)
         new_k2=new_kernel(kernelFIRST.k2,k2_params)
         return new_k1+new_k2
     elif isinstance(kernelFIRST,kl.Product):
         k1_params=[]
-        for i in range(len(kernelFIRST.k1.pars)):
+        for i, e in enumerate(kernelFIRST.k1.pars):
             k1_params.append(b[i])    
         k2_params=[]
-        for j in range(len(kernelFIRST.k2.pars)):
+        for j, e in enumerate(kernelFIRST.k1.pars):
             k2_params.append(b[len(kernelFIRST.k1.pars)+j])
         new_k1=new_kernel(kernelFIRST.k1,k1_params)
         new_k2=new_kernel(kernelFIRST.k2,k2_params)
