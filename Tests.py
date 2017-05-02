@@ -102,8 +102,8 @@ pl.xlabel("$x$")
 pl.ylabel("$y$")
 
 #run of the optimization algorithms
-optimization6=gedi.kernel_optimization.committed_optimization(kernel6,x,y,yerr,max_opt=10)
-#optimization6=gedi.kernel_optimization.single_optimization(kernel6,x,y,yerr,method="altsda")
+#optimization6=gedi.kernel_optimization.committed_optimization(kernel6,x,y,yerr,max_opt=10)
+optimization6=gedi.kernel_optimization.single_optimization(kernel6,x,y,yerr,method="altsda")
 print 'final kernel = ',optimization6[1]
 print 'final likelihood = ', optimization6[0]
 
@@ -142,8 +142,8 @@ pl.xlabel("$x$")
 pl.ylabel("$y$")
 
 #run of the optimization algorithms
-optimization7=gedi.kernel_optimization.committed_optimization(kernel7,x,y,yerr,max_opt=10)
-#optimization7=gedi.kernel_optimization.single_optimization(kernel7,x,y,yerr,method="altsda")
+#optimization7=gedi.kernel_optimization.committed_optimization(kernel7,x,y,yerr,max_opt=10)
+optimization7=gedi.kernel_optimization.single_optimization(kernel7,x,y,yerr,method="altsda")
 print 'final kernel = ',optimization7[1]
 print 'final likelihood = ', optimization7[0]
 
