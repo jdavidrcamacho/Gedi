@@ -57,38 +57,38 @@ def committed_optimization(kernel,x,y,yerr,max_opt=2,return_method=False):
     """
     i=0
     while i<max_opt:
-        log_SDA=SDA(kernel,x,y,yerr)
-        log_altSDA=altSDA(kernel,x,y,yerr)
-        log_BFGS=BFGS(kernel,x,y,yerr)        
-        logs=[log_SDA[0],log_altSDA[0],log_BFGS[0]]
+        log_sda=SDA(kernel,x,y,yerr)
+        log_altsda=altSDA(kernel,x,y,yerr)
+        log_bfgs=BFGS(kernel,x,y,yerr)        
+        logs=[log_sda[0],log_altsda[0],log_bfgs[0]]
         maximum_likelihood=np.max(logs)
         
-        if maximum_likelihood==log_SDA[0]:
-            kernel = log_SDA[1]        
-        if maximum_likelihood==log_altSDA[0]:           
-            kernel = log_altSDA[1]
-        if maximum_likelihood==log_BFGS[0]:           
-            kernel = log_BFGS[1]
+        if maximum_likelihood==log_sda[0]:
+            kernel = log_sda[1]        
+        if maximum_likelihood==log_altsda[0]:           
+            kernel = log_altsda[1]
+        if maximum_likelihood==log_bfgs[0]:           
+            kernel = log_bfgs[1]
         i=i+1
     
-    logs=[log_SDA[0],log_altSDA[0],log_BFGS[0]]
+    logs=[log_sda[0],log_altsda[0],log_bfgs[0]]
     maximum_likelihood=np.max(logs)
     
-    if maximum_likelihood==log_SDA[0]:
+    if maximum_likelihood==log_sda[0]:
         if return_method:
-            return log_SDA, "SDA"
+            return log_sda, "SDA"
         else:
-            return log_SDA
-    if maximum_likelihood==log_altSDA[0]:
+            return log_sda
+    if maximum_likelihood==log_altsda[0]:
         if return_method:
-            return log_altSDA, "altSDA"
+            return log_altsda, "altSDA"
         else:
-            return log_altSDA
-    if maximum_likelihood==log_BFGS[0]:
+            return log_altsda
+    if maximum_likelihood==log_bfgs[0]:
         if return_method:
-            return log_BFGS, "BFGS"
+            return log_bfgs, "BFGS"
         else:    
-            return log_BFGS
+            return log_bfgs
 
         
 ##### Algorithms #####
@@ -107,9 +107,9 @@ def BFGS(kernel,x,y,yerr):
     List[0] = final log likelihood
     List[1] = final kernel     
     """
-    #to not loose que original kernel and data
-    kernelFIRST=kernel;xFIRST=x
-    yFIRST=y;yerrFIRST=yerr
+    #to not loose the original kernel and data
+    original_kernel=kernel;original_x=x
+    original_y=y;original_yerr=yerr
 
     scipystep=1.4901161193847656e-8
     step=1e-3 #initia search step
@@ -120,28 +120,28 @@ def BFGS(kernel,x,y,yerr):
     check_it=False
     #we will only start the algorithm when we find the best step to give
     while check_it is False:
-        if isinstance(kernelFIRST,(kl.Sum,kl.Product)):
+        if isinstance(original_kernel,(kl.Sum,kl.Product)):
             hyperparms=[] #initial values of the hyperparam_eters 
-            for k, e in enumerate(kernelFIRST.pars):
-                hyperparms.append(kernelFIRST.pars[k])
+            for k, e in enumerate(original_kernel.pars):
+                hyperparms.append(original_kernel.pars[k])
             B=np.identity(len(hyperparms)) #Initial matrix   
         else:
             hyperparms=[] #initial values of the hyperparameters 
-            for k, e in enumerate(kernelFIRST.__dict__['pars']):
-                hyperparms.append(kernelFIRST.__dict__['pars'][k])
+            for k, e in enumerate(original_kernel.__dict__['pars']):
+                hyperparms.append(original_kernel.__dict__['pars'][k])
             B=np.identity(len(hyperparms)) #Initial matrix
             
         #original kernel and gradient    
-        first_kernel=new_kernel(kernelFIRST,hyperparms)
-        first_calc= sign_gradlike(first_kernel, xFIRST,yFIRST,yerrFIRST)            
+        first_kernel=new_kernel(original_kernel,hyperparms)
+        first_calc= sign_gradlike(first_kernel, original_x,original_y,original_yerr)            
         S1=np.dot(B,first_calc) 
     
         new_hyperparms = [step*n for n in S1] #gives step*S1
         new_hyperparms = [n+m for n,m in zip(hyperparms, new_hyperparms)]
                 
         #new kernel with hyperparams updated    
-        second_kernel=new_kernel(kernelFIRST,new_hyperparms)
-        second_calc=sign_gradlike(second_kernel,xFIRST,yFIRST,yerrFIRST)
+        second_kernel=new_kernel(original_kernel,new_hyperparms)
+        second_calc=sign_gradlike(second_kernel,original_x,original_y,original_yerr)
     
         #lets see if we are going the right direction
         check_sign=[] #to check if we overshot the optimal value           
@@ -150,11 +150,11 @@ def BFGS(kernel,x,y,yerr):
         check_it=all(check_sign>0 for check_sign in check_sign)
         if check_it is True: #we are ok to move forward
             step=1.2*step #new bigger step to speedup things
-            first_kernel=new_kernel(kernelFIRST,hyperparms)           
-            second_kernel=new_kernel(kernelFIRST,new_hyperparms) 
+            first_kernel=new_kernel(original_kernel,hyperparms)           
+            second_kernel=new_kernel(original_kernel,new_hyperparms) 
         else: #we passed the optimal value and need to go back                    
             step=0.5*step #new smaller step to redo the calculations
-            first_kernel=new_kernel(kernelFIRST,hyperparms) 
+            first_kernel=new_kernel(original_kernel,hyperparms) 
         
     #after finding the optimal step we do the calculations of a new matrix B
     d1=np.array([step*n for n in S1]) #gives D1=step*S1
@@ -180,26 +180,26 @@ def BFGS(kernel,x,y,yerr):
         if (it+1)%3!=0:
             check_it=False
             while check_it is False:
-                if isinstance(kernelFIRST,(kl.Sum,kl.Product)):
+                if isinstance(original_kernel,(kl.Sum,kl.Product)):
                     hyperparms=[] #initial values of the hyperparam_eters :
-                    for k, e in enumerate(kernelFIRST.pars):
-                        hyperparms.append(kernelFIRST.pars[k])
+                    for k, e in enumerate(original_kernel.pars):
+                        hyperparms.append(original_kernel.pars[k])
                     B=np.identity(len(hyperparms)) #Initial matrix   
                 else:
                     hyperparms=[] #initial values of the hyperparameters 
-                    for k in enumerate(kernelFIRST.__dict__['pars']):
-                        hyperparms.append(kernelFIRST.__dict__['pars'][k])
+                    for k in enumerate(original_kernel.__dict__['pars']):
+                        hyperparms.append(original_kernel.__dict__['pars'][k])
                     B=np.identity(len(hyperparms)) #Initial matrix    
                 
                 #old kernel
-                first_kernel=new_kernel(kernelFIRST,hyperparms)
-                first_calc= sign_gradlike(first_kernel,xFIRST,yFIRST,yerrFIRST)              
+                first_kernel=new_kernel(original_kernel,hyperparms)
+                first_calc= sign_gradlike(first_kernel,original_x,original_y,original_yerr)              
                 S1=np.dot(B,first_calc) #New S1 
                 new_hyperparms = [step*n for n in S1] #gives step*S1
                 new_hyperparms = [n+m for n,m in zip(hyperparms, new_hyperparms)]
                 #new kernel with hyperparams updated    
-                second_kernel=new_kernel(kernelFIRST,new_hyperparms)
-                second_calc=sign_gradlike(second_kernel,xFIRST,yFIRST,yerrFIRST)
+                second_kernel=new_kernel(original_kernel,new_hyperparms)
+                second_calc=sign_gradlike(second_kernel,original_x,original_y,original_yerr)
         
                 #lets see if we are going the right direction
                 check_sign=[] #to check if we overshot the optimal value           
@@ -208,11 +208,11 @@ def BFGS(kernel,x,y,yerr):
                 check_it=all(check_sign>0 for check_sign in check_sign)
                 if check_it is True: #we are ok to move forward
                     step=1.2*step #new bigger step to speedup things
-                    first_kernel=new_kernel(kernelFIRST,hyperparms)           
-                    second_kernel=new_kernel(kernelFIRST,new_hyperparms) 
+                    first_kernel=new_kernel(original_kernel,hyperparms)           
+                    second_kernel=new_kernel(original_kernel,new_hyperparms) 
                 else: #we passed the optimal value and need to go back                    
                     step=0.5*step #new smaller step to redo the calculations
-                    first_kernel=new_kernel(kernelFIRST,hyperparms) 
+                    first_kernel=new_kernel(original_kernel,hyperparms) 
     
             SignOfHyperparameters=np.min(new_hyperparms)
             if SignOfHyperparameters<=0:
@@ -247,26 +247,26 @@ def BFGS(kernel,x,y,yerr):
         else:
             check_it=False
             while check_it is False:
-                if isinstance(kernelFIRST,(kl.Sum,kl.Product)):
+                if isinstance(original_kernel,(kl.Sum,kl.Product)):
                     hyperparms=[] #initial values of the hyperparam_eters 
-                    for k, e in enumerate(kernelFIRST.pars):
-                        hyperparms.append(kernelFIRST.pars[k])
+                    for k, e in enumerate(original_kernel.pars):
+                        hyperparms.append(original_kernel.pars[k])
                     B=np.identity(len(hyperparms)) #Initial matrix   
                 else:
                     hyperparms=[] #initial values of the hyperparameters 
-                    for k in enumerate(kernelFIRST.__dict__['pars']):
-                        hyperparms.append(kernelFIRST.__dict__['pars'][k])
+                    for k in enumerate(original_kernel.__dict__['pars']):
+                        hyperparms.append(original_kernel.__dict__['pars'][k])
                     B=np.identity(len(hyperparms)) #Initial matrix
                        
                 #old kernel
-                first_kernel=new_kernel(kernelFIRST,hyperparms)
-                first_calc= sign_gradlike(first_kernel,xFIRST,yFIRST,yerrFIRST)              
+                first_kernel=new_kernel(original_kernel,hyperparms)
+                first_calc= sign_gradlike(first_kernel,original_x,original_y,original_yerr)              
                 S1=np.dot(B,first_calc) #New S1 
                 new_hyperparms = [step*n for n in S1] #gives step*S1
                 new_hyperparms = [n+m for n,m in zip(hyperparms, new_hyperparms)]
                 #new kernel with hyperparams updated    
-                second_kernel=new_kernel(kernelFIRST,new_hyperparms)
-                second_calc=sign_gradlike(second_kernel,xFIRST,yFIRST,yerrFIRST)
+                second_kernel=new_kernel(original_kernel,new_hyperparms)
+                second_calc=sign_gradlike(second_kernel,original_x,original_y,original_yerr)
         
                 #lets see if we are going the right direction
                 check_sign=[] #to check if we overshot the optimal value           
@@ -275,11 +275,11 @@ def BFGS(kernel,x,y,yerr):
                 check_it=all(check_sign>0 for check_sign in check_sign)
                 if check_it is True: #we are ok to move forward
                     step=1.2*step #new bigger step to speedup things
-                    first_kernel=new_kernel(kernelFIRST,hyperparms)           
-                    second_kernel=new_kernel(kernelFIRST,new_hyperparms) 
+                    first_kernel=new_kernel(original_kernel,hyperparms)           
+                    second_kernel=new_kernel(original_kernel,new_hyperparms) 
                 else: #we passed the optimal value and need to go back                    
                     step=0.5*step #new smaller step to redo the calculations
-                    first_kernel=new_kernel(kernelFIRST,hyperparms) 
+                    first_kernel=new_kernel(original_kernel,hyperparms) 
 
             SignOfHyperparameters=np.min(new_hyperparms)
             if SignOfHyperparameters<=0:
@@ -314,7 +314,7 @@ def BFGS(kernel,x,y,yerr):
         it=it+1
     
     #final likelihood and kernel
-    final_log= opt_likelihood(second_kernel,xFIRST,yFIRST,yerrFIRST)
+    final_log= opt_likelihood(second_kernel,original_x,original_y,original_yerr)
     return [final_log,second_kernel]
 
    
@@ -333,8 +333,8 @@ def SDA(kernel,x,y,yerr):
     List[0] = final log likelihood
     List[1] = final kernel     
     """
-    kernelFIRST=kernel;xFIRST=x
-    yFIRST=y;yerrFIRST=yerr
+    original_kernel=kernel;original_x=x
+    original_y=y;original_yerr=yerr
     
     scipystep=1.4901161193847656e-8
     step=1e-3 #initial search step
@@ -344,26 +344,26 @@ def SDA(kernel,x,y,yerr):
     it=0
     grad_condition=1e-3
     while it<iterations and step>scipystep and minimum_grad>grad_condition:
-        if isinstance(kernelFIRST,(kl.Sum,kl.Product)):
+        if isinstance(original_kernel,(kl.Sum,kl.Product)):
             hyperparms=[] #initial values of the hyperparam_eters 
-            for k, e in enumerate(kernelFIRST.pars):
-                hyperparms.append(kernelFIRST.pars[k])
+            for k, e in enumerate(original_kernel.pars):
+                hyperparms.append(original_kernel.pars[k])
         else:
             hyperparms=[] #initial values of the hyperparameters 
-            for k, e in enumerate(kernelFIRST.__dict__['pars']):
-                hyperparms.append(kernelFIRST.__dict__['pars'][k])        
+            for k, e in enumerate(original_kernel.__dict__['pars']):
+                hyperparms.append(original_kernel.__dict__['pars'][k])        
         
         #to save the 'old' kernel and gradient
-        first_kernel=new_kernel(kernelFIRST,hyperparms)
-        first_calc=sign_gradlike(first_kernel, xFIRST,yFIRST,yerrFIRST)
+        first_kernel=new_kernel(original_kernel,hyperparms)
+        first_calc=sign_gradlike(first_kernel, original_x,original_y,original_yerr)
 
         #update of the hyperparameters
         new_hyperparms = [step*n for n in first_calc]
         new_hyperparms = [n+m for n,m in zip(hyperparms, new_hyperparms)]
 
         #new kernel with hyperparams updated and gradient
-        second_kernel=new_kernel(kernelFIRST,new_hyperparms) 
-        second_calc=sign_gradlike(second_kernel, xFIRST,yFIRST,yerrFIRST)
+        second_kernel=new_kernel(original_kernel,new_hyperparms) 
+        second_calc=sign_gradlike(second_kernel, original_x,original_y,original_yerr)
 
         SignOfHyperparameters=np.min(new_hyperparms)
         if SignOfHyperparameters<=0:
@@ -378,10 +378,10 @@ def SDA(kernel,x,y,yerr):
 
         if check_it is True: #everything is ok and things can continue                    
             step=1.2*step #new bigger step to speed up the convergence            
-            kernel=new_kernel(kernelFIRST,new_hyperparms) 
+            kernel=new_kernel(original_kernel,new_hyperparms) 
         else: #we passed the optimal value and need to go back
             step=0.5*step #new smaller step to redo the calculations
-            kernel=new_kernel(kernelFIRST,hyperparms)        
+            kernel=new_kernel(original_kernel,hyperparms)        
 
         #test of a stoping criteria
         difference=[]
@@ -393,7 +393,7 @@ def SDA(kernel,x,y,yerr):
         it+=1 #should go back to the start and do the while
         
     #final likelihood and kernel
-    final_log= opt_likelihood(second_kernel,xFIRST,yFIRST,yerrFIRST)
+    final_log= opt_likelihood(second_kernel,original_x,original_y,original_yerr)
     return [final_log,second_kernel] 
 
                            
@@ -415,8 +415,8 @@ def RPROP(kernel,x,y,yerr):
     List[1] = final kernel     
     """ 
     try:
-        kernelFIRST=kernel;xFIRST=x
-        yFIRST=y;yerrFIRST=yerr
+        original_kernel=kernel;original_x=x
+        original_y=y;original_yerr=yerr
         
         step=0.005 #initia search step
         dmin=1e-6;dmax=50 #step limits
@@ -427,21 +427,21 @@ def RPROP(kernel,x,y,yerr):
         
         it=0 #initial iteration
         first_kernel=kernel    
-        first_calc=sign_gradlike(kernel, xFIRST,yFIRST,yerrFIRST)
+        first_calc=sign_gradlike(kernel, original_x,original_y,original_yerr)
         step_update=[] #steps we will give
         for i ,e in enumerate(first_calc):
             step_update.append(step)
         
         while it<iterations and minimum_step>dmin and maximum_step<dmax:
             hyperparms=[] #initial values of the hyperparameters
-            for k, e in enumerate(kernelFIRST.__dict__['pars']):
+            for k, e in enumerate(original_kernel.__dict__['pars']):
                 hyperparms.append(first_kernel.__dict__['pars'][k])
                 
             new_hyperparms = [sum(n) for n in zip(hyperparms, step_update)]
     
             #new kernel with hyperparams updated
-            second_kernel=new_kernel(kernelFIRST,new_hyperparms)
-            second_calc=sign_gradlike(second_kernel, xFIRST,yFIRST,yerrFIRST)
+            second_kernel=new_kernel(original_kernel,new_hyperparms)
+            second_calc=sign_gradlike(second_kernel, original_x,original_y,original_yerr)
             for j ,e in enumerate(first_calc):
                 if first_calc[j]*second_calc[j]>0:
                     step_update[j]=-np.sign(second_calc[i])*step_update[j]*nplus
@@ -471,7 +471,7 @@ def RPROP(kernel,x,y,yerr):
             maximum_step=maximum_difference
         
         #final likelihood and kernel
-        final_log= opt_likelihood(second_kernel,xFIRST,yFIRST,yerrFIRST)        
+        final_log= opt_likelihood(second_kernel,original_x,original_y,original_yerr)        
         return [final_log,second_kernel]        
     except:
         return [-1e10,-1e10]
@@ -494,8 +494,8 @@ def altSDA(kernel,x,y,yerr):
     List[0] = final log likelihood
     List[1] = final kernel     
     """
-    kernelFIRST=kernel;xFIRST=x
-    yFIRST=y;yerrFIRST=yerr
+    original_kernel=kernel;original_x=x
+    original_y=y;original_yerr=yerr
     
     scipystep=1.4901161193847656e-8
     step=1e-3 #initia search step
@@ -506,18 +506,18 @@ def altSDA(kernel,x,y,yerr):
     grad_condition=1e-3
 
     it=0
-    if isinstance(kernelFIRST,(kl.Sum,kl.Product)):
+    if isinstance(original_kernel,(kl.Sum,kl.Product)):
         hyperparms=[] #initial values of the hyperparameters 
-        for k, e in enumerate(kernelFIRST.pars):
-            hyperparms.append(kernelFIRST.pars[k]) 
+        for k, e in enumerate(original_kernel.pars):
+            hyperparms.append(original_kernel.pars[k]) 
     else:
         hyperparms=[] #initial values of the hyperparameters 
-        for k, e in enumerate(kernelFIRST.__dict__['pars']):
-            hyperparms.append(kernelFIRST.__dict__['pars'][k])
+        for k, e in enumerate(original_kernel.__dict__['pars']):
+            hyperparms.append(original_kernel.__dict__['pars'][k])
 
     #initial kernel, gradient, and steps
-    first_kernel=new_kernel(kernelFIRST,hyperparms)
-    first_calc=sign_gradlike(first_kernel, xFIRST,yFIRST,yerrFIRST)
+    first_kernel=new_kernel(original_kernel,hyperparms)
+    first_calc=sign_gradlike(first_kernel, original_x,original_y,original_yerr)
     #inital steps we will give for each hyperparameter    
     step_update=list(np.zeros(len(first_calc)))
     for i, e in enumerate(first_calc):
@@ -529,8 +529,8 @@ def altSDA(kernel,x,y,yerr):
         new_hyperparms = [sum(n) for n in zip(hyperparms, new_hyperparms)]
 
         #new kernel with hyperparams updated and gradient
-        second_kernel=new_kernel(kernelFIRST,new_hyperparms) 
-        second_calc=sign_gradlike(second_kernel, xFIRST,yFIRST,yerrFIRST)
+        second_kernel=new_kernel(original_kernel,new_hyperparms) 
+        second_calc=sign_gradlike(second_kernel, original_x,original_y,original_yerr)
 
         #lets see if we are going the right direction
         check_sign=[] #to check if we overshot the optimal value
@@ -551,8 +551,8 @@ def altSDA(kernel,x,y,yerr):
         
         #to update the kernelfor the next iteration       
         hyperparms=final_hyperparameters        
-        first_kernel=new_kernel(kernelFIRST,hyperparms)
-        first_calc=sign_gradlike(first_kernel, xFIRST,yFIRST,yerrFIRST)        
+        first_kernel=new_kernel(original_kernel,hyperparms)
+        first_calc=sign_gradlike(first_kernel, original_x,original_y,original_yerr)        
             
         #test of a stoping criteria (gradient)
         difference=[]
@@ -571,7 +571,7 @@ def altSDA(kernel,x,y,yerr):
         it+=1 #should go back to the start and do the while
                 
     #final likelihood and kernel
-    final_log= opt_likelihood(second_kernel,xFIRST,yFIRST,yerrFIRST)        
+    final_log= opt_likelihood(second_kernel,original_x,original_y,original_yerr)        
     return [final_log,second_kernel]  
 
     
@@ -630,50 +630,50 @@ def sign_gradlike(kernel, x,y,yerr):
     return grd   
 
 
-def new_kernel(kernelFIRST,b): #to update the kernels
+def new_kernel(original_kernel,b): #to update the kernels
     """
         new_kernel() updates the parameters of the kernels as the optimizations
     advances
         
         Parameters
-    kernelFIRST = original kernel in use
+    original_kernel = original kernel in use
     b = new parameters or new hyperparameters if you prefer using that denomination
     """
-    if isinstance(kernelFIRST,kl.ExpSquared):
+    if isinstance(original_kernel,kl.ExpSquared):
         return kl.ExpSquared(b[0],b[1])
-    elif isinstance(kernelFIRST,kl.ExpSineSquared):
+    elif isinstance(original_kernel,kl.ExpSineSquared):
         return kl.ExpSineSquared(b[0],b[1],b[2])
-    elif  isinstance(kernelFIRST,kl.RatQuadratic):
+    elif  isinstance(original_kernel,kl.RatQuadratic):
         return kl.RatQuadratic(b[0],b[1],b[2])
-    elif isinstance(kernelFIRST,kl.Exponential):
+    elif isinstance(original_kernel,kl.Exponential):
         return kl.Exponential(b[0],b[1])
-    elif isinstance(kernelFIRST,kl.Matern32):
+    elif isinstance(original_kernel,kl.Matern32):
         return kl.Matern_32(b[0],b[1])
-    elif isinstance(kernelFIRST,kl.Matern52):
+    elif isinstance(original_kernel,kl.Matern52):
         return kl.Matern_52(b[0],b[1])
-    elif isinstance(kernelFIRST,kl.ExpSineGeorge):
+    elif isinstance(original_kernel,kl.ExpSineGeorge):
         return kl.ExpSineGeorge(b[0],b[1])
-    elif isinstance(kernelFIRST,kl.WhiteNoise):
+    elif isinstance(original_kernel,kl.WhiteNoise):
         return kl.WhiteNoise(b[0])
-    elif isinstance(kernelFIRST,kl.Sum):
+    elif isinstance(original_kernel,kl.Sum):
         k1_params=[]
-        for i, e in enumerate(kernelFIRST.k1.pars):
+        for i, e in enumerate(original_kernel.k1.pars):
             k1_params.append(b[i])    
         k2_params=[]
-        for j, e in enumerate(kernelFIRST.k2.pars):
-            k2_params.append(b[len(kernelFIRST.k1.pars)+j])
-        new_k1=new_kernel(kernelFIRST.k1,k1_params)
-        new_k2=new_kernel(kernelFIRST.k2,k2_params)
+        for j, e in enumerate(original_kernel.k2.pars):
+            k2_params.append(b[len(original_kernel.k1.pars)+j])
+        new_k1=new_kernel(original_kernel.k1,k1_params)
+        new_k2=new_kernel(original_kernel.k2,k2_params)
         return new_k1+new_k2
-    elif isinstance(kernelFIRST,kl.Product):
+    elif isinstance(original_kernel,kl.Product):
         k1_params=[]
-        for i, e in enumerate(kernelFIRST.k1.pars):
+        for i, e in enumerate(original_kernel.k1.pars):
             k1_params.append(b[i])    
         k2_params=[]
-        for j, e in enumerate(kernelFIRST.k1.pars):
-            k2_params.append(b[len(kernelFIRST.k1.pars)+j])
-        new_k1=new_kernel(kernelFIRST.k1,k1_params)
-        new_k2=new_kernel(kernelFIRST.k2,k2_params)
+        for j, e in enumerate(original_kernel.k1.pars):
+            k2_params.append(b[len(original_kernel.k1.pars)+j])
+        new_k1=new_kernel(original_kernel.k1,k1_params)
+        new_k2=new_kernel(original_kernel.k2,k2_params)
         return new_k1*new_k2
     else:
         print 'Something is missing'

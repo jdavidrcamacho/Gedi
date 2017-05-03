@@ -23,13 +23,13 @@ def MCMC(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
         better one in the future    
     """ 
     #to not loose que original kernel
-    kernelFIRST=kernel
+    original_kernel=kernel
 
     initial_params= [0]*len(parameters)
 
     for i, e in enumerate(parameters): 
         initial_params[i]=np.random.uniform(parameters[i][0],parameters[i][1])    
-    first_kernel=new_kernel(kernelFIRST,initial_params)        
+    first_kernel=new_kernel(original_kernel,initial_params)        
     first_likelihood=lk.likelihood(first_kernel,x,y,yerr)
     print first_kernel,first_likelihood        
     
@@ -57,7 +57,7 @@ def MCMC(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
                 guess_params[j]=parameters[j][1]
 
         #lets see if we keep the new parameters or not 
-        second_kernel=new_kernel(kernelFIRST,guess_params)        
+        second_kernel=new_kernel(original_kernel,guess_params)        
         second_likelihood=lk.likelihood(second_kernel,x,y,yerr)   
 
         for j, e in enumerate(guess_params):
@@ -80,7 +80,7 @@ def MCMC(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
                 params_list[j].append(initial_params[j])
 
         #lets define the new kernel
-        first_kernel=new_kernel(kernelFIRST,initial_params)
+        first_kernel=new_kernel(original_kernel,initial_params)
         first_likelihood=lk.likelihood(first_kernel,x,y,yerr)
         if i<burns:
             pass
@@ -89,14 +89,14 @@ def MCMC(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
         i+=1
     
     #final kernel and log likelihood
-    final_kernel=new_kernel(kernelFIRST,initial_params)
+    final_kernel=new_kernel(original_kernel,initial_params)
     final_likelihood=lk.likelihood(final_kernel,x,y,yerr)
     
     return [final_kernel,final_likelihood,running_logs,params_list]
 
 
 ##### auxiliary calculations #####
-def new_kernel(kernelFIRST,b): #to update the kernels
+def new_kernel(original_kernel,b): #to update the kernels
     """
         new_kernel() updates the parameters of the kernels as the mcmc advances
         
@@ -104,41 +104,41 @@ def new_kernel(kernelFIRST,b): #to update the kernels
     kernelFIRST = original kernel in use
     b = new parameters or new hyperparameters if you prefer using that denomination
     """
-    if isinstance(kernelFIRST,kl.ExpSquared):
+    if isinstance(original_kernel,kl.ExpSquared):
         return kl.ExpSquared(b[0],b[1])
-    elif isinstance(kernelFIRST,kl.ExpSineSquared):
+    elif isinstance(original_kernel,kl.ExpSineSquared):
         return kl.ExpSineSquared(b[0],b[1],b[2])
-    elif  isinstance(kernelFIRST,kl.RatQuadratic):
+    elif  isinstance(original_kernel,kl.RatQuadratic):
         return kl.RatQuadratic(b[0],b[1],b[2])
-    elif isinstance(kernelFIRST,kl.Exponential):
+    elif isinstance(original_kernel,kl.Exponential):
         return kl.Exponential(b[0],b[1])
-    elif isinstance(kernelFIRST,kl.Matern32):
+    elif isinstance(original_kernel,kl.Matern32):
         return kl.Matern_32(b[0],b[1])
-    elif isinstance(kernelFIRST,kl.Matern52):
+    elif isinstance(original_kernel,kl.Matern52):
         return kl.Matern_52(b[0],b[1])
-    elif isinstance(kernelFIRST,kl.ExpSineGeorge):
+    elif isinstance(original_kernel,kl.ExpSineGeorge):
         return kl.ExpSineGeorge(b[0],b[1])
-    elif isinstance(kernelFIRST,kl.WhiteNoise):
+    elif isinstance(original_kernel,kl.WhiteNoise):
         return kl.WhiteNoise(b[0])
-    elif isinstance(kernelFIRST,kl.Sum):
+    elif isinstance(original_kernel,kl.Sum):
         k1_params=[]
-        for i, e in enumerate(kernelFIRST.k1.pars):
+        for i, e in enumerate(original_kernel.k1.pars):
             k1_params.append(b[i])    
         k2_params=[]
-        for j, e in enumerate(kernelFIRST.k2.pars):    
-            k2_params.append(b[len(kernelFIRST.k1.pars)+j])
-        new_k1=new_kernel(kernelFIRST.k1,k1_params)
-        new_k2=new_kernel(kernelFIRST.k2,k2_params)
+        for j, e in enumerate(original_kernel.k2.pars):    
+            k2_params.append(b[len(original_kernel.k1.pars)+j])
+        new_k1=new_kernel(original_kernel.k1,k1_params)
+        new_k2=new_kernel(original_kernel.k2,k2_params)
         return new_k1+new_k2
-    elif isinstance(kernelFIRST,kl.Product):
+    elif isinstance(original_kernel,kl.Product):
         k1_params=[]
-        for i, e in enumerate(kernelFIRST.k1.pars):
+        for i, e in enumerate(original_kernel.k1.pars):
             k1_params.append(b[i])    
         k2_params=[]
-        for j, e in enumerate(kernelFIRST.k2.pars):
-            k2_params.append(b[len(kernelFIRST.k1.pars)+j])
-        new_k1=new_kernel(kernelFIRST.k1,k1_params)
-        new_k2=new_kernel(kernelFIRST.k2,k2_params)
+        for j, e in enumerate(original_kernel.k2.pars):
+            k2_params.append(b[len(original_kernel.k1.pars)+j])
+        new_k1=new_kernel(original_kernel.k1,k1_params)
+        new_k2=new_kernel(original_kernel.k2,k2_params)
         return new_k1*new_k2
     else:
         print 'Something is missing'
