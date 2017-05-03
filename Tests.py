@@ -3,7 +3,7 @@
 import Gedi as gedi
 
 import numpy as np
-import matplotlib.pylab as pl
+import matplotlib.pylab as pl; pl.close()
 
 #####  INITIAL DATA ###########################################################
 #np.random.seed(12345)
@@ -33,7 +33,7 @@ print 'likelihood =',kernel2_test1
 print 'gradients =',kernel2_test2
 
 print 'test 3'
-kernel3=gedi.kernel.ExpSquared(10.2,7.1)+gedi.kernel.ExpSineSquared(10.1,1.2,5.1)
+kernel3=gedi.kernel.ExpSquared(10.2,7.1)+gedi.kernel.ExpSineGeorge(10.1,5.1)
 kernel3_test1= gedi.kernel_likelihood.likelihood(kernel3,x,y,yerr)
 kernel3_test2= gedi.kernel_likelihood.gradient_likelihood(kernel3,x,y,yerr)
 print 'kernel =',kernel3
@@ -88,7 +88,7 @@ likelihood6=gedi.kernel_likelihood.likelihood(kernel6,x,y,yerr)
 print 'likelihood65 ->', likelihood6
 
 
-xcalc=np.linspace(-1,11,300)  
+xcalc=np.linspace(-5,15,300)  
 #computation of the initial mean and standard deviation
 [mu,std]=gedi.kernel_likelihood.compute_kernel(kernel6,x,xcalc,y,yerr)
 pl.figure()
@@ -102,7 +102,9 @@ pl.xlabel("$x$")
 pl.ylabel("$y$")
 
 #run of the optimization algorithms
-#optimization6=gedi.kernel_optimization.committed_optimization(kernel6,x,y,yerr,max_opt=10)
+optimization6=gedi.kernel_optimization.committed_optimization(kernel6,x,y,yerr,max_opt=10)
+print 'final kernel = ',optimization6[1]
+print 'final likelihood = ', optimization6[0]
 optimization6=gedi.kernel_optimization.single_optimization(kernel6,x,y,yerr,method="altsda")
 print 'final kernel = ',optimization6[1]
 print 'final likelihood = ', optimization6[0]
@@ -128,7 +130,7 @@ print 'kernel 7  ->',kernel7
 likelihood7=gedi.kernel_likelihood.likelihood(kernel7,x,y,yerr)
 print 'likelihood 7 ->', likelihood7
 
-xcalc=np.linspace(-1,11,300)  
+xcalc=np.linspace(-5,15,300)  
 #computation of the initial mean and standard deviation
 [mu,std]=gedi.kernel_likelihood.compute_kernel(kernel7,x,xcalc,y,yerr)
 pl.figure()
@@ -142,7 +144,9 @@ pl.xlabel("$x$")
 pl.ylabel("$y$")
 
 #run of the optimization algorithms
-#optimization7=gedi.kernel_optimization.committed_optimization(kernel7,x,y,yerr,max_opt=10)
+optimization7=gedi.kernel_optimization.committed_optimization(kernel7,x,y,yerr,max_opt=3)
+print 'final kernel = ',optimization7[1]
+print 'final likelihood = ', optimization7[0]
 optimization7=gedi.kernel_optimization.single_optimization(kernel7,x,y,yerr,method="altsda")
 print 'final kernel = ',optimization7[1]
 print 'final likelihood = ', optimization7[0]
