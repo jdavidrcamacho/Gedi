@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import kernel as kl
 import kernel_likelihood as lk
+
 import numpy as np
- 
+from scipy.linalg import cho_factor, cho_solve 
+
 ##### Optimization of the kernels #####
 def single_optimization(kernel,x,y,yerr,method='BFGS'):
     """
@@ -214,8 +216,8 @@ def BFGS(kernel,x,y,yerr):
                     step=0.5*step #new smaller step to redo the calculations
                     first_kernel=new_kernel(original_kernel,hyperparms) 
     
-            SignOfHyperparameters=np.min(new_hyperparms)
-            if SignOfHyperparameters<=0:
+            signof_hyperparams=np.min(new_hyperparms)
+            if signof_hyperparams<=0:
                 second_kernel=first_kernel
                 break
 
@@ -281,8 +283,8 @@ def BFGS(kernel,x,y,yerr):
                     step=0.5*step #new smaller step to redo the calculations
                     first_kernel=new_kernel(original_kernel,hyperparms) 
 
-            SignOfHyperparameters=np.min(new_hyperparms)
-            if SignOfHyperparameters<=0:
+            signof_hyperparams=np.min(new_hyperparms)
+            if signof_hyperparams<=0:
                 second_kernel=first_kernel
                 break
 
@@ -365,8 +367,8 @@ def SDA(kernel,x,y,yerr):
         second_kernel=new_kernel(original_kernel,new_hyperparms) 
         second_calc=sign_gradlike(second_kernel, original_x,original_y,original_yerr)
 
-        SignOfHyperparameters=np.min(new_hyperparms)
-        if SignOfHyperparameters<=0:
+        signof_hyperparams=np.min(new_hyperparms)
+        if signof_hyperparams<=0:
             second_kernel=first_kernel
             break
     
@@ -544,8 +546,8 @@ def altSDA(kernel,x,y,yerr):
                 step_update[i]=0.5*step_update[i] #new smaller step to redo the calculations
                 final_hyperparameters.append(hyperparms[i])                       
 
-        SignOfHyperparameters=np.min(new_hyperparms)
-        if SignOfHyperparameters<=0:
+        signof_hyperparams=np.min(new_hyperparms)
+        if signof_hyperparams<=0:
             second_kernel=first_kernel
             break
         
@@ -576,12 +578,11 @@ def altSDA(kernel,x,y,yerr):
 
     
 ##### Auxiliary calculations #####
-from scipy.linalg import cho_factor, cho_solve
-     
 def opt_likelihood(kernel, x, y, yerr):   
     """
         opt_likelihood() calculates the log likelihood necessary while the
-    algorithms make their job
+    algorithms make their job, it is not used so it is possible to be removed
+    in a future update
         
         Parameters
     kernel = kernel in use
@@ -595,10 +596,10 @@ def opt_likelihood(kernel, x, y, yerr):
     L1 = cho_factor(K)
     sol = cho_solve(L1, y)
     n = y.size
-    logLike = -0.5*np.dot(y, sol) \
+    log_like = -0.5*np.dot(y, sol) \
               - np.sum(np.log(np.diag(L1[0]))) \
               - n*0.5*np.log(2*np.pi)        
-    return logLike
+    return log_like
 
 
 def opt_gradlike(kernel, x,y,yerr):
