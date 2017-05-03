@@ -14,7 +14,7 @@ calculation and more
     Kernel_mcmc: a random walk metropolis hastings algorithm developed to 
 optimize the gaussian processes
 
-    RV_function: contains two functions that simualate radial velocity signals 
+    RV_function: contains two functions to simulate radial velocity signals 
 """
 
 import kernel
