@@ -11,7 +11,7 @@ Do or do not, there is no try in the use of Gaussian processes to model real dat
  Current version is Gedi 0.1.7 as of 30/04/2017. 
 
  What other packages are needed to work?
- It's necessary to have numpy, scipy, matplotlib, inspect.
+ It's necessary to have numpy, scipy and matplotlib.
  
 |▒▓▒▒◙▒▓▒▓▒▓||░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
