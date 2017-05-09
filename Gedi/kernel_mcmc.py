@@ -176,7 +176,7 @@ def MCMC2(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
             if i<burns:
                 if i%500==0 and i>0:
                     accounting=accepted_list[j]/float(i)
-                    if accounting<0.25: #or accounting>0.3:
+                    if accounting<0.20 or accounting>0.30:
                         factor_list[j]=factor_list[j]*accounting*4
                     else:
                         factor_list[j]=factor_list[j]*10
@@ -193,7 +193,7 @@ def MCMC2(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
             #pass
             if i%500==0 and i>0:
                 accounting=accepted_list[j]/float(i)
-                if accounting<0.25: #or accounting>0.3:
+                if accounting<0.20 or accounting>0.3:
                     factor_list[j]=factor_list[j]*accounting*4
                 else:
                     factor_list[j]=factor_list[j]*10
