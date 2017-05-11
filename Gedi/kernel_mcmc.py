@@ -98,9 +98,8 @@ def MCMC(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
 ##### markov chain monte carlo #####
 def MCMC2(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
     """
-        MCMC() perform the markov chain monte carlo to find the optimal parameters
-    of a given kernel.
-        The algorithm needs improvements as it is very inefficient.
+        MCMC2() perform another the markov chain monte carlo to find the 
+    optimal parameters of a given kernel. This one is still begin tested!
     
         Parameters
     kernel = kernel in use
