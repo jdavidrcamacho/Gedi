@@ -224,6 +224,12 @@ def gradient_likelihood(kernel,x,y,yerr):
         grad1=grad_logp(kernel.dm52_dtheta,x,y,yerr,cov_matrix)
         grad2=grad_logp(kernel.dm52_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
+    elif isinstance(kernel,kl.QuasiPeriodic):
+        grad1=grad_logp(kernel.dqp_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dqp_dl1,x,y,yerr,cov_matrix)
+        grad3=grad_logp(kernel.dqp_dl2,x,y,yerr,cov_matrix)
+        grad4=grad_logp(kernel.dqp_dp,x,y,yerr,cov_matrix)
+        return grad1, grad2, grad3, grad4
     elif isinstance(kernel,kl.WhiteNoise):
         grad1=grad_logp(kernel.dwn_dtheta,x,y,yerr,cov_matrix)
         return grad1
@@ -320,6 +326,12 @@ def gradient_likelihood_sum(kernel,x,y,yerr,original_kernel):
         grad1=grad_logp(kernel.dm52_dtheta,x,y,yerr,cov_matrix)
         grad2=grad_logp(kernel.dm52_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
+    elif isinstance(kernel,kl.QuasiPeriodic):
+        grad1=grad_logp(kernel.dqp_dtheta,x,y,yerr,cov_matrix)
+        grad2=grad_logp(kernel.dqp_dl1,x,y,yerr,cov_matrix)
+        grad3=grad_logp(kernel.dqp_dl2,x,y,yerr,cov_matrix)
+        grad4=grad_logp(kernel.dqp_dp,x,y,yerr,cov_matrix)
+        return grad1, grad2, grad3, grad4
     elif isinstance(kernel,kl.WhiteNoise):
         grad1=grad_logp(kernel.dwn_dtheta,x,y,yerr,cov_matrix)       
         return grad1
@@ -430,9 +442,11 @@ def kernel_deriv(kernel):
         return kernel.de_dgamma, kernel.de_dp
     elif isinstance(kernel,kl.WhiteNoise):
         return kernel.dwn_dtheta
+    elif isinstance(kernel,kl.QuasiPeriodic):
+        return kernel.dqp_dtheta, kernel.dqp_dl1, kernel.dqp_dl2, kernel.dqp_dp
     else:
         print 'Something went wrong!'
-        
+         
               
 def grad_mul_aux(kernel,x,y,yerr,original_kernel):
     """

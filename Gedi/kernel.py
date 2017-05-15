@@ -162,7 +162,82 @@ class ExpSineSquared(Kernel):
         return f1*(4./f2)*f3*f5*np.cos(f3*f5)*np.sin(f3*f5) \
                 *np.exp((-2.0/f2)*np.sin(f3*f5)**2) 
 
- 
+
+class QuasiPeriodic(Kernel):
+    """
+        Definition of the product between the exponential sine squared kernel 
+    and the exponential squared kernel, also known as quasi periodic kernel.
+        I define this kernel because it is widely used and makes things more
+    efficient to run instead of multiplying two kernels and make GEDI to run.
+    
+        Important
+    The derivative its in respect to log(parameter)
+    
+        Parameters
+    QP_theta = amplitude of the kernel
+    QP_l1 and QP_l2 = characteristic lenght scales to define how 
+                        smooth the kernel is   
+    QP_P = periodic repetitions of the kernel
+    """
+    def __init__(self, QP_theta, QP_l1, QP_l2, QP_P):
+        """
+        Because we are "overwriting" the function __init__
+        we use this weird super function
+        """
+        super(QuasiPeriodic, self).__init__(QP_theta, QP_l1, QP_l2, QP_P)
+        self.QP_theta = QP_theta
+        self.QP_l1 = QP_l1
+        self.QP_l2 = QP_l2
+        self.QP_P = QP_P    
+
+    def __call__(self, r):
+        f1 = self.QP_theta**2
+        f2 = self.QP_l1**2
+        ff2= self.QP_l2**2
+        f3 = np.abs(r)
+        f4 = self.QP_P
+        return f1*np.exp((-2/f2)*((np.sin(np.pi*f3/f4))**2)-(0.5*f3*f3/ff2))
+                
+    def dqp_dtheta(self,r):
+        """ Log-derivative in order to theta """
+        f1 = self.QP_theta**2
+        f2 = self.QP_l1**2
+        ff2= self.QP_l2**2
+        f3 = np.abs(r)
+        f4 = self.QP_P
+        return 2*f1*np.exp((-2/f2)*((np.sin(np.pi*f3/f4))**2)-(0.5*f3*f3/ff2))
+                
+    def dqp_dl1(self,r):
+        """ Log-derivative in order to l1 """
+        f1 = self.QP_theta**2
+        f2 = self.QP_l1**2
+        ff2= self.QP_l2**2
+        f3 = np.abs(r)
+        f4 = self.QP_P
+        return 4*f1*((np.sin(np.pi*f3/f4))**2)/f2 \
+                *np.exp((-2/f2)*((np.sin(np.pi*f3/f4))**2)-(0.5*f3*f3/ff2))
+
+    def dqp_dl2(self,r):    
+        """ Log-derivative in order to l2 """
+        f1 = self.QP_theta**2
+        f2 = self.QP_l1**2
+        ff2= self.QP_l2**2
+        f3 = np.abs(r)
+        f4 = self.QP_P
+        return f1*f3*f3/ff2 \
+                *np.exp((-2/f2)*((np.sin(np.pi*f3/f4))**2)-(0.5*f3*f3/ff2))
+        
+    def dqp_dp(self,r):
+        """ Log-derivative in order to P """
+        f1 = self.QP_theta**2
+        f2 = self.QP_l1**2
+        ff2= self.QP_l2**2
+        f3 = np.abs(r)
+        f4 = self.QP_P
+        return 4*np.pi*f1*np.cos(np.pi*f3/f4)*np.sin(np.pi*f3/f4)/(f2*f4) \
+                *np.exp((-2/f2)*((np.sin(np.pi*f3/f4))**2)-(0.5*f3*f3/ff2))
+
+
 class RatQuadratic(Kernel):
     """
         Definition of the rational quadratic kernel and its derivatives.

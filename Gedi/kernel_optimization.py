@@ -656,6 +656,8 @@ def new_kernel(original_kernel,b): #to update the kernels
         return kl.ExpSineGeorge(b[0],b[1])
     elif isinstance(original_kernel,kl.WhiteNoise):
         return kl.WhiteNoise(b[0])
+    elif isinstance(original_kernel,kl.QuasiPeriodic):
+        return kl.QuasiPeriodic(b[0],b[1],b[2],b[3])
     elif isinstance(original_kernel,kl.Sum):
         k1_params=[]
         for i, e in enumerate(original_kernel.k1.pars):
