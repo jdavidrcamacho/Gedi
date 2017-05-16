@@ -649,9 +649,9 @@ def new_kernel(original_kernel,b): #to update the kernels
     elif isinstance(original_kernel,kl.Exponential):
         return kl.Exponential(b[0],b[1])
     elif isinstance(original_kernel,kl.Matern32):
-        return kl.Matern_32(b[0],b[1])
+        return kl.Matern32(b[0],b[1])
     elif isinstance(original_kernel,kl.Matern52):
-        return kl.Matern_52(b[0],b[1])
+        return kl.Matern52(b[0],b[1])
     elif isinstance(original_kernel,kl.ExpSineGeorge):
         return kl.ExpSineGeorge(b[0],b[1])
     elif isinstance(original_kernel,kl.WhiteNoise):
