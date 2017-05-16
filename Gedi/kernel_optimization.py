@@ -113,7 +113,7 @@ def BFGS(kernel,x,y,yerr):
     original_kernel=kernel;original_x=x
     original_y=y;original_yerr=yerr
 
-    scipystep=1.4901161193847656e-8
+    scipystep=1.5e-10 #was 1.4901161193847656e-8 at first 
     step=1e-3 #initia search step
     iterations=1000 #maximum number of iterations
     minimum_grad=1 #gradient difference, 1 to not give error at start
@@ -177,7 +177,7 @@ def BFGS(kernel,x,y,yerr):
     B= part1 + part2*part3 - part4 - part5 #new matrix B
     #To continue we need B, step, and gradient    
    
-    grad_condition=1e-3
+    grad_condition=1e-10 #was 1e-3 at first
     while it<iterations and step>scipystep and minimum_grad>grad_condition:
         if (it+1)%3!=0:
             check_it=False
@@ -338,13 +338,13 @@ def SDA(kernel,x,y,yerr):
     original_kernel=kernel;original_x=x
     original_y=y;original_yerr=yerr
     
-    scipystep=1.4901161193847656e-8
+    scipystep=1.5e-10 #was 1.4901161193847656e-8 at first 
     step=1e-3 #initial search step
     iterations=1000 #maximum number of iterations
     minimum_grad=1 #gradient difference, 1 to not give error at start
     
     it=0
-    grad_condition=1e-3
+    grad_condition=1e-10 #was 1e-3 at first
     while it<iterations and step>scipystep and minimum_grad>grad_condition:
         if isinstance(original_kernel,(kl.Sum,kl.Product)):
             hyperparms=[] #initial values of the hyperparam_eters 
@@ -499,13 +499,13 @@ def altSDA(kernel,x,y,yerr):
     original_kernel=kernel;original_x=x
     original_y=y;original_yerr=yerr
     
-    scipystep=1.4901161193847656e-8
+    scipystep=1.5e-10 #was 1.4901161193847656e-8 at first 
     step=1e-3 #initia search step
     iterations=1000 #maximum number of iterations
     minimum_grad=1 #gradient difference, 1 to not give error at start    
     minimum_step=1 #step difference, 1 to not give error at start
 
-    grad_condition=1e-3
+    grad_condition=1e-10 #was 1e-3 at first
 
     it=0
     if isinstance(original_kernel,(kl.Sum,kl.Product)):
@@ -673,7 +673,7 @@ def new_kernel(original_kernel,b): #to update the kernels
         for i, e in enumerate(original_kernel.k1.pars):
             k1_params.append(b[i])    
         k2_params=[]
-        for j, e in enumerate(original_kernel.k1.pars):
+        for j, e in enumerate(original_kernel.k2.pars):
             k2_params.append(b[len(original_kernel.k1.pars)+j])
         new_k1=new_kernel(original_kernel.k1,k1_params)
         new_k2=new_kernel(original_kernel.k2,k2_params)
