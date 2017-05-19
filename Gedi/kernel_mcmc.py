@@ -173,7 +173,7 @@ def MCMC2(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
             
             #separation of the burned data and the final data
             if i<burns:
-                if i%500==0 and i>0:
+                if i>0 and i%500==0:
                     accounting=accepted_list[j]/float(i)
                     if accounting<0.20 or accounting>0.30:
                         factor_list[j]=factor_list[j]*accounting*4
@@ -190,7 +190,7 @@ def MCMC2(kernel,x,y,yerr,parameters,runs=50000,burns=20000):
         first_likelihood=lk.likelihood(first_kernel,x,y,yerr)
         if i<burns:
             #pass
-            if i%500==0 and i>0:
+            if i>0 and i%500==0:
                 accounting=accepted_list[j]/float(i)
                 if accounting<0.20 or accounting>0.3:
                     factor_list[j]=factor_list[j]*accounting*4
