@@ -189,7 +189,7 @@ def BFGS(kernel,x,y,yerr):
                     B=np.identity(len(hyperparms)) #Initial matrix   
                 else:
                     hyperparms=[] #initial values of the hyperparameters 
-                    for k in enumerate(original_kernel.__dict__['pars']):
+                    for k, e in enumerate(original_kernel.__dict__['pars']):
                         hyperparms.append(original_kernel.__dict__['pars'][k])
                     B=np.identity(len(hyperparms)) #Initial matrix    
                 
@@ -256,7 +256,7 @@ def BFGS(kernel,x,y,yerr):
                     B=np.identity(len(hyperparms)) #Initial matrix   
                 else:
                     hyperparms=[] #initial values of the hyperparameters 
-                    for k in enumerate(original_kernel.__dict__['pars']):
+                    for k, e in enumerate(original_kernel.__dict__['pars']):
                         hyperparms.append(original_kernel.__dict__['pars'][k])
                     B=np.identity(len(hyperparms)) #Initial matrix
                        
