@@ -114,7 +114,7 @@ def BFGS(kernel,x,y,yerr):
     original_y=y;original_yerr=yerr
 
     scipystep=1.5e-10 #was 1.4901161193847656e-8 at first 
-    step=1e-3 #initia search step
+    step=1e-3 #initial search step
     iterations=1000 #maximum number of iterations
     minimum_grad=1 #gradient difference, 1 to not give error at start
     
