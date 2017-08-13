@@ -11,7 +11,10 @@ def build_matrix(kernel, x, y, yerr):
     kernel = kernel in use
     x = range of values of the independent variable (usually time)
     y = range of values of te dependent variable (the measurments)
-    yerr = error in the measurments     
+    yerr = error in the measurments
+    
+        Returns
+    K = covariance matrix
     """ 
     r = x[:, None] - x[None, :]
     K = kernel(r)
@@ -27,7 +30,10 @@ def likelihood(kernel, x, y, yerr):
     kernel = kernel in use
     x = range of values of the independent variable (usually time)
     y = range of values of te dependent variable (the measurments)
-    yerr = error in the measurments     
+    yerr = error in the measurments 
+
+        Returns
+    log_like = marginal log likelihood
     """
     K=build_matrix(kernel, x, y, yerr)    
     L1 = cho_factor(K)
@@ -52,7 +58,10 @@ def compute_kernel(kernel, x, xcalc, y, yerr):
             other words, to predict value of the kernel between measurments, as
             such we should have xcalc >> x
     y = range of values of te dependent variable (the measurments)
-    yerr = error in the measurments     
+    yerr = error in the measurments
+    
+        Returns
+    [y_mean,y_std] = [mean, standard deviation]
     """
     K=build_matrix(kernel, x, y, yerr)    
     L1 = cho_factor(K)
@@ -175,7 +184,10 @@ def grad_logp(kernel,x,y,yerr,cov_matrix):
     x = range of values of the independent variable (usually time)
     y = range of values of te dependent variable (the measurments)
     yerr = error in the measurments 
-    cov_matrix = kernel covariance matrix    
+    cov_matrix = kernel covariance matrix
+    
+        Returns
+    See gradient_likelihood(kernel,x,y,yerr) for more info
     """ 
     r = x[:, None] - x[None, :]
     kgrad = kernel(r)
@@ -195,7 +207,10 @@ def gradient_likelihood(kernel,x,y,yerr):
     kernel = kernel in use
     x = range of values of the independent variable (usually time)
     y = range of values of te dependent variable (the measurments)
-    yerr = error in the measurments    
+    yerr = error in the measurments
+    
+        Returns
+    grad1, grad2, ... = gradients of the kernel derivatives
     """
     cov_matrix=build_matrix(kernel,x,y,yerr)
     if isinstance(kernel,kl.ExpSquared):
@@ -258,7 +273,10 @@ def gradient_sum(kernel,x,y,yerr):
     kernel = kernel in use
     x = range of values of the independent variable (usually time)
     y = range of values of te dependent variable (the measurments)
-    yerr = error in the measurments     
+    yerr = error in the measurments
+    
+        Returns
+    See gradient_likelihood_sum(kernel,x,y,yerr,original_kernel) for more info
     """
     original_kernel=kernel 
     a=kernel.__dict__
@@ -296,7 +314,10 @@ def gradient_likelihood_sum(kernel,x,y,yerr,original_kernel):
     x = range of values of the independent variable (usually time)
     y = range of values of te dependent variable (the measurments)
     yerr = error in the measurments  
-    original_kernel = original kernel (original sum) being used  
+    original_kernel = original kernel (original sum) being used
+    
+        Returns
+    grad1, grad2, ... = gradients when using a sum operation    
     """ 
 #    cov_matrix=build_matrix(original_kernel,x,y,yerr)
     cov_matrix=build_matrix(kernel,x,y,yerr)
@@ -355,7 +376,10 @@ def grad_sum_aux(kernel,x,y,yerr,original_kernel):
     x = range of values of the independent variable (usually time)
     y = range of values of te dependent variable (the measurments)
     yerr = error in the measurments
-    original_kernel = original kernel (original sum) being used     
+    original_kernel = original kernel (original sum) being used
+
+        Return
+    See gradient_likelihood_sum(kernel,x,y,yerr,original_kernel) for more info
     """ 
     original_kernel=original_kernel
     a=kernel.__dict__
@@ -385,7 +409,10 @@ def gradient_mul(kernel,x,y,yerr):
     kernel = kernel in use
     x = range of values of the independent variable (usually time)
     y = range of values of te dependent variable (the measurments)
-    yerr = error in the measurments     
+    yerr = error in the measurments
+    
+        Returns
+    grad_result = gradients when multiplications are used
     """ 
     original_kernel=kernel 
     cov_matrix=build_matrix(original_kernel,x,y,yerr)
@@ -425,6 +452,9 @@ def kernel_deriv(kernel):
     
         Parameters
     kernel = kernel being use
+    
+        Returns
+    ... = derivatives of a given kernel
     """ 
     if isinstance(kernel,kl.ExpSquared):
         return kernel.des_dtheta, kernel.des_dl
@@ -459,7 +489,10 @@ def grad_mul_aux(kernel,x,y,yerr,original_kernel):
     x = range of values of the independent variable (usually time)
     y = range of values of te dependent variable (the measurments)
     yerr = error in the measurments
-    original_kernel = original kernel (original sum) being used     
+    original_kernel = original kernel (original sum) being used
+    
+        Returns
+    See gradient_mul(kernel,x,y,yerr) for more info
     """  
     original_kernel=original_kernel 
     cov_matrix= build_matrix(original_kernel,x,y,yerr)
@@ -492,5 +525,4 @@ def grad_mul_aux(kernel,x,y,yerr,original_kernel):
     grad_result=grad_result[::-1]
     return grad_result   
     
-    
-    
+##### END

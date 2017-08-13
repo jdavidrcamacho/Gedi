@@ -258,3 +258,5 @@ def new_kernel(original_kernel,b): #to update the kernels
         return new_k1*new_k2
     else:
         print 'Something is missing'
+        
+##### END
