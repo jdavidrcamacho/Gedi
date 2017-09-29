@@ -652,8 +652,6 @@ def new_kernel(original_kernel,b): #to update the kernels
         return kl.Matern32(b[0],b[1])
     elif isinstance(original_kernel,kl.Matern52):
         return kl.Matern52(b[0],b[1])
-    elif isinstance(original_kernel,kl.ExpSineGeorge):
-        return kl.ExpSineGeorge(b[0],b[1])
     elif isinstance(original_kernel,kl.WhiteNoise):
         return kl.WhiteNoise(b[0])
     elif isinstance(original_kernel,kl.QuasiPeriodic):

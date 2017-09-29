@@ -230,8 +230,6 @@ def new_kernel(original_kernel,b): #to update the kernels
         return kl.Matern_32(b[0],b[1])
     elif isinstance(original_kernel,kl.Matern52):
         return kl.Matern_52(b[0],b[1])
-    elif isinstance(original_kernel,kl.ExpSineGeorge):
-        return kl.ExpSineGeorge(b[0],b[1])
     elif isinstance(original_kernel,kl.QuasiPeriodic):
         return kl.QuasiPeriodic(b[0],b[1],b[2],b[3])
     elif isinstance(original_kernel,kl.WhiteNoise):

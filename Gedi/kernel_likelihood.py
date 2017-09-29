@@ -248,10 +248,6 @@ def gradient_likelihood(kernel,x,y,yerr):
     elif isinstance(kernel,kl.WhiteNoise):
         grad1=grad_logp(kernel.dwn_dtheta,x,y,yerr,cov_matrix)
         return grad1
-    elif isinstance(kernel,kl.ExpSineGeorge):
-        grad1=grad_logp(kernel.de_dgamma,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.de_dp,x,y,yerr,cov_matrix) 
-        return grad1, grad2
     elif isinstance(kernel,kl.Sum):
         grad_list=gradient_sum(kernel,x,y,yerr)                
         for i, e in enumerate(grad_list):
@@ -356,10 +352,6 @@ def gradient_likelihood_sum(kernel,x,y,yerr,original_kernel):
     elif isinstance(kernel,kl.WhiteNoise):
         grad1=grad_logp(kernel.dwn_dtheta,x,y,yerr,cov_matrix)       
         return grad1
-    elif isinstance(kernel,kl.ExpSineGeorge):
-        grad1=grad_logp(kernel.de_dgamma,x,y,yerr,cov_matrix)
-        grad2=grad_logp(kernel.de_dp,x,y,yerr,cov_matrix) 
-        return grad1, grad2
     elif isinstance(kernel,kl.Product):
         return grad_mul_aux(kernel,x,y,yerr,original_kernel)                   
     else:
@@ -468,8 +460,6 @@ def kernel_deriv(kernel):
         return kernel.dm32_dtheta, kernel.dm32_dl
     elif isinstance(kernel,kl.Matern52):
         return kernel.dm52_dtheta, kernel.dm52_dl
-    elif isinstance(kernel,kl.ExpSineGeorge):
-        return kernel.de_dgamma, kernel.de_dp
     elif isinstance(kernel,kl.WhiteNoise):
         return kernel.dwn_dtheta
     elif isinstance(kernel,kl.QuasiPeriodic):
