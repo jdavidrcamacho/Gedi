@@ -1,0 +1,6 @@
+language: python
+rvm:
+ - 2.7.12
+ - numpy
+ - scipy
+ - matplotlib
