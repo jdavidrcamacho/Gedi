@@ -1,6 +1,6 @@
 language: python
-rvm:
- - 2.7
- - numpy
- - scipy
- - matplotlib
+python:
+  - "2.7"
+
+# command to run tests
+script: nosetests test.py
