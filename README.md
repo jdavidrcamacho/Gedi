@@ -144,10 +144,7 @@ pl.xlabel('x')
 pl.ylabel('y')
 ```
 
-\begin{figure}
-\includegraphics[width=10cm]{imagens/apendix_data.png}
-\end{figure}
-\FloatBarrier
+![](https://i.imgur.com/rbTVvQM.png)
 
 This allow us to see that the amplitude of our data is around 1 unit and the period around 6 units, which will be useful to set our priors. Having prepared the data that we will be working with we can now prepare our MCMC and start by defining our priors and the log marginal likelihood we will use
 
@@ -214,7 +211,7 @@ axes[3].set_xlabel("step number")
 fig.tight_layout(h_pad=0.0)
 ```
 
-![](https://i.imgur.com/rbTVvQM.png)
+![](https://i.imgur.com/k5GDVey.png)
 
 Using 5000 steps as our burn-in and 5000 step to use in our MCMC, we can see that there seems to be a convergence, for example, on the hyperparameter that corresponds to the period and the white noise of the kernel, although the same seemed to not be obtained to the amplitude and the length-scale, as this is just an example of how to use \textit{gedi}, we will ignore it and continue on our analysis.
 
