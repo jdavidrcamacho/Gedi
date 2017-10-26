@@ -213,7 +213,7 @@ fig.tight_layout(h_pad=0.0)
 
 ![](https://i.imgur.com/k5GDVey.png)
 
-Using 5000 steps as our burn-in and 5000 step to use in our MCMC, we can see that there seems to be a convergence, for example, on the hyperparameter that corresponds to the period and the white noise of the kernel, although the same seemed to not be obtained to the amplitude and the length-scale, as this is just an example of how to use \textit{gedi}, we will ignore it and continue on our analysis.
+Using 5000 steps as our burn-in and 5000 step to use in our MCMC, we can see that there seems to be a convergence, for example, on the hyperparameter that corresponds to the period and the white noise of the kernel, although the same seemed to not be obtained to the amplitude and the length-scale, as this is just an example of how to use *gedi*, we will ignore it and continue on our analysis.
 
 To obtain our final solution we can compute the quantiles and median that will be used
 
