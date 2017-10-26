@@ -1,6 +1,9 @@
 # Gedi - introducing the gaussian jedi	
+
 Do or do not, there is no try in the use of Gaussian processes to model real data, test the limits of this approach, and find the best way to analyze radial velocities measurements of stars.
  
+
+
 
 |▒▓▒▒◙▒▓▒▓▒▓||░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
  
@@ -16,6 +19,8 @@ Do or do not, there is no try in the use of Gaussian processes to model real dat
  What other packages are needed to work?
  It's necessary to have numpy, scipy and matplotlib.
  
+
+
 
 |▒▓▒▒◙▒▓▒▓▒▓||░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
@@ -92,7 +97,6 @@ kernel= gedi.kernel_optimization.new_kernel(kernel,np.exp(results_gedi.x))
 
 print('Final kernel',kernel)
 print('Final likelihood =',gedi.kernel_likelihood.likelihood(kernel,x,y,yerr))
-\end{lstlisting}
 ```
 
 This allow us to obtain as a final result
@@ -103,7 +107,7 @@ This allow us to obtain as a final result
 ('Final likelihood', -34.288489695783142)
 ```
 
-The final log marginal likelihood show us that the final kernel is indeed a better kernel than the one used in the beginning, and \textit{scipy.optimize} was successful in finding a better solution to the one we had.
+The final log marginal likelihood show us that the final kernel is indeed a better kernel than the one used in the beginning, and *scipy.optimize* was successful in finding a better solution to the one we had.
 
 ###### emcee
 
