@@ -1,20 +1,20 @@
 # Gedi - introducing the gaussian jedi	
-Do or do not, there is no try in the use of Gaussian processes to model real data, test the limits of this approach, and find the best way to analyze radial velocities measurements of stars.__
+Do or do not, there is no try in the use of Gaussian processes to model real data, test the limits of this approach, and find the best way to analyze radial velocities measurements of stars.
  
 
 |▒▓▒▒◙▒▓▒▓▒▓||░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
  
 
- How to install?__
- The easy way is using pip: $ pip install Gedi__
+ How to install?
+ The easy way is using pip: $ pip install Gedi
  
 
- What is the current version?__
- Current version is Gedi 0.2 as of 29/09/2017.__ 
+ What is the current version?
+ Current version is Gedi 0.2 as of 29/09/2017.
 
 
- What other packages are needed to work?__
- It's necessary to have numpy, scipy and matplotlib.__
+ What other packages are needed to work?
+ It's necessary to have numpy, scipy and matplotlib.
  
 
 |▒▓▒▒◙▒▓▒▓▒▓||░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
@@ -60,30 +60,31 @@ kernel_lk= gedi.kernel_likelihood.likelihood(kernel,x,y,yerr)
 print('initial likelihood',kernel_lk)
 ```
 
-Since we are working with a sinusoid it is logical to use the *ES kernel* as it is a periodic kernel. From the first kernel we were able to obtain a log marginal likelihood of around -51.06, while with the second we obtained around -47.97. This clearly tell us that the second kernel is a better choice to work with, what comes with not much surprise, as the generated data contained noise.__
+Since we are working with a sinusoid it is logical to use the *ES kernel* as it is a periodic kernel. From the first kernel we were able to obtain a log marginal likelihood of around -51.06, while with the second we obtained around -47.97. This clearly tell us that the second kernel is a better choice to work with, what comes with not much surprise, as the generated data contained noise.
 
-As such we will continue our analysis using the second kernel and now define the log marginal likelihood and the gradients that *scipy.optimize* will use__ 
+As such we will continue our analysis using the second kernel and now define the log marginal likelihood and the gradients that *scipy.optimize* will use
 
 
 ```
 #Log marginal likelihood
-def likelihood_gedi(p):__
-    global kernel__
-    # Update the kernel parameters and compute the likelihood.__
-    kernel= gedi.kernel_optimization.new_kernel(kernel,np.exp(p))__
-    ll = gedi.kernel_likelihood.likelihood(kernel,x,y,yerr)__
-    return -ll if np.isfinite(ll) else 1e25__
+def likelihood_gedi(p):
+    global kernel
+    # Update the kernel parameters and compute the likelihood.
+    kernel= gedi.kernel_optimization.new_kernel(kernel,np.exp(p))
+    ll = gedi.kernel_likelihood.likelihood(kernel,x,y,yerr)
+    return -ll if np.isfinite(ll) else 1e25
 
 #Gradients
-def gradients_gedi(p):__
-    global kernel__
-    # Update the kernel parameters and compute the likelihood.__
-    kernel= gedi.kernel_optimization.new_kernel(kernel,np.exp(p))__
-    return -np.array(gedi.kernel_likelihood.gradient_likelihood(kernel,x,y,yerr))__
+def gradients_gedi(p):
+    global kernel
+    # Update the kernel parameters and compute the likelihood.
+    kernel= gedi.kernel_optimization.new_kernel(kernel,np.exp(p))
+    return -np.array(gedi.kernel_likelihood.gradient_likelihood(kernel,x,y,yerr))
 ```
 
 With this two simple functions we are now ready to use \textit{scipy.optimize} and find our optimized kernel
-\begin{lstlisting}[language=Python]
+
+```
 #lets run the optimization
 p0_gedi = np.log(kernel.pars)
 results_gedi = op.minimize(likelihood_gedi, p0_gedi, jac=gradients_gedi)
@@ -92,48 +93,56 @@ kernel= gedi.kernel_optimization.new_kernel(kernel,np.exp(results_gedi.x))
 print('Final kernel',kernel)
 print('Final likelihood =',gedi.kernel_likelihood.likelihood(kernel,x,y,yerr))
 \end{lstlisting}
+```
 
 This allow us to obtain as a final result
-\begin{verbatim}
+
+```
 ('Final kernel', ExpSineSquared(2.72896536025, 1.10953213369, 16.5826072023)
 + WhiteNoise(0.356778865898))
 ('Final likelihood', -34.288489695783142)
-\end{verbatim}
+```
 
 The final log marginal likelihood show us that the final kernel is indeed a better kernel than the one used in the beginning, and \textit{scipy.optimize} was successful in finding a better solution to the one we had.
 
-\section{emcee}
-We are now going to use \textit{gedi} in conjunction with \textit{emcee} to find the best values of our kernel's hyperparameters. We obviously begin by importing all necessary packages
-\begin{lstlisting}[language=Python]
+###### emcee
+
+We are now going to use *gedi* in conjunction with *emcee* to find the best values of our kernel's hyperparameters. We obviously begin by importing all necessary packages
+
+```
 import Gedi as gedi
 import emcee
 import numpy as np
 import matplotlib.pyplot as pl
 from matplotlib.ticker import MaxNLocator
 from scipy import stats
-\end{lstlisting}
+```
 
-Besides \textit{gedi} and \textit{emcee} we will also need to use \textit{numpy}, \textit{scipy} and \textit{matplotlib}, to generate our data and plot the necessary graphics. To start this second example we can generate same sinusoidal data with and respective error with
-\begin{lstlisting}[language=Python]
+Besides *gedi* and *emcee* we will also need to use *numpy*, *scipy* and *matplotlib*, to generate our data and plot the necessary graphics. To start this second example we can generate same sinusoidal data with and respective error with
+
+```
 np.random.seed(1001)
 x= 10 * np.sort(np.random.rand(30))
 yerr= 0.2 * np.ones_like(x)
 y= np.sin(x) + yerr * np.random.randn(len(x))
-\end{lstlisting}
+```
 
-With the help of \textit{matplotlib} we can take a look on our generated data.
-\begin{lstlisting}[language=Python]
+With the help of *matplotlib* we can take a look on our generated data.
+
+```
 pl.plot(x,y,'*')
 pl.xlabel('x')
 pl.ylabel('y')
-\end{lstlisting}
+```
+
 \begin{figure}
 \includegraphics[width=10cm]{imagens/apendix_data.png}
 \end{figure}
 \FloatBarrier
 
 This allow us to see that the amplitude of our data is around 1 unit and the period around 6 units, which will be useful to set our priors. Having prepared the data that we will be working with we can now prepare our MCMC and start by defining our priors and the log marginal likelihood we will use
-\begin{lstlisting}[language=Python]
+
+```
 #defining our priors
 def logprob(p):
     global kernel
@@ -153,7 +162,7 @@ lenghtscale_prior=stats.uniform(np.exp(-10), 10-np.exp(-10))
 period_prior=stats.uniform(4, 8-4)
 wn_prior=stats.uniform(np.exp(-10), 0.5-np.exp(-10))
 
-def from_prior():           
+def from_prior():
     return np.array([amplitude_prior.rvs(),lenghtscale_prior.rvs(),
                     period_prior.rvs(),wn_prior.rvs()])
 
@@ -166,18 +175,19 @@ kernel=gedi.kernel.ExpSineSquared(amplitude_prior.rvs(),
 burns, runs= 2500, 5000
 
 #set up the sampler.
-nwalkers, ndim = 10, len(kernel.pars)               
+nwalkers, ndim = 10, len(kernel.pars)
 sampler = emcee.EnsembleSampler(nwalkers, ndim, logprob)
 
-p0=[np.log(from_prior()) for i in range(nwalkers)]           
+p0=[np.log(from_prior()) for i in range(nwalkers)]
 assert not np.isinf(map(lnprob, p0)).any()
 
 p0, _, _ = sampler.run_mcmc(p0, burns)
-sampler.run_mcmc(p0, runs)    
-\end{lstlisting}
+sampler.run_mcmc(p0, runs)
+```
 
-Once again we use the sum of an \textit{ES kernel} with a \textit{WN kernel} to fit to our data, since our data comes from a sinusoidal model. With our MCMC complete we can now plot the results to check visually if we had convergence in our hyperparameters.
-\begin{lstlisting}[language=Python]
+Once again we use the sum of an *ES kernel* with a *WN kernel* to fit to our data, since our data comes from a sinusoidal model. With our MCMC complete we can now plot the results to check visually if we had convergence in our hyperparameters.
+
+```
 fig, axes = pl.subplots(4, 1, sharex=True, figsize=(8, 9))
 axes[0].plot(sampler.chain[:, :, 0].T, color="k", alpha=0.4) #log
 axes[0].yaxis.set_major_locator(MaxNLocator(5))
@@ -193,7 +203,8 @@ axes[3].yaxis.set_major_locator(MaxNLocator(5))
 axes[3].set_ylabel("$WN$")
 axes[3].set_xlabel("step number")
 fig.tight_layout(h_pad=0.0)
-\end{lstlisting}
+```
+
 \begin{figure}
 \includegraphics[width=\textwidth]{imagens/apendix_mcmc.png}
 \end{figure}
@@ -202,7 +213,8 @@ fig.tight_layout(h_pad=0.0)
 Using 5000 steps as our burn-in and 5000 step to use in our MCMC, we can see that there seems to be a convergence, for example, on the hyperparameter that corresponds to the period and the white noise of the kernel, although the same seemed to not be obtained to the amplitude and the length-scale, as this is just an example of how to use \textit{gedi}, we will ignore it and continue on our analysis.
 
 To obtain our final solution we can compute the quantiles and median that will be used
-\begin{lstlisting}[language=Python]
+
+```
 burnin = 50
 samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
 
@@ -218,19 +230,20 @@ print('theta = {0[0]} +{0[1]} -{0[2]}'.format(theta_mcmc))
 print('l = {0[0]} +{0[1]} -{0[2]}'.format(l_mcmc))
 print('period = {0[0]} +{0[1]} -{0[2]}'.format(p_mcmc))
 print('white noise = {0[0]} +{0[1]} -{0[2]}'.format(wn_mcmc))
-\end{lstlisting}
+```
 
 In the end of this we are able to obtain the values
-\begin{verbatim}
+
+```
 theta = 1.41668244894 +0.373790095626 -0.288328791884
 l = 2.46889155829 +0.952416345357 -0.735937463898
 period = 6.42794862032 +0.096144793889 -0.0969172051794
 white noise = 0.00225458063694 +0.0358745326978 -0.00209754174694
-\end{verbatim}
+```
 
-Which comparing with the value obtained in the optimization with scipy.optimize, using a MCMC has a greater advantage. Not only we were able to obtain a value for our hyperparameters, we were able to obtain an error interval for each one of it. Since the optimization of the hyperparameters with gradient based algorithms is not a convex problem, it is necessary to be careful about our initial values, in order to not reach a bad local minima.
+Which comparing with the value obtained in the optimization with *scipy.optimize*, using a MCMC has a greater advantage. Not only we were able to obtain a value for our hyperparameters, we were able to obtain an error interval for each one of it. Since the optimization of the hyperparameters with gradient based algorithms is not a convex problem, it is necessary to be careful about our initial values, in order to not reach a bad local minima.
 
-The result obtained with \textit{scipy.optimize} give us a period of around 16.58 units, while just by looking at the graph of the data analyzed, we should have a periodicity around 6 units. Unlike \textit{scipy.optimize}, the MCMC clearly reach this value, showing us that the problem of bad local minima does not occur with the use of an MCMC.
+The result obtained with *scipy.optimize* give us a period of around 16.58 units, while just by looking at the graph of the data analyzed, we should have a periodicity around 6 units. Unlike *scipy.optimize*, the MCMC clearly reach this value, showing us that the problem of bad local minima does not occur with the use of an MCMC.
 
 
 
