@@ -9,14 +9,19 @@ Do or do not, there is no try in the use of Gaussian processes to model real dat
  
 
  How to install?
- The easy way is using pip: $ pip install Gedi
- 
+
+ The easy way is using pip: 
+```
+$ pip install Gedi
+``` 
 
  What is the current version?
+
  Current version is Gedi 0.2 as of 29/09/2017.
 
 
  What other packages are needed to work?
+
  It's necessary to have numpy, scipy and matplotlib.
  
 
@@ -29,7 +34,7 @@ Do or do not, there is no try in the use of Gaussian processes to model real dat
 In this section we present two simple examples of how to work with *gedi*. In the first it will be presented a simple example on how to perform the optimization of the kernel with *scipy.optimize*. The second one will be another simple example but this time using the package *emcee*. With this two example we believe we are able to show the full potential of *gedi* and of the functions it has implemented.
 
 
-###### *scipy.optimize*
+### *scipy.optimize*
 
 To use *gedi* together with *scipy.optimize* we first we of course to import all the necessary python packages. Besides the two mentioned packages we will also require *numpy*.
 
@@ -109,7 +114,7 @@ This allow us to obtain as a final result
 
 The final log marginal likelihood show us that the final kernel is indeed a better kernel than the one used in the beginning, and *scipy.optimize* was successful in finding a better solution to the one we had.
 
-###### emcee
+### emcee
 
 We are now going to use *gedi* in conjunction with *emcee* to find the best values of our kernel's hyperparameters. We obviously begin by importing all necessary packages
 
@@ -209,10 +214,7 @@ axes[3].set_xlabel("step number")
 fig.tight_layout(h_pad=0.0)
 ```
 
-\begin{figure}
-\includegraphics[width=\textwidth]{imagens/apendix_mcmc.png}
-\end{figure}
-\FloatBarrier
+![](https://i.imgur.com/rbTVvQM.png)
 
 Using 5000 steps as our burn-in and 5000 step to use in our MCMC, we can see that there seems to be a convergence, for example, on the hyperparameter that corresponds to the period and the white noise of the kernel, although the same seemed to not be obtained to the amplitude and the length-scale, as this is just an example of how to use \textit{gedi}, we will ignore it and continue on our analysis.
 
