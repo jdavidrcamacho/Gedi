@@ -70,7 +70,7 @@ kernel_lk= gedi.kernel_likelihood.likelihood(kernel,x,y,yerr)
 print('initial likelihood',kernel_lk)
 ```
 
-Since we are working with a sinusoid it is logical to use the *ES kernel* as it is a periodic kernel. From the first kernel we were able to obtain a log marginal likelihood of around -51.06, while with the second we obtained around -47.97. This clearly tell us that the second kernel is a better choice to work with, what comes with not much surprise, as the generated data contained noise.
+Since we are working with a sinusoid it is logical to use the *ESS kernel* as it is a periodic kernel. From the first kernel we were able to obtain a log marginal likelihood of around -51.06, while with the second we obtained around -47.97. This clearly tell us that the second kernel is a better choice to work with, what comes with not much surprise, as the generated data contained noise.
 
 As such we will continue our analysis using the second kernel and now define the log marginal likelihood and the gradients that *scipy.optimize* will use
 
@@ -191,7 +191,7 @@ p0, _, _ = sampler.run_mcmc(p0, burns)
 sampler.run_mcmc(p0, runs)
 ```
 
-Once again we use the sum of an *ES kernel* with a *WN kernel* to fit to our data, since our data comes from a sinusoidal model. With our MCMC complete we can now plot the results to check visually if we had convergence in our hyperparameters.
+Once again we use the sum of an *ESS kernel* with a *WN kernel* to fit to our data, since our data comes from a sinusoidal model. With our MCMC complete we can now plot the results to check visually if we had convergence in our hyperparameters.
 
 ```
 fig, axes = pl.subplots(4, 1, sharex=True, figsize=(8, 9))
