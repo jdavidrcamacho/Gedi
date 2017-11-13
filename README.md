@@ -253,6 +253,6 @@ The result obtained with *scipy.optimize* give us a period of around 16.58 units
 
 |▒▓▒▒◙▒▓▒▓▒▓||░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-2017 João Camacho
+2017 [João Camacho](https://github.com/jdavidrcamacho)
 
-CONTRIBUTORS: João Faria
+CONTRIBUTORS: [João Faria](https://github.com/j-faria)
