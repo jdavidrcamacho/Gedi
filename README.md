@@ -1,6 +1,6 @@
 # Gedi - introducing the gaussian jedi	
 [![Build Status](https://travis-ci.org/jdavidrcamacho/Gedi.svg?branch=master)](https://travis-ci.org/jdavidrcamacho/Gedi)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/jdavidrcamacho/Gdi/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/jdavidrcamacho/Gedi/blob/master/LICENSE)
 
 Do or do not, there is no try in the use of Gaussian processes to model real data, test the limits of this approach, and find the best way to analyze radial velocities measurements of stars.
  
