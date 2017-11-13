@@ -12,5 +12,4 @@ install:
   - pip install scipy
   - pip install matplotlib
   - pip install Gedi
-script: 
-  - test.py
+
