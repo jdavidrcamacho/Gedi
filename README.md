@@ -7,12 +7,12 @@ Do or do not, there is no try in the use of Gaussian processes to model real dat
 
 |▒▓▒▒◙▒▓▒▓▒▓||░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
  
-
-Feel free to check the [wiki page](https://github.com/jdavidrcamacho/Gedi/wiki) if you want to know a little more about this python package!
+We are currently updating gedi to work with python 3.x, abandoning python 2.7 in the process, but feel free to check the now obsolete [wiki page](https://github.com/jdavidrcamacho/Gedi/wiki) if you want to know a little more about this python package! We will update the wiki as soon as possible.
 
 
 |▒▓▒▒◙▒▓▒▓▒▓||░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-2017 [João Camacho](https://github.com/jdavidrcamacho)
+2017-2018 [João Camacho](https://github.com/jdavidrcamacho)
 
 CONTRIBUTORS: [João Faria](https://github.com/j-faria)
+
