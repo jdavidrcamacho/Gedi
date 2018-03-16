@@ -10,6 +10,5 @@
 
 """
 
-import gpKernel
-import gpCalc
-
+from gedi import gpCalc
+from gedi import gpKernel
