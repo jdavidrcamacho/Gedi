@@ -4,9 +4,8 @@
 """
     Package to analyze radial velocity measurements using Gaussian processes.
     
-    gpObject: Initial object to work with Gaussian processes,
-	contains the log likelihood calculation.
-    kernels: contains all the developed kernels.
+    gpCalc: contains the log likelihood calculation.
+    gpKernel: contains all the developed kernels.
 
 """
 
