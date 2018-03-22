@@ -16,7 +16,8 @@ install:
   - pip install matplotlib
   - pip install emcee
   - pip install corner
-  - pip install Gedi
+  # and now the Gedi package
+  - python setup.py install
 
 script:
   - test.py
