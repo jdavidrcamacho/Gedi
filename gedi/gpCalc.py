@@ -2,7 +2,7 @@
 import numpy as np
 from scipy.linalg import cho_factor, cho_solve 
 
-from gedi.gpKernel import kernel
+from gedi import gpKernel
 
 
 def build_matrix(kern, x, yerr):

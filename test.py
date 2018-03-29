@@ -58,7 +58,7 @@ nwalkers, ndim = 10, len(kernel.pars)
 sampler = emcee.EnsembleSampler(nwalkers, ndim, logprob)
 
 p0=[np.log(from_prior()) for i in range(nwalkers)]
-assert not np.isinf(map(logprob, p0)).any()
+#assert not np.isinf(map(logprob, p0)).any()
 
 p0, _, _ = sampler.run_mcmc(p0, burns)
 sampler.run_mcmc(p0, runs)
