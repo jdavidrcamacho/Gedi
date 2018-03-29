@@ -1,11 +1,20 @@
 language: python
 python:
-  - "3.5"
+  - 2.7
+  - 3.5
+  - 3.6
 
 notifications:
   email: false
 
 sudo: required
+
+env:
+  global:
+    # List package dependencies for conda
+    - CONDA_DEPS="pytest numpy"
+    # package name for test invocation
+    - PACKAGENAME="gedi"
 
 before_install:
  - sudo apt-get update
@@ -20,4 +29,5 @@ install:
   - python setup.py install
 
 script:
-  - test.py
+	- python -c "import gedi"
+	- pytest $PACKAGENAME
