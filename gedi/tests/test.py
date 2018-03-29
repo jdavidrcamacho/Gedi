@@ -21,38 +21,6 @@ print(loglike)
 k = calc.build_matrix(kernel0,y,yerr)
 pl.imshow(k)
 
-
-###### scipy.optimize example #####
-#import scipy.optimize as op
-#
-#kernel1= kernels.ExpSineSquared(2,2.5,5) + kernels.WhiteNoise(0.2)
-#kernel_lk= calc.likelihood(kernel1,x,y,yerr)
-#print('initial likelihood',kernel_lk)
-#
-##Log marginal likelihood
-#def likelihood_gedi(p):
-#    global kernel
-#    # Update the kernel parameters and compute the likelihood.
-#    kernel = calc.new_kernel(kernel1,p)
-#    ll = calc.likelihood(kernel,x,y,yerr)
-#    return -ll if np.isfinite(ll) else 1e25
-#
-##Gradients
-#def gradients_gedi(p):
-#    global kernel
-#    # Update the kernel parameters and compute the likelihood.
-#    kernel = calc.new_kernel(kernel1,p)
-#    return -np.array(calc.gradient_likelihood(kernel,x,y,yerr))
-#    
-##lets run the optimization
-#p0_gedi = kernel1.pars
-#print(kernel1)
-#results_gedi = op.minimize(likelihood_gedi, p0_gedi, jac=gradients_gedi)
-#
-#kernel1= calc.new_kernel(kernel1,results_gedi.x)
-#print('Final kernel',kernel1)
-#print('Final likelihood =',calc.likelihood(kernel1,x,y,yerr))
-
 ##### emcee example #####
 import emcee
 from matplotlib.ticker import MaxNLocator
