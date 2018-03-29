@@ -29,5 +29,5 @@ install:
   - python setup.py install
 
 script:
-	- python -c "import gedi"
-	- pytest $PACKAGENAME
+  - python -c "import gedi"
+  - pytest $PACKAGENAME
