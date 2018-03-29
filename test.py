@@ -17,10 +17,6 @@ kernel0 = kernels.ExpSquared(10,1) * kernels.ExpSquared(5,0.3) + kernels.Exponen
 loglike = calc.likelihood(kernel0,x,y,yerr, kepler = False)
 print(loglike)
 
-#lets see the covariance kernel
-k = calc.build_matrix(kernel0,y,yerr)
-pl.imshow(k)
-
 ##### emcee example #####
 import emcee
 from matplotlib.ticker import MaxNLocator
@@ -66,22 +62,6 @@ assert not np.isinf(map(logprob, p0)).any()
 
 p0, _, _ = sampler.run_mcmc(p0, burns)
 sampler.run_mcmc(p0, runs)
-
-fig, axes = pl.subplots(4, 1, sharex=True, figsize=(8, 9))
-axes[0].plot(sampler.chain[:, :, 0].T, color="k", alpha=0.4) #log
-axes[0].yaxis.set_major_locator(MaxNLocator(5))
-axes[0].set_ylabel("$theta$")
-axes[1].plot(np.exp(sampler.chain[:, :, 1]).T, color="k", alpha=0.4)
-axes[1].yaxis.set_major_locator(MaxNLocator(5))
-axes[1].set_ylabel("$l$")
-axes[2].plot(np.exp(sampler.chain[:, :, 2]).T, color="k", alpha=0.4)
-axes[2].yaxis.set_major_locator(MaxNLocator(5))
-axes[2].set_ylabel("$P$")
-axes[3].plot(sampler.chain[:, :, 3].T, color="k", alpha=0.4) #log
-axes[3].yaxis.set_major_locator(MaxNLocator(5))
-axes[3].set_ylabel("$WN$")
-axes[3].set_xlabel("step number")
-fig.tight_layout(h_pad=0.0)
 
 burnin = 50
 samples = sampler.chain[:, burnin:, :].reshape((-1, ndim))
