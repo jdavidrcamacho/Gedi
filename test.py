@@ -1,5 +1,5 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 import gedi.gpCalc as calc
 import gedi.gpKernel as kernels
 import numpy as np
