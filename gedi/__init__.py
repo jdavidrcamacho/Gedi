@@ -1,5 +1,5 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 ##### Necessary scripts to everything work #####
 """
     Package to analyze radial velocity measurements using Gaussian processes.
