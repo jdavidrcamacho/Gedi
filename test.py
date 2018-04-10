@@ -12,8 +12,8 @@ def test_gedi():
     
     #lets define a kernel
     kernel0 = kernels.ExpSquared(10,1) * kernels.ExpSquared(5,0.3) + kernels.Exponential(1,1)
-    
-    #lets calculate the log-likelihood
-    loglike = calc.likelihood(kernel0,x,y,yerr, kepler = False)
 
-    return loglike
+    #lets calculate the log-likelihood
+    loglike = calc.likelihood(kernel0, x, y, yerr, kepler = False)
+    loglike2 = calc.likelihood(kernel0,x, y, yerr, kepler = True, kepler_params=[1, 1, 0.5, 50, 0])
+    return loglike, loglike2
