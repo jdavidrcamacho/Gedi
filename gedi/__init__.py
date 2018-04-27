@@ -9,5 +9,5 @@
 
 """
 
-from gedi import gpCalc
-from gedi import gpKernel
+from gedi import calc
+from gedi import kernels
