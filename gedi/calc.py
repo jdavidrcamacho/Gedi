@@ -515,4 +515,56 @@ def grad_mul_aux(kern,x,y,yerr,original_kernel):
     grad_result = grad_result[::-1]
     return grad_result
 
+
+def compute_kernel(kernel, x, new_x, y, yerr):    
+    """
+        compute_kenrel() makes the necessary calculations to allow the user to 
+    create pretty graphics in the end, the ones that includes the mean and 
+    standard deviation. 
+    
+        Parameters
+    kernel = kernel in use
+    x = range of values of the independent variable (usually time)
+    xcalc = new range of values to calculate the means and standard deviation, in
+            other words, to predict value of the kernel between measurments, as
+            such we should have xcalc >> x
+    y = range of values of te dependent variable (the measurments)
+    yerr = error in the measurments
+    
+        Returns
+    [y_mean,y_std] = [mean, standard deviation]
+    """
+    K = build_matrix(kernel, x, y, yerr)    
+    L1 = cho_factor(K)
+    sol = cho_solve(L1, y)
+
+    kfinal=K
+    
+    new_r = new_x[:, None] - x[None, :]   
+    new_lines = kernel(new_r)
+    kfinal=np.vstack([kfinal,new_lines])
+    
+    new_r = new_x[:,None] - new_x[None,:]
+    new_columns = kernel(new_r)        
+    kcolumns = np.vstack([new_lines.T, new_columns])
+    kfinal = np.hstack([kfinal, kcolumns])
+
+    y_mean = [] #mean = K*.K-1.y  
+    for i, e in enumerate(xcalc):
+        y_mean.append(np.dot(new_lines[i,:], sol))
+    
+    y_var=[] #var=  K** - K*.K-1.K*.T
+    diag=np.diagonal(new_columns)
+    for i, e in enumerate(xcalc):
+        #K**=diag[i]; K*=new_lines[i]      
+        a=diag[i]
+        newsol = cho_solve(L1, new_lines[i])
+        d=np.dot(new_lines[i,:],newsol)
+        result=a-d      
+        y_var.append(result)
+
+    y_std = np.sqrt(y_var) #standard deviation
+    return y_mean, y_std
+
+
 ##### END
