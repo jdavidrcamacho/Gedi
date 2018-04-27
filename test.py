@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import gedi.gpCalc as calc
-import gedi.gpKernel as kernels
+import gedi.calc as calc
+import gedi.kernels as kernels
 import numpy as np
 
 def test_gedi():

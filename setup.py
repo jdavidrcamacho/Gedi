@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(	name = 'gedi',
 	packages = ['gedi'], 
-	version = '0.3',
+	version = '0.3.1',
 	description = 'Package to analyze radial velocity measurements using Gaussian processes made for a MSc Thesis',
 	author = 'Joao Camacho',
 	author_email = 'joao.camacho@astro.up.pt',
