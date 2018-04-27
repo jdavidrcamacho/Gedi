@@ -3,7 +3,7 @@
 import numpy as np
 from scipy.linalg import cho_factor, cho_solve 
 
-from gedi import gpKernel
+from gedi import kernels
 
 
 def build_matrix(kern, x, yerr):
@@ -97,31 +97,31 @@ def new_kernel(original_kernel,b):
     original_kernel = original kernel in use
     b = new parameters or new hyperparameters if you prefer using that denomination
     """
-    if isinstance(original_kernel,gpKernel.ExpSquared):
-        return gpKernel.ExpSquared(b[0],b[1])
+    if isinstance(original_kernel,kernels.ExpSquared):
+        return kernels.ExpSquared(b[0],b[1])
         
-    elif isinstance(original_kernel,gpKernel.ExpSineSquared):
-        return gpKernel.ExpSineSquared(b[0],b[1],b[2])
+    elif isinstance(original_kernel,kernels.ExpSineSquared):
+        return kernels.ExpSineSquared(b[0],b[1],b[2])
         
-    elif isinstance(original_kernel,gpKernel.RatQuadratic):
-        return gpKernel.RatQuadratic(b[0],b[1],b[2])
+    elif isinstance(original_kernel,kernels.RatQuadratic):
+        return kernels.RatQuadratic(b[0],b[1],b[2])
         
-    elif isinstance(original_kernel,gpKernel.Exponential):
-        return gpKernel.Exponential(b[0],b[1])
+    elif isinstance(original_kernel,kernels.Exponential):
+        return kernels.Exponential(b[0],b[1])
         
-    elif isinstance(original_kernel,gpKernel.Matern32):
-        return gpKernel.Matern32(b[0],b[1])
+    elif isinstance(original_kernel,kernels.Matern32):
+        return kernels.Matern32(b[0],b[1])
         
-    elif isinstance(original_kernel,gpKernel.Matern52):
-        return gpKernel.Matern52(b[0],b[1])
+    elif isinstance(original_kernel,kernels.Matern52):
+        return kernels.Matern52(b[0],b[1])
         
-    elif isinstance(original_kernel,gpKernel.WhiteNoise):
-        return gpKernel.WhiteNoise(b[0])
+    elif isinstance(original_kernel,kernels.WhiteNoise):
+        return kernels.WhiteNoise(b[0])
         
-    elif isinstance(original_kernel,gpKernel.QuasiPeriodic):
-        return gpKernel.QuasiPeriodic(b[0],b[1],b[2],b[3])
+    elif isinstance(original_kernel,kernels.QuasiPeriodic):
+        return kernels.QuasiPeriodic(b[0],b[1],b[2],b[3])
         
-    elif isinstance(original_kernel,gpKernel.Sum):
+    elif isinstance(original_kernel,kernels.Sum):
         k1_params = []
         for i, e in enumerate(original_kernel.k1.pars):
             k1_params.append(b[i])    
@@ -132,7 +132,7 @@ def new_kernel(original_kernel,b):
         new_k2 = new_kernel(original_kernel.k2,k2_params)
         return new_k1+new_k2
         
-    elif isinstance(original_kernel,gpKernel.Product):
+    elif isinstance(original_kernel,kernels.Product):
         k1_params = []
         for i, e in enumerate(original_kernel.k1.pars):
             k1_params.append(b[i])    
@@ -162,50 +162,50 @@ def gradient_likelihood(kern,x,y,yerr):
     grad1, grad2, ... = gradients of the kernel derivatives
     """
     cov_matrix = build_matrix(kern,x,yerr)
-    if isinstance(kern,gpKernel.ExpSquared):
+    if isinstance(kern,kernels.ExpSquared):
         grad1 = grad_lp(kern.des_dtheta, x, y, yerr, cov_matrix)
         grad2 = grad_lp(kern.des_dl, x, y, yerr, cov_matrix)
         return grad1, grad2
 
-    elif isinstance(kern,gpKernel.ExpSineSquared):
+    elif isinstance(kern,kernels.ExpSineSquared):
         grad1 = grad_lp(kern.dess_dtheta,x,y,yerr,cov_matrix)
         grad2 = grad_lp(kern.dess_dl,x,y,yerr,cov_matrix)
         grad3 = grad_lp(kern.dess_dp,x,y,yerr,cov_matrix)
         return grad1, grad2, grad3 
 
-    elif isinstance(kern,gpKernel.RatQuadratic):
+    elif isinstance(kern,kernels.RatQuadratic):
         grad1 = grad_lp(kern.drq_dtheta,x,y,yerr,cov_matrix)
         grad2 = grad_lp(kern.drq_dalpha,x,y,yerr,cov_matrix)
         grad3 = grad_lp(kern.drq_dl,x,y,yerr,cov_matrix)
         return grad1, grad2, grad3 
 
-    elif isinstance(kern,gpKernel.Exponential):
+    elif isinstance(kern,kernels.Exponential):
         grad1 = grad_lp(kern.dexp_dtheta,x,y,yerr,cov_matrix)
         grad2 = grad_lp(kern.dexp_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
 
-    elif isinstance(kern,gpKernel.Matern32):
+    elif isinstance(kern,kernels.Matern32):
         grad1 = grad_lp(kern.dm32_dtheta,x,y,yerr,cov_matrix)
         grad2 = grad_lp(kern.dm32_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
 
-    elif isinstance(kern,gpKernel.Matern52):
+    elif isinstance(kern,kernels.Matern52):
         grad1 = grad_lp(kern.dm52_dtheta,x,y,yerr,cov_matrix)
         grad2 = grad_lp(kern.dm52_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
 
-    elif isinstance(kern,gpKernel.QuasiPeriodic):
+    elif isinstance(kern,kernels.QuasiPeriodic):
         grad1 = grad_lp(kern.dqp_dtheta,x,y,yerr,cov_matrix)
         grad2 = grad_lp(kern.dqp_dl1,x,y,yerr,cov_matrix)
         grad3 = grad_lp(kern.dqp_dl2,x,y,yerr,cov_matrix)
         grad4 = grad_lp(kern.dqp_dp,x,y,yerr,cov_matrix)
         return grad1, grad2, grad3, grad4
 
-    elif isinstance(kern,gpKernel.WhiteNoise):
+    elif isinstance(kern,kernels.WhiteNoise):
         grad1 = grad_lp(kern.dwn_dtheta,x,y,yerr,cov_matrix)
         return grad1
 
-    elif isinstance(kern,gpKernel.Sum):
+    elif isinstance(kern,kernels.Sum):
         grad_list = grad_sum(kern,x,y,yerr)
         for i, e in enumerate(grad_list):
             if isinstance(e,float):
@@ -213,7 +213,7 @@ def gradient_likelihood(kern,x,y,yerr):
         total = sum(grad_list, [])
         return total
 
-    elif isinstance(kern,gpKernel.Product):
+    elif isinstance(kern,kernels.Product):
         return grad_mul(kern,x,y,yerr)
 
     else:
@@ -265,7 +265,7 @@ def grad_sum(kern,x,y,yerr):
         var = "k{0:d}".format(i)
         k_i = a[var] 
 
-        if isinstance(k_i,gpKernel.Sum): #to solve the three sums problem
+        if isinstance(k_i,kernels.Sum): #to solve the three sums problem
             calc = grad_sum_aux(k_i,x,y,yerr,original_kernel)
         else:
             calc = grad_like_sum(k_i,x,y,yerr,original_kernel)
@@ -300,50 +300,50 @@ def grad_like_sum(kern,x,y,yerr,original_kernel):
     """ 
     cov_matrix = build_matrix(kern,x,yerr)
 
-    if isinstance(kern, gpKernel.ExpSquared):
+    if isinstance(kern, kernels.ExpSquared):
         grad1 = grad_lp(kern.des_dtheta, x, y, yerr, cov_matrix)
         grad2 = grad_lp(kern.des_dl, x, y, yerr, cov_matrix)
         return grad1, grad2
 
-    elif isinstance(kern, gpKernel.ExpSineSquared):
+    elif isinstance(kern, kernels.ExpSineSquared):
         grad1 = grad_lp(kern.dess_dtheta,x,y,yerr,cov_matrix)
         grad2 = grad_lp(kern.dess_dl,x,y,yerr,cov_matrix)
         grad3 = grad_lp(kern.dess_dp,x,y,yerr,cov_matrix)
         return grad1, grad2, grad3 
 
-    elif isinstance(kern, gpKernel.RatQuadratic):
+    elif isinstance(kern, kernels.RatQuadratic):
         grad1 = grad_lp(kern.drq_dtheta,x,y,yerr,cov_matrix)
         grad2 = grad_lp(kern.drq_dalpha,x,y,yerr,cov_matrix)
         grad3 = grad_lp(kern.drq_dl,x,y,yerr,cov_matrix)
         return grad1, grad2, grad3 
 
-    elif isinstance(kern, gpKernel.Exponential):
+    elif isinstance(kern, kernels.Exponential):
         grad1 = grad_lp(kern.dexp_dtheta,x,y,yerr,cov_matrix)
         grad2 = grad_lp(kern.dexp_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
 
-    elif isinstance(kern, gpKernel.Matern32):
+    elif isinstance(kern, kernels.Matern32):
         grad1 = grad_lp(kern.dm32_dtheta,x,y,yerr,cov_matrix)
         grad2 = grad_lp(kern.dm32_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
 
-    elif isinstance(kern, gpKernel.Matern52):
+    elif isinstance(kern, kernels.Matern52):
         grad1 = grad_lp(kern.dm52_dtheta,x,y,yerr,cov_matrix)
         grad2 = grad_lp(kern.dm52_dl,x,y,yerr,cov_matrix)
         return grad1, grad2
 
-    elif isinstance(kern, gpKernel.QuasiPeriodic):
+    elif isinstance(kern, kernels.QuasiPeriodic):
         grad1 = grad_lp(kern.dqp_dtheta,x,y,yerr,cov_matrix)
         grad2 = grad_lp(kern.dqp_dl1,x,y,yerr,cov_matrix)
         grad3 = grad_lp(kern.dqp_dl2,x,y,yerr,cov_matrix)
         grad4 = grad_lp(kern.dqp_dp,x,y,yerr,cov_matrix)
         return grad1, grad2, grad3, grad4
 
-    elif isinstance(kern, gpKernel.WhiteNoise):
+    elif isinstance(kern, kernels.WhiteNoise):
         grad1 = grad_lp(kern.dwn_dtheta,x,y,yerr,cov_matrix)
         return grad1
 
-    elif isinstance(kern, gpKernel.Product):
+    elif isinstance(kern, kernels.Product):
         return grad_mul_aux(kern,x,y,yerr,original_kernel)
 
     else:
@@ -440,28 +440,28 @@ def kernel_deriv(kern):
         Returns
     ... = derivatives of a given kernel
     """ 
-    if isinstance(kern, gpKernel.ExpSquared):
+    if isinstance(kern, kernels.ExpSquared):
         return kern.des_dtheta, kern.des_dl
 
-    elif isinstance(kern, gpKernel.ExpSineSquared):
+    elif isinstance(kern, kernels.ExpSineSquared):
         return kern.dess_dtheta, kern.dess_dl, kern.dess_dp
 
-    elif  isinstance(kern, gpKernel.RatQuadratic):
+    elif  isinstance(kern, kernels.RatQuadratic):
         return kern.drq_dtheta, kern.drq_dl, kern.drq_dalpha
 
-    elif isinstance(kern, gpKernel.Exponential):
+    elif isinstance(kern, kernels.Exponential):
         return kern.dexp_dtheta, kern.dexp_dl
 
-    elif isinstance(kern, gpKernel.Matern32):
+    elif isinstance(kern, kernels.Matern32):
         return kern.dm32_dtheta, kern.dm32_dl
 
-    elif isinstance(kern, gpKernel.Matern52):
+    elif isinstance(kern, kernels.Matern52):
         return kern.dm52_dtheta, kern.dm52_dl
 
-    elif isinstance(kern, gpKernel.WhiteNoise):
+    elif isinstance(kern, kernels.WhiteNoise):
         return kern.dwn_dtheta
 
-    elif isinstance(kern, gpKernel.QuasiPeriodic):
+    elif isinstance(kern, kernels.QuasiPeriodic):
         return kern.dqp_dtheta, kern.dqp_dl1, kern.dqp_dl2, kern.dqp_dp
 
     else:
