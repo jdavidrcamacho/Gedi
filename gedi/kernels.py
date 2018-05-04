@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import numpy as np
+import numpy as _np
 
 class kernel(object):
     """ 
@@ -9,7 +9,7 @@ class kernel(object):
     """
     def __init__(self, *args):
         """ puts all Kernel arguments in an array pars """
-        self.pars = np.array(args)
+        self.pars = _np.array(args)
 
     def __call__(self, r):
         raise NotImplementedError
@@ -39,7 +39,7 @@ class _operator(kernel):
 
     @property
     def pars(self):
-        return np.append(self.k1.pars, self.k2.pars)
+        return _np.append(self.k1.pars, self.k2.pars)
 
 
 class Sum(_operator):
@@ -85,14 +85,14 @@ class ExpSquared(kernel):
         f1 = self.ES_theta**2
         f2 = self.ES_l**2
         f3 = (r)**2
-        return f1 * np.exp(-0.5* f3/f2)
+        return f1 * _np.exp(-0.5* f3/f2)
 
     def des_dtheta(self, r):
         """ Log-derivative in order to theta """
         f1=self.ES_theta**2
         f2=self.ES_l**2
         f3=(r)**2
-        return  2*f1*np.exp(-0.5*f3/f2)
+        return  2*f1*_np.exp(-0.5*f3/f2)
 
     def des_dl(self, r):
         """ Log-derivative in order to l """
@@ -100,7 +100,7 @@ class ExpSquared(kernel):
         f2=self.ES_l
         f3=(r)**2
         f4=self.ES_l**3    
-        return f1*(f3/f4)*np.exp(-0.5*f3/f2**2) *f2
+        return f1*(f3/f4)*_np.exp(-0.5*f3/f2**2) *f2
 
 
 class ExpSineSquared(kernel):
@@ -129,37 +129,37 @@ class ExpSineSquared(kernel):
     def __call__(self, r):
         f1 = self.ESS_theta**2
         f2 = self.ESS_l**2
-        f3 = np.abs(r)
+        f3 = _np.abs(r)
         f4 = self.ESS_P
-        return f1*np.exp((-2/f2)*((np.sin(np.pi*f3/f4))**2))
+        return f1*_np.exp((-2/f2)*((_np.sin(_np.pi*f3/f4))**2))
 
     def dess_dtheta(self,r):
         """ Log-derivative in order to theta """
         f1 = self.ESS_theta**2
         f2 = self.ESS_l**2
-        f3 = np.pi/self.ESS_P
-        f4 = np.abs(r)
-        return 2*f1*np.exp(-(2.0/f2)*np.sin(f3*f4)**2)  
+        f3 = _np.pi/self.ESS_P
+        f4 = _np.abs(r)
+        return 2*f1*_np.exp(-(2.0/f2)*_np.sin(f3*f4)**2)  
 
     def dess_dl(self,r):
         """ Log-derivative in order to l """
         f1=self.ESS_theta**2
         f2=self.ESS_l**3
-        f3=np.pi/self.ESS_P
-        f4=np.abs(r)
+        f3=_np.pi/self.ESS_P
+        f4=_np.abs(r)
         f5=self.ESS_l**2
         f6=self.ESS_l
-        return (4*f1/f2)*(np.sin(f3*f4)**2)*np.exp((-2./f5)*np.sin(f3*f4)**2) \
+        return (4*f1/f2)*(_np.sin(f3*f4)**2)*_np.exp((-2./f5)*_np.sin(f3*f4)**2) \
                 *f6
 
     def dess_dp(self,r):
         """ Log-derivative in order to P """
         f1=self.ESS_theta**2
         f2=self.ESS_l**2
-        f3=np.pi/self.ESS_P
-        f5=np.abs(r)
-        return f1*(4./f2)*f3*f5*np.cos(f3*f5)*np.sin(f3*f5) \
-                *np.exp((-2.0/f2)*np.sin(f3*f5)**2) 
+        f3=_np.pi/self.ESS_P
+        f5=_np.abs(r)
+        return f1*(4./f2)*f3*f5*_np.cos(f3*f5)*_np.sin(f3*f5) \
+                *_np.exp((-2.0/f2)*_np.sin(f3*f5)**2) 
 
 
 class QuasiPeriodic(kernel):
@@ -193,48 +193,48 @@ class QuasiPeriodic(kernel):
         f1 = self.QP_theta**2
         f2 = self.QP_l1**2
         ff2= self.QP_l2**2
-        f3 = np.abs(r)
+        f3 = _np.abs(r)
         f4 = self.QP_P
-        return f1*np.exp((-2/f2)*((np.sin(np.pi*f3/f4))**2)-(0.5*f3*f3/ff2))
+        return f1*_np.exp((-2/f2)*((_np.sin(_np.pi*f3/f4))**2)-(0.5*f3*f3/ff2))
 
     def dqp_dtheta(self,r):
         """ Log-derivative in order to theta """
         f1 = self.QP_theta**2
         f2 = self.QP_l1**2
         ff2= self.QP_l2**2
-        f3 = np.abs(r)
+        f3 = _np.abs(r)
         f4 = self.QP_P
-        return 2*f1*np.exp((-2/f2)*((np.sin(np.pi*f3/f4))**2)-(0.5*f3*f3/ff2))
+        return 2*f1*_np.exp((-2/f2)*((_np.sin(_np.pi*f3/f4))**2)-(0.5*f3*f3/ff2))
 
     def dqp_dl1(self,r):
         """ Log-derivative in order to l1 """
         f1 = self.QP_theta**2
         f2 = self.QP_l1**2
         ff2= self.QP_l2**2
-        f3 = np.abs(r)
+        f3 = _np.abs(r)
         f4 = self.QP_P
-        return 4*f1*((np.sin(np.pi*f3/f4))**2)/f2 \
-                *np.exp((-2/f2)*((np.sin(np.pi*f3/f4))**2)-(0.5*f3*f3/ff2))
+        return 4*f1*((_np.sin(_np.pi*f3/f4))**2)/f2 \
+                *_np.exp((-2/f2)*((_np.sin(_np.pi*f3/f4))**2)-(0.5*f3*f3/ff2))
 
     def dqp_dl2(self,r):
         """ Log-derivative in order to l2 """
         f1 = self.QP_theta**2
         f2 = self.QP_l1**2
         ff2= self.QP_l2**2
-        f3 = np.abs(r)
+        f3 = _np.abs(r)
         f4 = self.QP_P
         return f1*f3*f3/ff2 \
-                *np.exp((-2/f2)*((np.sin(np.pi*f3/f4))**2)-(0.5*f3*f3/ff2))
+                *_np.exp((-2/f2)*((_np.sin(_np.pi*f3/f4))**2)-(0.5*f3*f3/ff2))
 
     def dqp_dp(self,r):
         """ Log-derivative in order to P """
         f1 = self.QP_theta**2
         f2 = self.QP_l1**2
         ff2= self.QP_l2**2
-        f3 = np.abs(r)
+        f3 = _np.abs(r)
         f4 = self.QP_P
-        return 4*np.pi*f1*np.cos(np.pi*f3/f4)*np.sin(np.pi*f3/f4)/(f2*f4) \
-                *np.exp((-2/f2)*((np.sin(np.pi*f3/f4))**2)-(0.5*f3*f3/ff2))
+        return 4*_np.pi*f1*_np.cos(_np.pi*f3/f4)*_np.sin(_np.pi*f3/f4)/(f2*f4) \
+                *_np.exp((-2/f2)*((_np.sin(_np.pi*f3/f4))**2)-(0.5*f3*f3/ff2))
 
 
 class RatQuadratic(kernel):
@@ -290,7 +290,7 @@ class RatQuadratic(kernel):
         f4=self.RQ_l**2
         func0=1.0 + f2/(2.0*f3*f4)
         func1=f2/(2.0*f3*f4*func0)
-        return f1*(func1-np.log(func0))*func0**(-f3) *f3
+        return f1*(func1-_np.log(func0))*func0**(-f3) *f3
 
 
 class WhiteNoise(kernel):
@@ -313,13 +313,13 @@ class WhiteNoise(kernel):
 
     def __call__(self, r):
         f1=self.WN_theta**2
-        f2=np.diag(np.diag(np.ones_like(r)))
+        f2=_np.diag(_np.diag(_np.ones_like(r)))
         return f1*f2 
 
     def dwn_dtheta(self,r):
         """ Log-derivative in order to theta """
         f1=self.WN_theta**2
-        f2=np.diag(np.diag(np.ones_like(r)))
+        f2=_np.diag(_np.diag(_np.ones_like(r)))
         return 2*f1*f2
 
 
@@ -345,24 +345,24 @@ class Exponential(kernel):
         self.Exp_l=Exp_l
 
     def __call__(self, r):
-        f1=np.abs(r)
+        f1=_np.abs(r)
         f2=self.Exp_l
         f3=self.Exp_theta**2
-        return f3*np.exp(-f1/f2)
+        return f3*_np.exp(-f1/f2)
 
     def dexp_dtheta(self,r):
         """ Log-derivative in order to theta """
-        f1=np.abs(r)
+        f1=_np.abs(r)
         f2=self.Exp_l
         f3=self.Exp_theta**2
-        return 2*f3*np.exp(-f1/f2)
+        return 2*f3*_np.exp(-f1/f2)
     
     def dexp_dl(self,r):
         """ Log-derivative in order to l """
         f1=self.Exp_theta**2
-        f2=np.abs(r)
+        f2=_np.abs(r)
         f3=self.Exp_l
-        return (f1*f2/f3)*np.exp(-f2/f3)
+        return (f1*f2/f3)*_np.exp(-f2/f3)
 
 
 class Matern32(kernel):
@@ -387,26 +387,26 @@ class Matern32(kernel):
         self.M32_l=M32_l
 
     def __call__(self, r):
-        f1=np.sqrt(3.0)*np.abs(r)
+        f1=_np.sqrt(3.0)*_np.abs(r)
         f2=self.M32_l
         f3=self.M32_theta**2
-        return f3*(1.0 + f1/f2)*np.exp(-f1/f2)
+        return f3*(1.0 + f1/f2)*_np.exp(-f1/f2)
 
     def dm32_dtheta(self,r):
         """ Log-derivative in order to theta """
-        f1=np.sqrt(3.0)*np.abs(r) 
+        f1=_np.sqrt(3.0)*_np.abs(r) 
         f2=self.M32_l
         f3=self.M32_theta**2
-        return 2*f3*(1.0 + f1/f2)*np.exp(-f1/f2)
+        return 2*f3*(1.0 + f1/f2)*_np.exp(-f1/f2)
 
     def dm32_dl(self,r):
         """ Log-derivative in order to l """
         f1=self.M32_theta**2
-        f2=np.sqrt(3.0)*np.abs(r)
+        f2=_np.sqrt(3.0)*_np.abs(r)
         f3=self.M32_l
         f4=self.M32_l**2
-        return f3*f1*(f2/f4)*(1+f2/f3)*np.exp(-f2/f3) \
-                - f3*f1*(f2/f4)*np.exp(-f2/f3)
+        return f3*f1*(f2/f4)*(1+f2/f3)*_np.exp(-f2/f3) \
+                - f3*f1*(f2/f4)*_np.exp(-f2/f3)
 
 
 class Matern52(kernel):
@@ -431,31 +431,31 @@ class Matern52(kernel):
         self.M52_l=M52_l
 
     def __call__(self, r):
-        f1=np.sqrt(5.0)*np.abs(r)
-        f2=(np.abs(r))**2
+        f1=_np.sqrt(5.0)*_np.abs(r)
+        f2=(_np.abs(r))**2
         f3=self.M52_l
         f4=self.M52_l**2
         f5=self.M52_theta**2
-        return f5*(1.0 + f1/f3 + (5.0*f2)/(3.0*f4))*np.exp(-f1/f3)
+        return f5*(1.0 + f1/f3 + (5.0*f2)/(3.0*f4))*_np.exp(-f1/f3)
 
     def dm52_dtheta(self,r):
         """ Log-derivative in order to theta """
         f1=self.M52_theta**2
         f2=self.M52_l
         f3=3*(self.M52_l)**2
-        f4=np.sqrt(5)*np.abs(r)
-        f5=5*np.abs(r)**2
-        return 2*f1*(f5/f3 + f4/f2 +1)*np.exp(-f4/f2)
+        f4=_np.sqrt(5)*_np.abs(r)
+        f5=5*_np.abs(r)**2
+        return 2*f1*(f5/f3 + f4/f2 +1)*_np.exp(-f4/f2)
 
     def dm52_dl(self,r):
         """ Log-derivative in order to l """
         f1=self.M52_theta**2
         f2=self.M52_l
         f3=self.M52_l**2
-        f4=np.abs(r)
-        f5=np.abs(r)**2
-        return 2*f1*((5*f2*f5 + np.sqrt(5**3)*f5*f4)/(3*f3*f2) \
-                *np.exp(-np.sqrt(5)*f4/f2))
+        f4=_np.abs(r)
+        f5=_np.abs(r)**2
+        return 2*f1*((5*f2*f5 + _np.sqrt(5**3)*f5*f4)/(3*f3*f2) \
+                *_np.exp(-_np.sqrt(5)*f4/f2))
 
 
 #    def log_likelihood(self, a, y):
@@ -474,16 +474,16 @@ class Matern52(kernel):
 #            L1 = cho_factor(K)
 #            sol = cho_solve(L1, y)
 #            n = y.size
-#            log_like = - 0.5*np.dot(y, sol) \
-#                       - np.sum(np.log(np.diag(L1[0]))) \
-#                       - n*0.5*np.log(2*np.pi)
+#            log_like = - 0.5*_np.dot(y, sol) \
+#                       - _np.sum(_np.log(_np.diag(L1[0]))) \
+#                       - n*0.5*_np.log(2*_np.pi)
 #        except LinAlgError:
-#            return -np.inf
-##            K2=np.linalg.inv(K)
+#            return -_np.inf
+##            K2=_np.linalg.inv(K)
 ##            n = y.size
-##            log_like = -0.5* np.dot(np.dot(y.T,K2),y) \
-##                       -np.sum(np.log(np.diag(K))) \
-##                       -n*0.5*np.log(2*np.pi) 
+##            log_like = -0.5* _np.dot(_np.dot(y.T,K2),y) \
+##                       -_np.sum(_np.log(_np.diag(K))) \
+##                       -n*0.5*_np.log(2*_np.pi) 
 #        return log_like
 #
 #    def minus_log_likelihood(self, a, y):
