@@ -11,3 +11,4 @@
 
 from gedi import calc
 from gedi import kernels
+from gedi import rvfunction
