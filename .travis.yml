@@ -1,0 +1,31 @@
+language: python
+python:
+  - 2.7
+  - 3.6
+
+notifications:
+  email: false
+
+sudo: required
+
+env:
+  global:
+    # List package dependencies for conda
+    - CONDA_DEPS="pytest numpy"
+    # package name for test invocation
+    - PACKAGENAME="gedi"
+
+before_install:
+ - sudo apt-get update
+
+install: 
+  - pip install numpy
+  - pip install scipy
+  - pip install matplotlib
+  - pip install emcee
+  - pip install corner
+  # and now the Gedi package
+  - python setup.py install
+
+script:
+  - pytest test.py
