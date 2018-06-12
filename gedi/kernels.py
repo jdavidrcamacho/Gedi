@@ -490,9 +490,9 @@ class RQP(kernel):
         f2 = self.RQP_l1**2
         f3 = (r)**2
         f33 = _np.abs(r)
-        f4 = self.RQ_a
-        f5 = self.RQ_l2**2
-        f6 = self.RQ_P
+        f4 = self.RQP_a
+        f5 = self.RQP_l2**2
+        f6 = self.RQP_P
         return f1 * (1+(0.5*f3/(f4*f2)))**(-f4) * _np.exp((-2/f5) \
                    * ((_np.sin(_np.pi*f33/f6))**2))
 
