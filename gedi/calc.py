@@ -100,28 +100,23 @@ def new_kernel(original_kernel,b):
     """
     if isinstance(original_kernel,_kernels.ExpSquared):
         return _kernels.ExpSquared(b[0],b[1])
-        
     elif isinstance(original_kernel,_kernels.ExpSineSquared):
         return _kernels.ExpSineSquared(b[0],b[1],b[2])
-        
     elif isinstance(original_kernel,_kernels.RatQuadratic):
         return _kernels.RatQuadratic(b[0],b[1],b[2])
-        
     elif isinstance(original_kernel,_kernels.Exponential):
         return _kernels.Exponential(b[0],b[1])
         
     elif isinstance(original_kernel,_kernels.Matern32):
         return _kernels.Matern32(b[0],b[1])
-        
     elif isinstance(original_kernel,_kernels.Matern52):
         return _kernels.Matern52(b[0],b[1])
-        
     elif isinstance(original_kernel,_kernels.WhiteNoise):
         return _kernels.WhiteNoise(b[0])
-        
     elif isinstance(original_kernel,_kernels.QuasiPeriodic):
         return _kernels.QuasiPeriodic(b[0],b[1],b[2],b[3])
-        
+    elif isinstance(original_kernel,_kernels.SemiPeriodic):
+        return _kernels.SemiPeriodic(b[0],b[1],b[2],b[3],b[4])
     elif isinstance(original_kernel,_kernels.Sum):
         k1_params = []
         for i, e in enumerate(original_kernel.k1.pars):
