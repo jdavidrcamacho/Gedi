@@ -461,10 +461,11 @@ class Matern52(kernel):
 class RQP(kernel):
     """
         Definition of the product between the exponential sine squared kernel 
-    and the rational quadratic kernel.
+    and the rational quadratic kernel that we called RQP kernel.
 
         Important
-    The derivative its in respect to log(parameter)
+    The derivative should be in respect to log(parameter), since they are not
+    defined yet gradinet based optimization will not work with this kernel
 
         Parameters
     RQP_theta = amplitude of the kernel
@@ -514,36 +515,5 @@ class RQP(kernel):
     def drqp_dlP(self,r):
         """ Log-derivatives in order to P """
         return None
-
-#    def log_likelihood(self, a, y):
-#        """ Calculates the marginal log likelihood
-#
-#        Parameters:
-#            a = array with the scaling parameters
-#            y = values of the dependent variable (the measurements)
-#
-#        Returns:
-#            marginal log likelihood
-#        """
-#        K = self.compute_matrix(a)
-#
-#        try:
-#            L1 = cho_factor(K)
-#            sol = cho_solve(L1, y)
-#            n = y.size
-#            log_like = - 0.5*_np.dot(y, sol) \
-#                       - _np.sum(_np.log(_np.diag(L1[0]))) \
-#                       - n*0.5*_np.log(2*_np.pi)
-#        except LinAlgError:
-#            return -_np.inf
-##            K2=_np.linalg.inv(K)
-##            n = y.size
-##            log_like = -0.5* _np.dot(_np.dot(y.T,K2),y) \
-##                       -_np.sum(_np.log(_np.diag(K))) \
-##                       -n*0.5*_np.log(2*_np.pi) 
-#        return log_like
-#
-#    def minus_log_likelihood(self, a, y):
-#        return - self.log_likelihood(a, y)
 
 ##### END
