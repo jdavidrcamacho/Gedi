@@ -115,8 +115,8 @@ def new_kernel(original_kernel,b):
         return _kernels.WhiteNoise(b[0])
     elif isinstance(original_kernel,_kernels.QuasiPeriodic):
         return _kernels.QuasiPeriodic(b[0],b[1],b[2],b[3])
-    elif isinstance(original_kernel,_kernels.SemiPeriodic):
-        return _kernels.SemiPeriodic(b[0],b[1],b[2],b[3],b[4])
+    elif isinstance(original_kernel,_kernels.RQP):
+        return _kernels.RQP(b[0],b[1],b[2],b[3],b[4])
     elif isinstance(original_kernel,_kernels.Sum):
         k1_params = []
         for i, e in enumerate(original_kernel.k1.pars):

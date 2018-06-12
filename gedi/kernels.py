@@ -458,7 +458,7 @@ class Matern52(kernel):
                 *_np.exp(-_np.sqrt(5)*f4/f2))
 
 
-class SemiPeriodic(kernel):
+class RQP(kernel):
     """
         Definition of the product between the exponential sine squared kernel 
     and the rational quadratic kernel.
@@ -467,53 +467,51 @@ class SemiPeriodic(kernel):
     The derivative its in respect to log(parameter)
 
         Parameters
-    SP_theta = amplitude of the kernel
-    SP_l1 and QP_l2 = characteristic lenght scales   
-    SP_a = alpha of the rational quadratic kernel
-    SP_P = periodic repetitions of the kernel
+    RQP_theta = amplitude of the kernel
+    RQP_l1 and RQP_l2 = characteristic lenght scales
+    RQP_a = alpha of the rational quadratic kernel
+    RQP_P = periodic repetitions of the kernel
     """
-    def __init__(self, SP_theta, SP_l1, SP_a, SP_l2, SP_P):
+    def __init__(self, RQP_theta, RQP_l1, RQP_a, RQP_l2, RQP_P):
         """
         Because we are "overwriting" the function __init__
         we use this weird super function
         """
-        super(SemiPeriodic, self).__init__(SP_theta, SP_l1, SP_a, SP_l2, SP_P)
-        self.SP_theta = SP_theta
-        self.SP_l1 = SP_l1
-        self.SP_a = SP_a
-        self.SP_l2 = SP_l2
-        self.SP_P = SP_P  
+        super(RQP, self).__init__(RQP_theta, RQP_l1, RQP_a, RQP_l2, RQP_P)
+        self.RQP_theta = RQP_theta
+        self.RQP_l1 = RQP_l1
+        self.RQP_a = RQP_a
+        self.RQP_l2 = RQP_l2
+        self.RQP_P = RQP_P  
 
     def __call__(self, r):
-        f1 = self.SP_theta**2
-
-        f2 = self.SP_l1**2
+        f1 = self.RQP_theta**2
+        f2 = self.RQP_l1**2
         f3 = (r)**2
         f33 = _np.abs(r)
-        f4 = self.SP_a
+        f4 = self.RQ_a
+        f5 = self.RQ_l2**2
+        f6 = self.RQ_P
+        return f1 * (1+(0.5*f3/(f4*f2)))**(-f4) * _np.exp((-2/f5) \
+                   * ((_np.sin(_np.pi*f33/f6))**2))
 
-        f5 = self.SP_l2**2
-        f6 = self.SP_P
-
-        return f1*(1+(0.5*f3/(f4*f2)))**(-f4)*_np.exp((-2/f5)*((_np.sin(_np.pi*f33/f6))**2))
-
-    def dsp_dtheta(self,r):
+    def drqp_dtheta(self,r):
         """ Log-derivative in order to theta """
         return None
 
-    def drq_dl1(self,r):
+    def drqp_dl1(self,r):
         """ Log-derivatives in order to l1 """
         return None
 
-    def drq_da(self,r):
+    def drqp_da(self,r):
         """ Log-derivative in order to alpha """
         return None
 
-    def drq_dl2(self,r):
+    def drqp_dl2(self,r):
         """ Log-derivatives in order to l2 """
         return None
 
-    def drq_dlP(self,r):
+    def drqp_dlP(self,r):
         """ Log-derivatives in order to P """
         return None
 
