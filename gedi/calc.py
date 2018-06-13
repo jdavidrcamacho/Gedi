@@ -530,11 +530,23 @@ def compute_kernel(kernel, x, new_x, y, yerr):
         Returns
     y_mean,y_std = mean, standard deviation
     """
-    K = build_matrix(kernel, x, yerr)
-    L1 = _cho_factor(K)
-    sol = _cho_solve(L1, y)
+    if isinstance(kernel, _kernels.Sum):
+        if isinstance(kernel.k2, _kernels.WhiteNoise):
+            WN_pars = kernel.k2.pars[0]**2
+            kernel = kernel.k1
+            K = build_matrix(kernel, x, yerr) 
+            K = K + WN_pars*_np.diag(_np.diag(K))
+            L1 = _cho_factor(K)
+        else:
+            K = build_matrix(kernel, x, yerr)
+            L1 = _cho_factor(K)
 
-    kfinal=K
+    else:
+        K = build_matrix(kernel, x, yerr)
+        L1 = _cho_factor(K)
+
+    sol = _cho_solve(L1, y)
+    kfinal = K
 
     new_r = new_x[:, None] - x[None, :]
     new_lines = kernel(new_r)
