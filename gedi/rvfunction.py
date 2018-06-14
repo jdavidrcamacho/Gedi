@@ -28,23 +28,23 @@ def circular(P=365, K=0.1, T=0, gamma=0, t=None):
     return t, RV
 
 
-def kepler(P=365, e=0, K=.1, T=0, phi=None, gamma=0, w=_np.pi, t=None):
+def kepler(P=365, K=.1, e=0,  w=_np.pi, T=0, phi=None, gamma=0, t=None):
     """
         kepler() simulates the radial velocity signal of a planet in a 
     keplerian orbit around a star.
 
         Parameters:
     P = period in days
-    e = eccentricity
     K = RV amplitude
-    gamma = constant system RV
+    e = eccentricity
+    w = longitude of the periastron
     T = zero phase
     phi = orbital phase
-    w = longitude of the periastron
-    t = time
+    gamma = constant system RV
+    t = time of measurements
 
         Returns:
-    t = time
+    t = time of measurements
     RV = rv signal generated
     """
     if t is  None:
