@@ -464,8 +464,7 @@ class RQP(kernel):
     and the rational quadratic kernel that we called RQP kernel.
 
         Important
-    The derivative should be in respect to log(parameter), since they are not
-    defined yet gradinet based optimization will not work with this kernel
+    The derivative should be in respect to log(parameter)
 
         Parameters
     RQP_theta = amplitude of the kernel
@@ -487,33 +486,51 @@ class RQP(kernel):
 
     def __call__(self, r):
         f1 = self.RQP_theta**2
-        f2 = self.RQP_l1**2
-        f3 = (r)**2
-        f33 = _np.abs(r)
-        f4 = self.RQP_a
-        f5 = self.RQP_l2**2
-        f6 = self.RQP_P
-        return f1 * (1+(0.5*f3/(f4*f2)))**(-f4) * _np.exp((-2/f5) \
-                   * ((_np.sin(_np.pi*f33/f6))**2))
+        f2 = _np.exp((-2*_np.sin(((_np.pi)*_np.abs(r))/self.RQP_P)**2)/self.RQP_l2**2)
+        f3 = (1 + r**2 / (2*self.RQP_a*self.RQP_l1**2) )**(-self.RQP_a)
+        return f1 * f2 * f3
 
     def drqp_dtheta(self,r):
         """ Log-derivative in order to theta """
-        return None
+        f1 = _np.exp(-(2*_np.sin(((_np.pi)*_np.abs(r))/self.RQP_P)**2)/self.RQP_l2**2)
+        f2 = (1+r**2/(2*self.RQP_a*self.RQP_l1**2))**self.RQP_a
+        return 2* f1/f2 * self.RQP_theta**2
 
     def drqp_dl1(self,r):
         """ Log-derivatives in order to l1 """
-        return None
+        f1 = r**2
+        f2 = (1+r**2/(2*self.RQP_a*self.RQP_l1**2))**(-1-self.RQP_a)
+        f3 = self.RQP_theta**2
+        f4 = _np.exp(-(2*_np.sin(((_np.pi)*_np.abs(r))/self.RQP_P)**2)/self.RQP_l2**2)
+        f5 = self.RQP_l1**3
+        return self.RQP_l1 * f1 * f2 * f3 * f4 *f5
 
     def drqp_da(self,r):
+        f1 = r**2/(2*self.RQP_a*(r**2/(2*self.RQP_a*self.RQP_l1**2)+1)*self.RQP_l1**2)
+        f2 = _np.log(r**2/(2*self.RQP_a*self.RQP_l1**2)+1)
+        f3 = self.RQP_theta**2
+        f4 = _np.exp(-(2*_np.sin(((_np.pi)*_np.abs(r))/self.RQP_P)**2)/self.RQP_l2**2)
+        f5 = (1+r**2/(2*self.RQP_a*self.RQP_l1**2))**self.RQP_a
         """ Log-derivative in order to alpha """
-        return None
+        return self.RQP_a * (f1 - f2) * f3 * f4 / f5
 
     def drqp_dl2(self,r):
         """ Log-derivatives in order to l2 """
-        return None
+        f1 = 4*self.RQP_theta**2
+        f2 = _np.sin((_np.pi)*_np.abs(r)/self.RQP_P)**2
+        f3 = _np.exp(-(2*_np.sin(((_np.pi)*_np.abs(r))/self.RQP_P)**2)/self.RQP_l2**2)
+        f4 = (1+r**2/(2*self.RQP_a*self.RQP_l1**2))**self.RQP_a
+        f5 = self.RQP_l2**2
+        return f1 * f2 * f3 / (f4 * f5)
 
     def drqp_dlP(self,r):
         """ Log-derivatives in order to P """
-        return None
+        f1 = 4*(_np.pi)*r*self.RQP_theta**2
+        f2 = _np.cos(((_np.pi)*_np.abs(r))/self.RQP_P)
+        f3 = _np.sin(((_np.pi)*_np.abs(r))/self.RQP_P)
+        f4 = _np.exp(-(2*_np.sin(((_np.pi)*_np.abs(r)/self.RQP_P)**2)/self.RQP_l2**2))
+        f5 = (1+r**2/(2*self.RQP_a*self.RQP_l1**2))**self.RQP_a
+        f6 = self.RQP_l2**2*self.RQP_P
+        return f1 * f2 * f3 * f4 /(f5 * f6)
 
 ##### END
