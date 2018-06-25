@@ -7,7 +7,7 @@ from scipy.linalg import cho_solve as _cho_solve
 from gedi import kernels as _kernels
 
 
-def build_matrix(kern, x, yerr):
+def build_matrix(kernel, x, yerr):
     """
         build_matrix() creates the covariance matrix
 
@@ -20,9 +20,14 @@ def build_matrix(kern, x, yerr):
         Returns
     K = covariance matrix
     """ 
-    r = x[:, None] - x[None, :]
-    K = kern(r)
-    K = K + yerr**2*_np.identity(len(x)) 
+    if kernel.__type__() is 'non-stationary':
+        r = _np.dot(x[:, None],x[None, :])
+    else:
+        r = x[:, None] - x[None, :]
+    
+    K = kernel(r)
+    K = K + yerr**2*_np.identity(len(x))
+
     return K
 
 

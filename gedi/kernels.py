@@ -41,6 +41,9 @@ class _operator(kernel):
     def pars(self):
         return _np.append(self.k1.pars, self.k2.pars)
 
+    @property
+    def kernel_type(self):
+        return self.__type__
 
 class Sum(_operator):
     """ To allow the sum of kernels """
@@ -50,6 +53,8 @@ class Sum(_operator):
     def __call__(self, r):
         return self.k1(r) + self.k2(r)
 
+    def __type__(self):
+        return 'stationary'
 
 class Product(_operator):
     """ To allow the multiplycation of kernels """
@@ -86,6 +91,10 @@ class ExpSquared(kernel):
         f2 = self.ES_l**2
         f3 = (r)**2
         return f1 * _np.exp(-0.5* f3/f2)
+
+    def __type__(self):
+        """ It returns if a kernel is stationary or not """
+        return 'stationary'
 
     def des_dtheta(self, r):
         """ Log-derivative in order to theta """
@@ -132,6 +141,10 @@ class ExpSineSquared(kernel):
         f3 = _np.abs(r)
         f4 = self.ESS_P
         return f1 * _np.exp((-2/f2) * (_np.sin(_np.pi*f3/f4))**2)
+
+    def __type__(self):
+        """ It returns if a kernel is stationary or not """
+        return 'stationary'
 
     def dess_dtheta(self,r):
         """ Log-derivative in order to theta """
@@ -197,6 +210,10 @@ class QuasiPeriodic(kernel):
         f4 = self.QP_P
         return f1 * _np.exp((-2/f2) * ((_np.sin(_np.pi*f3/f4))**2) \
                             - (0.5 * f3 * f3 / ff2))
+
+    def __type__(self):
+        """ It returns if a kernel is stationary or not """
+        return 'stationary'
 
     def dqp_dtheta(self, r):
         """ Log-derivative in order to theta """
@@ -272,6 +289,10 @@ class RatQuadratic(kernel):
         f4 = self.RQ_alpha
         return f1 *(1 + (0.5 * f3 / ( f4 * f2))) ** (-f4)
 
+    def __type__(self):
+        """ It returns if a kernel is stationary or not """
+        return 'stationary'
+
     def drq_dtheta(self, r):
         """ Log-derivative in order to theta """
         f1 = self.RQ_theta**2
@@ -322,6 +343,10 @@ class WhiteNoise(kernel):
         f2 = _np.diag(_np.diag(_np.ones_like(r)))
         return f1 * f2 
 
+    def __type__(self):
+        """ It returns if a kernel is stationary or not """
+        return 'stationary'
+
     def dwn_dtheta(self, r):
         """ Log-derivative in order to theta """
         f1 = self.WN_theta**2
@@ -355,6 +380,10 @@ class Exponential(kernel):
         f2 = self.Exp_l
         f3 = self.Exp_theta**2
         return f3 * _np.exp(-f1 / f2)
+
+    def __type__(self):
+        """ It returns if a kernel is stationary or not """
+        return 'stationary'
 
     def dexp_dtheta(self, r):
         """ Log-derivative in order to theta """
@@ -397,6 +426,10 @@ class Matern32(kernel):
         f2 = self.M32_l
         f3 = self.M32_theta**2
         return f3 * (1.0 + f1 / f2) * _np.exp(-f1 / f2)
+
+    def __type__(self):
+        """ It returns if a kernel is stationary or not """
+        return 'stationary'
 
     def dm32_dtheta(self, r):
         """ Log-derivative in order to theta """
@@ -443,6 +476,10 @@ class Matern52(kernel):
         f4 = self.M52_l**2
         f5 = self.M52_theta**2
         return f5 * (1.0 + f1 / f3 + (5.0 * f2) / (3.0 * f4)) * _np.exp(-f1 / f3)
+
+    def __type__(self):
+        """ It returns if a kernel is stationary or not """
+        return 'stationary'
 
     def dm52_dtheta(self, r):
         """ Log-derivative in order to theta """
@@ -496,13 +533,17 @@ class RQP(kernel):
         f3 = (1 + r**2 / (2*self.RQP_a*self.RQP_l1**2) )**(-self.RQP_a)
         return f1 * f2 * f3
 
+    def __type__(self):
+        """ It returns if a kernel is stationary or not """
+        return 'stationary'
+
     def drqp_dtheta(self,r):
         """ Log-derivative in order to theta """
         f1 = _np.exp(-(2*_np.sin(((_np.pi)*_np.abs(r))/self.RQP_P)**2)/self.RQP_l2**2)
         f2 = (1+r**2/(2*self.RQP_a*self.RQP_l1**2))**self.RQP_a
         return 2* f1/f2 * self.RQP_theta**2
 
-    def drqp_dl1(self,r):
+    def drqp_dl1(self, r):
         """ Log-derivatives in order to l1 """
         f1 = r**2
         f2 = (1+r**2/(2*self.RQP_a*self.RQP_l1**2))**(-1-self.RQP_a)
@@ -511,7 +552,7 @@ class RQP(kernel):
         f5 = self.RQP_l1**3
         return self.RQP_l1 * f1 * f2 * f3 * f4 *f5
 
-    def drqp_da(self,r):
+    def drqp_da(self, r):
         f1 = r**2/(2*self.RQP_a*(r**2/(2*self.RQP_a*self.RQP_l1**2)+1)*self.RQP_l1**2)
         f2 = _np.log(r**2/(2*self.RQP_a*self.RQP_l1**2)+1)
         f3 = self.RQP_theta**2
@@ -520,7 +561,7 @@ class RQP(kernel):
         """ Log-derivative in order to alpha """
         return self.RQP_a * (f1 - f2) * f3 * f4 / f5
 
-    def drqp_dl2(self,r):
+    def drqp_dl2(self, r):
         """ Log-derivatives in order to l2 """
         f1 = 4*self.RQP_theta**2
         f2 = _np.sin((_np.pi)*_np.abs(r)/self.RQP_P)**2
@@ -529,7 +570,7 @@ class RQP(kernel):
         f5 = self.RQP_l2**2
         return f1 * f2 * f3 / (f4 * f5)
 
-    def drqp_dlP(self,r):
+    def drqp_dlP(self, r):
         """ Log-derivatives in order to P """
         f1 = 4*(_np.pi)*r*self.RQP_theta**2
         f2 = _np.cos(((_np.pi)*_np.abs(r))/self.RQP_P)
@@ -539,4 +580,35 @@ class RQP(kernel):
         f6 = self.RQP_l2**2*self.RQP_P
         return f1 * f2 * f3 * f4 /(f5 * f6)
 
-##### END
+class Linear(kernel):
+    """
+        Definition of the linear kernel
+
+        Important
+    The derivative should be in respect to log(parameter)
+
+        Parameters
+    c = constant
+    """
+    def __init__(self, c):
+        """
+        Because we are "overwriting" the function __init__
+        we use this weird super function
+        """
+        super(Linear, self).__init__(c)
+        self.c = c
+
+    def __call__(self, r):
+        f1 = self.c**2
+        f2 = r
+        return f1 * f2
+
+    def __type__(self):
+        """ It returns if a kernel is stationary or not """
+        return 'non-stationary'
+    
+    def dl_dc(self, r):
+        """ Log-derivatives in order to P """
+        f1 = self.c**2
+        f2 = r
+        return 2 * f1 * f2
