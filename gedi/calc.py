@@ -7,9 +7,12 @@ from scipy.linalg import cho_solve as _cho_solve
 from gedi import kernels as _kernels
 
 
-def build_matrix(kernel, x, yerr):
+def build_matrix(kern, x, yerr):
     """
         build_matrix() creates the covariance matrix
+
+        The Linear kernel will not work here, another solution needs
+    to be found for it
 
         Parameters
     kern = kernel in use
@@ -20,14 +23,9 @@ def build_matrix(kernel, x, yerr):
         Returns
     K = covariance matrix
     """ 
-    if kernel.__type__() is 'non-stationary':
-        r = _np.dot(x[:, None],x[None, :])
-    else:
-        r = x[:, None] - x[None, :]
-    
-    K = kernel(r)
-    K = K + yerr**2*_np.identity(len(x))
-
+    r = x[:, None] - x[None, :]
+    K = kern(r)
+    K = K + yerr**2*_np.identity(len(x)) 
     return K
 
 
@@ -521,7 +519,9 @@ def compute_kernel(kernel, x, new_x, y, yerr):
     """
         compute_kenrel() makes the necessary calculations to allow the user to 
     create pretty graphics in the end, the ones that includes the mean and 
-    standard deviation. 
+    standard deviation.
+    
+        I'm not sure if multiplication will work properly
 
         Parameters
     kernel = kernel in use
