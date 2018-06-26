@@ -10,6 +10,7 @@ class kernel(object):
     def __init__(self, *args):
         """ puts all Kernel arguments in an array pars """
         self.pars = _np.array(args)
+        self.kerneltype = 'simple'
 
     def __call__(self, r):
         raise NotImplementedError
@@ -36,6 +37,7 @@ class _operator(kernel):
     def __init__(self, k1, k2):
         self.k1 = k1
         self.k2 = k2
+        self.kerneltype = 'complex'
 
     @property
     def pars(self):

@@ -535,12 +535,37 @@ def compute_kernel(kernel, x, new_x, y, yerr):
         Returns
     y_mean,y_std = mean, standard deviation
     """
+    #To deal with the white noise problem in sums
     if isinstance(kernel, _kernels.Sum):
         if isinstance(kernel.k2, _kernels.WhiteNoise):
             WN_pars = kernel.k2.pars[0]**2
             kernel = kernel.k1
             K = build_matrix(kernel, x, yerr) 
             K = K + WN_pars*_np.diag(_np.diag(K))
+            L1 = _cho_factor(K)
+        elif isinstance(kernel.k1, _kernels.WhiteNoise):
+            WN_pars = kernel.k1.pars[0]**2
+            kernel = kernel.k2
+            K = build_matrix(kernel, x, yerr) 
+            K = K + WN_pars*_np.diag(_np.diag(K))
+            L1 = _cho_factor(K)
+        else:
+            K = build_matrix(kernel, x, yerr)
+            L1 = _cho_factor(K)
+
+    #To deal with the white noise problem in multiplications
+    if isinstance(kernel, _kernels.Product):
+        if isinstance(kernel.k2, _kernels.WhiteNoise):
+            WN_pars = kernel.k2.pars[0]**2
+            kernel = kernel.k1
+            K = build_matrix(kernel, x, yerr) 
+            K = _np.dot(K, WN_pars*_np.diag(_np.diag(K)))
+            L1 = _cho_factor(K)
+        if isinstance(kernel.k1, _kernels.WhiteNoise):
+            WN_pars = kernel.k1.pars[0]**2
+            kernel = kernel.k2
+            K = build_matrix(kernel, x, yerr) 
+            K = _np.dot(K, WN_pars*_np.diag(_np.diag(K)))
             L1 = _cho_factor(K)
         else:
             K = build_matrix(kernel, x, yerr)
