@@ -41,9 +41,6 @@ class _operator(kernel):
     def pars(self):
         return _np.append(self.k1.pars, self.k2.pars)
 
-    @property
-    def kernel_type(self):
-        return self.__type__
 
 class Sum(_operator):
     """ To allow the sum of kernels """
@@ -54,15 +51,18 @@ class Sum(_operator):
         return self.k1(r) + self.k2(r)
 
     def __type__(self):
-        return 'stationary'
+        return 'stationary' #temporary fix
 
 class Product(_operator):
     """ To allow the multiplycation of kernels """
     def __repr__(self):
         return "{0} * {1}".format(self.k1, self.k2)
-        
+
     def __call__(self, r):
         return self.k1(r) * self.k2(r)
+
+    def __type__(self):
+        return 'stationary' #temporary fix
 
 
 class ExpSquared(kernel):
@@ -85,16 +85,13 @@ class ExpSquared(kernel):
         super(ExpSquared, self).__init__(ES_theta, ES_l)
         self.ES_theta = ES_theta
         self.ES_l = ES_l
+        self.type = 'stationary'
 
     def __call__(self, r):
         f1 = self.ES_theta**2
         f2 = self.ES_l**2
         f3 = (r)**2
         return f1 * _np.exp(-0.5* f3/f2)
-
-    def __type__(self):
-        """ It returns if a kernel is stationary or not """
-        return 'stationary'
 
     def des_dtheta(self, r):
         """ Log-derivative in order to theta """
@@ -134,6 +131,7 @@ class ExpSineSquared(kernel):
         self.ESS_theta = ESS_theta
         self.ESS_l = ESS_l
         self.ESS_P = ESS_P
+        self.type = 'stationary'
 
     def __call__(self, r):
         f1 = self.ESS_theta**2
@@ -141,10 +139,6 @@ class ExpSineSquared(kernel):
         f3 = _np.abs(r)
         f4 = self.ESS_P
         return f1 * _np.exp((-2/f2) * (_np.sin(_np.pi*f3/f4))**2)
-
-    def __type__(self):
-        """ It returns if a kernel is stationary or not """
-        return 'stationary'
 
     def dess_dtheta(self,r):
         """ Log-derivative in order to theta """
@@ -200,7 +194,8 @@ class QuasiPeriodic(kernel):
         self.QP_theta = QP_theta
         self.QP_l1 = QP_l1
         self.QP_l2 = QP_l2
-        self.QP_P = QP_P    
+        self.QP_P = QP_P
+        self.type = 'stationary'
 
     def __call__(self, r):
         f1 = self.QP_theta**2
@@ -210,10 +205,6 @@ class QuasiPeriodic(kernel):
         f4 = self.QP_P
         return f1 * _np.exp((-2/f2) * ((_np.sin(_np.pi*f3/f4))**2) \
                             - (0.5 * f3 * f3 / ff2))
-
-    def __type__(self):
-        """ It returns if a kernel is stationary or not """
-        return 'stationary'
 
     def dqp_dtheta(self, r):
         """ Log-derivative in order to theta """
@@ -281,17 +272,14 @@ class RatQuadratic(kernel):
         self.RQ_theta = RQ_theta
         self.RQ_alpha = RQ_alpha
         self.RQ_l = RQ_l
-
+        self.type = 'stationary'
+        
     def __call__(self, r):
         f1 = self.RQ_theta**2
         f2 = self.RQ_l**2
         f3 = (r)**2
         f4 = self.RQ_alpha
         return f1 *(1 + (0.5 * f3 / ( f4 * f2))) ** (-f4)
-
-    def __type__(self):
-        """ It returns if a kernel is stationary or not """
-        return 'stationary'
 
     def drq_dtheta(self, r):
         """ Log-derivative in order to theta """
@@ -337,15 +325,12 @@ class WhiteNoise(kernel):
         """
         super(WhiteNoise, self).__init__(WN_theta)
         self.WN_theta = WN_theta
+        self.type = 'stationary'
 
     def __call__(self, r):
         f1 = self.WN_theta**2
         f2 = _np.diag(_np.diag(_np.ones_like(r)))
         return f1 * f2 
-
-    def __type__(self):
-        """ It returns if a kernel is stationary or not """
-        return 'stationary'
 
     def dwn_dtheta(self, r):
         """ Log-derivative in order to theta """
@@ -374,16 +359,13 @@ class Exponential(kernel):
         super(Exponential, self).__init__(Exp_theta, Exp_l)
         self.Exp_theta = Exp_theta
         self.Exp_l = Exp_l
-
+        self.type = 'stationary'
+        
     def __call__(self, r):
         f1 = _np.abs(r)
         f2 = self.Exp_l
         f3 = self.Exp_theta**2
         return f3 * _np.exp(-f1 / f2)
-
-    def __type__(self):
-        """ It returns if a kernel is stationary or not """
-        return 'stationary'
 
     def dexp_dtheta(self, r):
         """ Log-derivative in order to theta """
@@ -420,16 +402,13 @@ class Matern32(kernel):
         super(Matern32, self).__init__(M32_theta, M32_l)
         self.M32_theta = M32_theta
         self.M32_l = M32_l
+        self.type = 'stationary'
 
     def __call__(self, r):
         f1 = _np.sqrt(3.0)*_np.abs(r)
         f2 = self.M32_l
         f3 = self.M32_theta**2
         return f3 * (1.0 + f1 / f2) * _np.exp(-f1 / f2)
-
-    def __type__(self):
-        """ It returns if a kernel is stationary or not """
-        return 'stationary'
 
     def dm32_dtheta(self, r):
         """ Log-derivative in order to theta """
@@ -468,6 +447,7 @@ class Matern52(kernel):
         super(Matern52, self).__init__(M52_theta, M52_l)
         self.M52_theta = M52_theta
         self.M52_l = M52_l
+        self.type = 'stationary'
 
     def __call__(self, r):
         f1 = _np.sqrt(5.0) * _np.abs(r)
@@ -476,10 +456,6 @@ class Matern52(kernel):
         f4 = self.M52_l**2
         f5 = self.M52_theta**2
         return f5 * (1.0 + f1 / f3 + (5.0 * f2) / (3.0 * f4)) * _np.exp(-f1 / f3)
-
-    def __type__(self):
-        """ It returns if a kernel is stationary or not """
-        return 'stationary'
 
     def dm52_dtheta(self, r):
         """ Log-derivative in order to theta """
@@ -526,6 +502,7 @@ class RQP(kernel):
         self.RQP_a = RQP_a
         self.RQP_l2 = RQP_l2
         self.RQP_P = RQP_P
+        self.type = 'stationary'
 
     def __call__(self, r):
         f1 = self.RQP_theta**2
@@ -533,9 +510,6 @@ class RQP(kernel):
         f3 = (1 + r**2 / (2*self.RQP_a*self.RQP_l1**2) )**(-self.RQP_a)
         return f1 * f2 * f3
 
-    def __type__(self):
-        """ It returns if a kernel is stationary or not """
-        return 'stationary'
 
     def drqp_dtheta(self,r):
         """ Log-derivative in order to theta """
@@ -597,16 +571,13 @@ class Linear(kernel):
         """
         super(Linear, self).__init__(c)
         self.c = c
+        self.type = 'non-stationary'
 
     def __call__(self, r):
         f1 = self.c**2
         f2 = r
         return f1 * f2
 
-    def __type__(self):
-        """ It returns if a kernel is stationary or not """
-        return 'non-stationary'
-    
     def dl_dc(self, r):
         """ Log-derivatives in order to P """
         f1 = self.c**2
