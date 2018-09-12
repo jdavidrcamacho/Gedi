@@ -63,7 +63,7 @@ def kepler(P=365, K=.1, e=0,  w=_np.pi, T=0, phi=None, gamma=0, t=None):
     M0 = [x - e*_np.sin(x) for x in E0]
 
     i = 0
-    while i < 100:
+    while i < 1000:
         #[x + y for x, y in zip(first, second)]
         calc_aux = [x2-y for x2,y in zip(mean_anom, M0)]    
         E1 = [x3 + y/(1-e*_np.cos(x3)) for x3,y in zip(E0, calc_aux)]
@@ -76,3 +76,26 @@ def kepler(P=365, K=.1, e=0,  w=_np.pi, T=0, phi=None, gamma=0, t=None):
     RV = [ gamma + K*(e*_np.cos(w)+_np.cos(w+x6)) for x6 in nu]
     RV = [x for x in RV] #m/s 
     return t, RV
+
+
+##### Semi amplitude calculation #####
+    def semi_amplitude(period, Mplanet, Mstar, ecc):
+    """
+        Calculates the semi-amplitude (K) caused by a planet with a given
+    perion and mass Mplanet with a eccentricity ecc.
+    
+        Parameters:
+    period in years
+    Mplanet in Jupiter masses, tecnically is the M.sin i
+    Mstar in Solar masses
+    ecc is the eccentricity
+    
+        Returns:
+    Semi-amplitude K
+    """
+    per = np.power(1/period, 1/3)
+    Pmass = Mplanet / 1
+    Smass = np.power(1/Mstar, 2/3)
+    Ecc = 1 / np.sqrt(1 - ecc**2)
+
+    return 28.435 * per * Pmass* Smass * Ecc

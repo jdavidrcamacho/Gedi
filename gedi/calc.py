@@ -584,6 +584,7 @@ def compute_kernel(kernel, x, new_x, y, yerr):
 
     new_r = new_x[:,None] - new_x[None,:]
     new_columns = kernel(new_r)
+    print('K =', new_columns)
     kcolumns = _np.vstack([new_lines.T, new_columns])
     kfinal = _np.hstack([kfinal, kcolumns])
 
