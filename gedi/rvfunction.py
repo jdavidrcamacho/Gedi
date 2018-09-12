@@ -79,7 +79,7 @@ def kepler(P=365, K=.1, e=0,  w=_np.pi, T=0, phi=None, gamma=0, t=None):
 
 
 ##### Semi amplitude calculation #####
-    def semi_amplitude(period, Mplanet, Mstar, ecc):
+def semi_amplitude(period, Mplanet, Mstar, ecc):
     """
         Calculates the semi-amplitude (K) caused by a planet with a given
     perion and mass Mplanet with a eccentricity ecc.
@@ -89,13 +89,14 @@ def kepler(P=365, K=.1, e=0,  w=_np.pi, T=0, phi=None, gamma=0, t=None):
     Mplanet in Jupiter masses, tecnically is the M.sin i
     Mstar in Solar masses
     ecc is the eccentricity
-    
+
         Returns:
     Semi-amplitude K
     """
-    per = np.power(1/period, 1/3)
+    
+    per = _np.power(1/period, 1/3)
     Pmass = Mplanet / 1
-    Smass = np.power(1/Mstar, 2/3)
-    Ecc = 1 / np.sqrt(1 - ecc**2)
+    Smass = _np.power(1/Mstar, 2/3)
+    Ecc = 1 / _np.sqrt(1 - ecc**2)
 
     return 28.435 * per * Pmass* Smass * Ecc
