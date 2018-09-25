@@ -1,4 +1,4 @@
-<img align="left" src="https://i.imgur.com/vJV3mvb.png">
+<img align="left" width="180" height="180" src="https://i.imgur.com/O7KP89v.png">
 
 
 [![Build Status](https://travis-ci.org/jdavidrcamacho/Gedi.svg?branch=master)](https://travis-ci.org/jdavidrcamacho/Gedi)
@@ -15,7 +15,7 @@ Do or do not, there is no try... Use Gaussian processes to model real data, test
 
 |▒▓▒▒◙▒▓▒▓▒▓||░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
  
-We are currently updating gedi to work with python 3.x, abandoning python 2.7 in the process, but this package is fully functional and feel free to check the [wiki page](https://github.com/jdavidrcamacho/Gedi/wiki) if you want to know a little more about it! The wiki is up to date to the current gedi version.
+This package was made to be used in python 3.x, check the [wiki page](https://github.com/jdavidrcamacho/Gedi/wiki) if you want to know a little more about it!
 
 |▒▓▒▒◙▒▓▒▓▒▓||░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
