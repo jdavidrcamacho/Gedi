@@ -1,7 +1,7 @@
 <img align="left" width="180" height="180" src="https://i.imgur.com/O7KP89v.png">
 
 
-[![Build Status](https://travis-ci.org/jdavidrcamacho/Gedi.svg?branch=master)](https://travis-ci.org/jdavidrcamacho/Gedi)
+[![Build Status](https://travis-ci.org/jdavidrcamacho/Gedi.svg?branch=master)](https://travis-ci.org/jdavidrcamacho/Gedi) \
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/jdavidrcamacho/Gedi/blob/master/LICENSE)
 
 
